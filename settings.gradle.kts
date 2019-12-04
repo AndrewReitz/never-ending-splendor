@@ -1,7 +1,10 @@
+plugins {
+    id("com.gradle.enterprise").version("3.1")
+}
+
 include(":mobile", "networking")
 
 rootProject.name = "RoboPhish"
-
 rootProject.children.forEach {
     if(file("${it.projectDir}/${it.name}.gradle.kts").exists()) {
         it.buildFileName = "${it.name}.gradle.kts"

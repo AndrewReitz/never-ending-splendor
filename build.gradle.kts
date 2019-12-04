@@ -15,6 +15,12 @@
 */
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildScan {
+    termsOfServiceAgree = "yes"
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    publishAlways()
+}
+
 subprojects {
     repositories {
         google()
