@@ -1,11 +1,11 @@
 package com.bayapps.android.robophish
 
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.singleton
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.singleton
 
-val releaseModule = Kodein.Module("Release Module") {
+val releaseModule = DI.Module("Release Module") {
     bind<AppInitializer>() with singleton { ReleaseAppInitializer() }
 }
 

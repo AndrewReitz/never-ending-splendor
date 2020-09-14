@@ -18,13 +18,13 @@ import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import okhttp3.OkHttpClient
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
+import org.kodein.di.DI
+import org.kodein.di.DIAware
 import org.kodein.di.android.androidCoreModule
 import org.kodein.di.android.x.androidXModule
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.singleton
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.singleton
 import org.kodein.di.jxinject.Jx
 import org.kodein.di.jxinject.jxInjectorModule
 import robophish.CACHE_DIR_TAG
@@ -35,9 +35,9 @@ import java.io.File
 
 const val MEDIA_PLAYER_NOTIFICATION = "MediaPlayer"
 
-class RoboPhishApplication : MultiDexApplication(), KodeinAware {
+class RoboPhishApplication : MultiDexApplication(), DIAware {
 
-    override val kodein = Kodein.lazy {
+    override val di = DI.lazy {
         import(androidCoreModule(this@RoboPhishApplication))
         import(androidXModule(this@RoboPhishApplication))
         import(jxInjectorModule)
@@ -49,8 +49,8 @@ class RoboPhishApplication : MultiDexApplication(), KodeinAware {
          * build type. For example, [Timber] logging w/ the [Timber.DebugTree] should only
          * be done in the debug module.
          */
-        buildSpecificModules.forEach {
-            import(it)
+        buildSpecificModules.forEach { module ->
+            import(module)
         }
 
         bind<NotificationManagerCompat>() with singleton { NotificationManagerCompat.from(instance()) }
@@ -105,10 +105,10 @@ class RoboPhishApplication : MultiDexApplication(), KodeinAware {
     }
 }
 
-val Context.kodein get() = (applicationContext as RoboPhishApplication).kodein
+val Context.di get() = (applicationContext as RoboPhishApplication).di
 
 fun Activity.inject() {
-    Jx.of(kodein).inject(this)
+    Jx.of(di).inject(this)
 }
 
 fun Fragment.inject() {
@@ -116,5 +116,5 @@ fun Fragment.inject() {
 }
 
 fun Context.inject(any: Any) {
-    Jx.of(kodein).inject(any)
+    Jx.of(di).inject(any)
 }

@@ -16,13 +16,10 @@ rootProject.children.forEach {
 
 gradleEnterprise {
     buildScan {
-        publishAlways()
+        publishAlwaysIf(System.getProperty("NEVER_ENDING_SPLENDOR_ACCEPT_BUILD_SCAN_AGREEMENT") != null)
         buildScan {
             termsOfServiceUrl = "https://gradle.com/terms-of-service"
-
-            // pass in to gradle with -DROBOPHISH_ACCEPT_BUILD_SCAN_AGREEMENT=yes or add to
-            // gradle.properties with systemProp.ROBOPHISH_ACCEPT_BUILD_SCAN_AGREEMENT=yes
-            termsOfServiceAgree = System.getProperty("ROBOPHISH_ACCEPT_BUILD_SCAN_AGREEMENT", "no")
+            termsOfServiceAgree = System.getProperty("NEVER_ENDING_SPLENDOR_ACCEPT_BUILD_SCAN_AGREEMENT", "no")
         }
     }
 }

@@ -5,18 +5,18 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import org.junit.jupiter.api.Test
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.generic.instance
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.instance
 import robophish.networkingModule
 
 /**
  * Test to ensure the models match what we expect from the [robophish.PhishinService], and
  * that the adapters are generated and setup correctly in [Moshi].
  */
-class JsonParsingTest: KodeinAware{
+class JsonParsingTest: DIAware {
 
-    override val kodein = Kodein.lazy {
+    override val di = DI.lazy {
         import(networkingModule)
     }
 

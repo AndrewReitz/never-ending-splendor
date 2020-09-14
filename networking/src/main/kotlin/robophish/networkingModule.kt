@@ -8,10 +8,10 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.singleton
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import robophish.moshi.HttpUrlAdapter
@@ -31,7 +31,7 @@ private const val PHISHIN_RETROFIT_TAG = "Phishin"
 private val PHISHIN_API_URL: HttpUrl = requireNotNull("https://phish.in/".toHttpUrlOrNull())
 private val DISK_CACHE_SIZE = MEGABYTES.toBytes(50).toInt()
 
-val networkingModule = Kodein.Module(name = "NetworkingModule") {
+val networkingModule = DI.Module(name = "NetworkingModule") {
 
     bind<PhishinService>() with singleton {
         instance<Retrofit>(tag = PHISHIN_RETROFIT_TAG).create(PhishinService::class.java)

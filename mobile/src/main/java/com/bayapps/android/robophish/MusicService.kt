@@ -44,9 +44,9 @@ import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
 import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.*
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.kodein
-import org.kodein.di.generic.instance
+import org.kodein.di.DIAware
+import org.kodein.di.android.di
+import org.kodein.di.instance
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -105,9 +105,9 @@ import java.lang.ref.WeakReference
  *
  * @see [README.md](README.md) for more details.
  */
-class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, KodeinAware, CoroutineScope by MainScope() {
+class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAware, CoroutineScope by MainScope() {
 
-    override val kodein by kodein()
+    override val di by di()
 
     private var mPlaybackManager: PlaybackManager? = null
     private var mSession: MediaSessionCompat? = null
