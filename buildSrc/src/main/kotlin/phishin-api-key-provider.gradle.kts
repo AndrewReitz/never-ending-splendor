@@ -1,8 +1,8 @@
 /**
  * Loads the Phish.in api key from gradle/system properties
  *
- * `robophish.phishinApiKey=apiKey` for gradle properties.
- * `ROBOPHISH_PHISHIN_API_KEY=apiKey` for system property.
+ * `never.ending.splendor.phishinApiKey=apiKey` for gradle properties.
+ * `NEVER_ENDING_SPLENDOR_PHISHIN_API_KEY=apiKey` for system property.
  *
  * Can then be used from the project's extras with `phishinApiKey`
  */
