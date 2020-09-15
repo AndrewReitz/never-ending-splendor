@@ -16,7 +16,7 @@
   -->
 <resources>
 
-    <string name="app_name">RoboPhish</string>
+    <string name="app_name">Never Ending Splendor</string>
     <string name="favorite">Favorite</string>
     <string name="error_no_metadata">Unable to retrieve metadata.</string>
     <string name="browse_genres">Genres</string>

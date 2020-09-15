@@ -29,10 +29,10 @@ android {
 
     defaultConfig {
         applicationId "never.ending.splendor"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 29
-        versionName "1.1.0"
+        versionName "One"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 

@@ -16,7 +16,7 @@
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.bayapps.android.robophish"
+    package="never.ending.splendor"
     >
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -30,7 +30,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:name=".RoboPhishApplication"
+        android:name="never.ending.splendor.app.RoboPhishApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -43,7 +43,7 @@
 
         <!-- Main activity for music browsing on phone -->
         <activity
-            android:name=".ui.MusicPlayerActivity"
+            android:name="never.ending.splendor.app.ui.MusicPlayerActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,8 +58,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="android.bayapps.com"
-                    android:pathPattern="/robophish"
+                    android:host="never.ending.splendor"
+                    android:pathPattern="/"
                     android:scheme="http" />
             </intent-filter>
 
@@ -71,8 +71,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="android.bayapps.com"
-                    android:pathPattern="/robophish"
+                    android:host="never.ending.splendor"
+                    android:pathPattern="/"
                     android:scheme="https" />
             </intent-filter>
 
@@ -85,17 +85,17 @@
 
         <!-- Placeholder activity for phone UI -->
         <activity
-            android:name=".ui.PlaceholderActivity"
+            android:name="never.ending.splendor.app.ui.PlaceholderActivity"
             android:label="@string/app_name">
         </activity>
 
         <activity
-            android:name=".ui.DownloadsActivity"
+            android:name="never.ending.splendor.app.ui.DownloadsActivity"
             android:label="@string/app_name">
         </activity>
 
         <activity
-            android:name=".ui.AboutActivity"
+            android:name="never.ending.splendor.app.ui.AboutActivity"
             android:label="@string/app_name">
         </activity>
 
@@ -122,7 +122,7 @@
          consumers through MediaBrowserService and MediaSession. Consumers connect to it through
          MediaBrowser (for browsing) and MediaController (for play session control) -->
         <service
-            android:name=".MusicService"
+            android:name="never.ending.splendor.app.MusicService"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -137,13 +137,13 @@
         <!-- A full screen activity showing controls and a seek bar for
              the current playing music -->
         <activity
-            android:name=".ui.FullScreenPlayerActivity"
+            android:name="never.ending.splendor.app.ui.FullScreenPlayerActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".ui.MusicPlayerActivity">
+            android:parentActivityName="never.ending.splendor.app.ui.MusicPlayerActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MusicPlayerActivity"/>
+                android:value="never.ending.splendor.app.ui.MusicPlayerActivity"/>
         </activity>
 
         <!-- A receiver that will receive media buttons and send as

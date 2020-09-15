@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.MusicPlayerActivity">
+    tools:context="never.ending.splendor.app.ui.MusicPlayerActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -46,7 +46,7 @@
             android:layout_alignParentBottom="true"
             app:cardElevation="8dp">
 
-            <fragment android:name="com.bayapps.android.robophish.ui.PlaybackControlsFragment"
+            <fragment android:name="never.ending.splendor.app.ui.PlaybackControlsFragment"
                 android:id="@+id/fragment_playback_controls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
