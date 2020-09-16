@@ -53,11 +53,8 @@ import timber.log.Timber;
  */
 public abstract class BaseActivity extends ActionBarCastActivity implements MediaBrowserProvider {
 
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private boolean isReceiverRegistered;
 
     @Inject GoogleApiAvailability googleApiAvailability;
 
@@ -69,25 +66,22 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         RoboPhishApplicationKt.inject(this);
         checkPlayServices();
 
-        // Areitz: I think this can be removed since we don't have an icon that's the
-        // same color as our primary icon.
-        if (Build.VERSION.SDK_INT >= 21) {
-            // Since our app icon has the same color as colorPrimary, our entry in the Recent Apps
-            // list gets weird. We need to change either the icon or the color
-            // of the TaskDescription.
-            ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(
-                    getTitle().toString(),
-                    BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_white),
-                    ContextCompat.getColor(this, R.color.primaryColor));
-            setTaskDescription(taskDesc);
-        }
+        // Since our app icon has the same color as colorPrimary, our entry in the Recent Apps
+        // list gets weird. We need to change either the icon or the color
+        // of the TaskDescription.
+        ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(
+                getTitle().toString(),
+                BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_white),
+                ContextCompat.getColor(this, R.color.primaryColor));
+        setTaskDescription(taskDesc);
 
         // Connect a media browser just to get the media session token. There are other ways
         // this can be done, for example by sharing the session token directly.
         mMediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class), mConnectionCallback, null);
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+        //mRegistrationProgressBar.setVisibility(ProgressBar.GONE);
+        BroadcastReceiver mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //mRegistrationProgressBar.setVisibility(ProgressBar.GONE);

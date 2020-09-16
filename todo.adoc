@@ -1,4 +1,0 @@
-= TODO
-
-- Setup Firebase for this package name
--

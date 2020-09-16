@@ -495,10 +495,6 @@ public class MediaBrowserFragment extends Fragment {
     }
 
     private void updateTitle() {
-
-        mMediaFragmentListener.updateDrawerToggle();
-
-
         if (mMediaId.startsWith(MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR)) {
 
             String year = MediaIDHelper.getHierarchy(mMediaId)[1];
@@ -573,7 +569,6 @@ public class MediaBrowserFragment extends Fragment {
         void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
         void setToolbarTitle(CharSequence title);
         void setToolbarSubTitle(CharSequence title);
-        void updateDrawerToggle();
     }
 
 }

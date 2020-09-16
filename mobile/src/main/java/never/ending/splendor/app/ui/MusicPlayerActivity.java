@@ -126,11 +126,6 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     @Override
-    public void updateDrawerToggle() {
-        super.updateDrawerToggle();
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Timber.d("onNewIntent, intent=%s", intent);
