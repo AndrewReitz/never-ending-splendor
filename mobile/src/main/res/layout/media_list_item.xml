@@ -15,6 +15,7 @@
   limitations under the License.
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/media_item_height">
@@ -27,9 +28,10 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/media_item_icon_margin_start"
         android:tintMode="src_in"
-        android:tint="@color/media_item_icon_not_playing"
         android:contentDescription="@string/play_item"
-        android:src="@drawable/ic_play_arrow_black_36dp"/>
+        android:src="@drawable/ic_play_arrow_black_36dp"
+        app:tint="@color/media_item_icon_not_playing"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"

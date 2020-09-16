@@ -184,20 +184,6 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         mToolbarInitialized = true;
     }
 
-    private void populateDrawerItems(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
-                menuItem -> {
-                    menuItem.setChecked(true);
-                    mItemToOpenWhenDrawerCloses = menuItem.getItemId();
-                    return true;
-                });
-        if (MusicPlayerActivity.class.isAssignableFrom(getClass())) {
-            navigationView.setCheckedItem(R.id.navigation_allmusic);
-        } else if (PlaceholderActivity.class.isAssignableFrom(getClass())) {
-            navigationView.setCheckedItem(R.id.navigation_playlists);
-        }
-    }
-
     /**
      * Shows the Cast First Time User experience to the user (an overlay that explains what is
      * the Cast icon)

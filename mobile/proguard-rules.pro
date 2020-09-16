@@ -13,6 +13,6 @@
 # remove code paths that has the SDK int less than 21 up to 1000
 -allowaccessmodification
 -assumevalues class android.os.Build$VERSION {
-    int SDK_INT return 21..1000;
+    int SDK_INT return 23..1000;
 }
 

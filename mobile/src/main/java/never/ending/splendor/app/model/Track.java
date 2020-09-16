@@ -1,6 +1,7 @@
 package never.ending.splendor.app.model;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,12 +56,11 @@ public class Track {
     }
 
     public String getDurationString() {
-        String timestamp = String.format("%d:%02d",
+        return String.format(Locale.ROOT, "%d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(mDuration),
                 TimeUnit.MILLISECONDS.toSeconds(mDuration) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(mDuration))
         );
-    return timestamp;
     }
 
     public void setSet(String set) {
