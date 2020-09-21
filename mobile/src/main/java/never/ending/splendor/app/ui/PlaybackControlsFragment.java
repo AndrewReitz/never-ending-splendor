@@ -118,8 +118,7 @@ public class PlaybackControlsFragment extends Fragment {
     public void onStart() {
         super.onStart();
         Timber.d("fragment.onStart");
-        MediaControllerCompat controller = ((BaseActivity) getActivity())
-                .getSupportMediaController();
+        MediaControllerCompat controller = ((BaseActivity) getActivity()).getSupportMediaController();
         if (controller != null) {
             onConnected();
         }
