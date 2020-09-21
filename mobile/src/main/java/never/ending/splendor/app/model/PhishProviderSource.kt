@@ -16,7 +16,7 @@ class PhishProviderSource(
 ) : MusicProviderSource {
 
     override suspend fun years(): List<YearData> {
-        return when(val result = retry { phishinRepository.years() }) {
+        return when (val result = retry { phishinRepository.years() }) {
             is PhishinSuccess -> result.data.asReversed()
             is PhishinError -> {
                 Timber.e(result.exception, "There was an error loading years from phishin api")

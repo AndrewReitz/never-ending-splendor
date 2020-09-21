@@ -48,7 +48,6 @@ import androidx.viewpager.widget.ViewPager;
 import never.ending.splendor.R;
 
 import never.ending.splendor.app.MusicService;
-import never.ending.splendor.app.utils.Downloader;
 import never.ending.splendor.app.utils.MediaIDHelper;
 import never.ending.splendor.app.utils.NetworkHelper;
 import com.google.android.material.tabs.TabLayout;
@@ -174,22 +173,7 @@ public class MediaBrowserFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case 0:
-                // start DownloadManager
-                String showId = extractShowFromMediaID(getMediaId());
-                Downloader dl = new Downloader(getActivity(), showId, mShowData);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item); // important line
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        //menu.add("Download Show");  //TODO: enable once downloads are working
         super.onCreateOptionsMenu(menu,inflater);
     }
 
