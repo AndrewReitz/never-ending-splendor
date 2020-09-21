@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,5 +15,9 @@ subprojects {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    tasks.withType<Test> {
+        testLogging.exceptionFormat = TestExceptionFormat.FULL
     }
 }

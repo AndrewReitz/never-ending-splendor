@@ -1,13 +1,13 @@
 package never.ending.splendor.app
 
 import android.app.Activity
+import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
-import androidx.multidex.MultiDexApplication
 import never.ending.splendor.R
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.model.MusicProviderSource
@@ -37,7 +37,7 @@ import java.io.File
 
 const val MEDIA_PLAYER_NOTIFICATION = "MediaPlayer"
 
-class RoboPhishApplication : MultiDexApplication(), DIAware {
+class RoboPhishApplication : Application(), DIAware {
 
     override val di = DI.lazy {
         import(androidCoreModule(this@RoboPhishApplication))
