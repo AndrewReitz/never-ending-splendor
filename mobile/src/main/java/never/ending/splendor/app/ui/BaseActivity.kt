@@ -17,14 +17,10 @@ package never.ending.splendor.app.ui
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager.TaskDescription
-import android.content.BroadcastReceiver
 import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.RemoteException
-import android.preference.PreferenceManager
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -81,7 +77,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
         return resultCode == ConnectionResult.SUCCESS
     }
 
-    val supportMediaController: MediaControllerCompat get() = MediaControllerCompat.getMediaController(this)
+    val supportMediaController: MediaControllerCompat? get() = MediaControllerCompat.getMediaController(this)
 
     override fun onStart() {
         super.onStart()

@@ -68,8 +68,6 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import timber.log.Timber;
 
-import static never.ending.splendor.app.utils.MediaIDHelper.extractShowFromMediaID;
-
 /**
  * A Fragment that lists all the various browsable queues available
  * from a {@link android.service.media.MediaBrowserService}.
@@ -187,7 +185,7 @@ public class MediaBrowserFragment extends Fragment {
         String mediaId = getMediaId();
         ListView listView;
 
-        if (mediaId != null && MediaIDHelper.isShow(mediaId)) {
+        if (mediaId != null && MediaIDHelper.INSTANCE.isShow(mediaId)) {
 
             setHasOptionsMenu(true);  //show option to download
 
@@ -292,7 +290,7 @@ public class MediaBrowserFragment extends Fragment {
             final WebView tapernotesWebview = rootView.findViewById(R.id.tapernotes_webview);
             tapernotesWebview.getSettings().setJavaScriptEnabled(true);
 
-            String showId = extractShowFromMediaID(mediaId);
+            String showId = MediaIDHelper.INSTANCE.extractShowFromMediaID(mediaId);
             final AsyncHttpClient tapernotesClient = new AsyncHttpClient();
             tapernotesClient.get("http://phish.in/api/v1/shows/" + showId + ".json",
                     null, new JsonHttpResponseHandler() {
@@ -481,7 +479,7 @@ public class MediaBrowserFragment extends Fragment {
     private void updateTitle() {
         if (mMediaId.startsWith(MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR)) {
 
-            String year = MediaIDHelper.getHierarchy(mMediaId)[1];
+            String year = MediaIDHelper.INSTANCE.getHierarchy(mMediaId)[1];
             mMediaFragmentListener.setToolbarTitle(year);
             mMediaFragmentListener.setToolbarSubTitle("");
             return;
@@ -528,7 +526,7 @@ public class MediaBrowserFragment extends Fragment {
                 MediaControllerCompat controller = ((BaseActivity) getContext()).getSupportMediaController();
                 if (controller != null && controller.getMetadata() != null) {
                     String currentPlaying = controller.getMetadata().getDescription().getMediaId();
-                    String musicId = MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId());
+                    String musicId = MediaIDHelper.INSTANCE.extractMusicIDFromMediaID(item.getDescription().getMediaId());
                     if (currentPlaying != null && currentPlaying.equals(musicId)) {
                         PlaybackStateCompat pbState = controller.getPlaybackState();
                         if (pbState == null ||

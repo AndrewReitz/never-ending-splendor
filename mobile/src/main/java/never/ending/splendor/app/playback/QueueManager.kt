@@ -52,7 +52,7 @@ class QueueManager(
         return index >= 0
     }
 
-    private fun setCurrentQueueItem(mediaId: String?): Boolean {
+    private fun setCurrentQueueItem(mediaId: String): Boolean {
         // set the current index on queue from the music Id:
         val index = QueueHelper.getMusicIndexOnQueue(playingQueue, mediaId)
         currentIndex = index
@@ -111,7 +111,8 @@ class QueueManager(
             )
             setCurrentQueue(
                 queueTitle,
-                QueueHelper.getPlayingQueue(mediaId, musicProvider), mediaId
+                requireNotNull(QueueHelper.getPlayingQueue(mediaId, musicProvider)),
+                mediaId
             )
         }
         updateMetadata()
