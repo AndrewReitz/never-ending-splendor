@@ -139,7 +139,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
             // In onDisconnected(), the underlying CastPlayback#mVideoCastConsumer
             // is disconnected and hence we update our local value of stream position
             // to the latest position.
-            mPlaybackManager!!.playback.updateLastKnownStreamPosition()
+            mPlaybackManager!!.playback?.updateLastKnownStreamPosition()
         }
 
         override fun onDisconnected() {
@@ -294,14 +294,14 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         stopForeground(true)
     }
 
+    override fun onPlaybackStateUpdated(newState: PlaybackStateCompat) {
+        mSession!!.setPlaybackState(newState)
+    }
+
     override fun onNotificationRequired() {
         launch {
             mediaNotificationManager.startNotification()
         }
-    }
-
-    override fun onPlaybackStateUpdated(newState: PlaybackStateCompat) {
-        mSession!!.setPlaybackState(newState)
     }
 
     private fun registerCarConnectionReceiver() {
@@ -330,7 +330,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         override fun handleMessage(msg: Message) {
             val service = mWeakReference.get()
             if (service != null && service.mPlaybackManager!!.playback != null) {
-                if (service.mPlaybackManager!!.playback.isPlaying) {
+                if (service.mPlaybackManager!!.playback?.isPlaying!!) {
                     Timber.d("Ignoring delayed stop since the media player is in use.")
                     return
                 }

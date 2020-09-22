@@ -192,7 +192,7 @@ public class MediaBrowserFragment extends Fragment {
             rootView = inflater.inflate(R.layout.fragment_list_show, container, false);
 
             ViewPager viewPager = rootView.findViewById(R.id.viewpager);
-            viewPager.setAdapter(new ShowPagerAdapter(inflater, rootView));
+            viewPager.setAdapter(new ShowPagerAdapter(rootView));
             viewPager.setOffscreenPageLimit(3);
 
             TabLayout tabLayout = rootView.findViewById(R.id.sliding_tabs);
