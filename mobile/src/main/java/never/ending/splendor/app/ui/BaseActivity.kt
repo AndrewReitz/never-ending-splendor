@@ -81,7 +81,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
         return resultCode == ConnectionResult.SUCCESS
     }
 
-    val supportMediaController: MediaControllerCompat? get() = MediaControllerCompat.getMediaController(this)
+    val supportMediaController: MediaControllerCompat get() = MediaControllerCompat.getMediaController(this)
 
     override fun onStart() {
         super.onStart()

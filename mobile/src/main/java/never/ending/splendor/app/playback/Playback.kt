@@ -13,133 +13,126 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package never.ending.splendor.app.playback;
+package never.ending.splendor.app.playback
 
-import never.ending.splendor.app.MusicService;
-
-import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
+import android.support.v4.media.session.MediaSessionCompat
 
 /**
- * Interface representing either Local or Remote Playback. The {@link MusicService} works
+ * Interface representing either Local or Remote Playback. The [MusicService] works
  * directly with an instance of the Playback object to make the various calls such as
  * play, pause etc.
  */
-public interface Playback {
+interface Playback {
     /**
      * Start/setup the playback.
      * Resources/listeners would be allocated by implementations.
      */
-    void start();
+    fun start()
 
     /**
      * Stop the playback. All resources can be de-allocated by implementations here.
      * @param notifyListeners if true and a callback has been set by setCallback,
-     *                        callback.onPlaybackStatusChanged will be called after changing
-     *                        the state.
+     * callback.onPlaybackStatusChanged will be called after changing
+     * the state.
      */
-    void stop(boolean notifyListeners);
-
+    fun stop(notifyListeners: Boolean)
+    /**
+     * Get the current [android.media.session.PlaybackState.getState]
+     */
     /**
      * Set the latest playback state as determined by the caller.
      */
-    void setState(int state);
-
-    /**
-     * Get the current {@link android.media.session.PlaybackState#getState()}
-     */
-    int getState();
+    var state: Int
 
     /**
      * @return boolean that indicates that this is ready to be used.
      */
-    boolean isConnected();
+    val isConnected: Boolean
 
     /**
      * @return boolean indicating whether the player is playing or is supposed to be
      * playing when we gain audio focus.
      */
-    boolean isPlaying();
-
+    val isPlaying: Boolean
     /**
      * @return pos if currently playing an item
      */
-    int getCurrentStreamPosition();
-
     /**
      * Set the current position. Typically used when switching players that are in
      * paused state.
      *
      * @param pos position in the stream
      */
-    void setCurrentStreamPosition(int pos);
+    var currentStreamPosition: Int
 
     /**
      * Query the underlying stream and update the internal last known stream position.
      */
-    void updateLastKnownStreamPosition();
+    fun updateLastKnownStreamPosition()
 
     /**
      * @param item to play
      */
-    void play(QueueItem item);
+    fun play(item: MediaSessionCompat.QueueItem)
 
     /**
      * @param item to play after the currently playing item, using gapless playback
-     *             returns true if gapless is supported, false otherwise
+     * returns true if gapless is supported, false otherwise
      */
-    boolean playNext(QueueItem item);
+    fun playNext(item: MediaSessionCompat.QueueItem): Boolean
 
     /**
      * Pause the current playing item
      */
-    void pause();
+    fun pause()
 
     /**
      * Seek to the given position
      */
-    void seekTo(int position);
+    fun seekTo(position: Int)
 
     /**
+     * The current media Id being processed in any state or null.
+     *
      * Set the current mediaId. This is only used when switching from one
      * playback to another.
-     *
-     * @param mediaId to be set as the current.
      */
-    void setCurrentMediaId(String mediaId);
-
-    /**
-     *
-     * @return the current media Id being processed in any state or null.
-     */
-    String getCurrentMediaId();
+    var currentMediaId: String?
 
     interface Callback {
         /**
          * On current music completed.
          */
-        void onCompletion();
+        fun onCompletion()
+
         /**
          * on Playback status changed
          * Implementations can use this callback to update
          * playback state on the media sessions.
          */
-        void onPlaybackStatusChanged(int state);
+        fun onPlaybackStatusChanged(state: Int)
 
         /**
          * @param error to be added to the PlaybackState
          */
-        void onError(String error);
+        fun onError(error: String?)
 
         /**
          * @param mediaId being currently played
          */
-        void setCurrentMediaId(String mediaId);
+        fun setCurrentMediaId(mediaId: String?)
+
+        companion object {
+            val EMPTY = object : Callback {
+                override fun onCompletion() = Unit
+                override fun onPlaybackStatusChanged(state: Int) = Unit
+                override fun onError(error: String?) = Unit
+                override fun setCurrentMediaId(mediaId: String?) = Unit
+            }
+        }
     }
 
-    /**
-     * @param callback to be called
-     */
-    void setCallback(Callback callback);
+    var callback: Callback
 
-    boolean supportsGapless();
+    val supportsGapless: Boolean
 }

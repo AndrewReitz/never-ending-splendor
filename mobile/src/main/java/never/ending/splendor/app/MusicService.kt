@@ -167,10 +167,6 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Service#onCreate()
-     */
     override fun onCreate() {
         super.onCreate()
         Timber.d("onCreate")
@@ -195,7 +191,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
                         mPlaybackManager!!.handlePlayRequest()
                     }
 
-                    override fun onQueueUpdated(title: String, newQueue: List<MediaSessionCompat.QueueItem>?) {
+                    override fun onQueueUpdated(title: String, newQueue: List<MediaSessionCompat.QueueItem>) {
                         mSession!!.setQueue(newQueue)
                         mSession!!.setQueueTitle(title)
                     }

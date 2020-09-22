@@ -105,7 +105,7 @@ public class PlaybackManager implements Playback.Callback {
             return;
         }
 
-        if (mPlayback.supportsGapless() && mPlayback.isPlaying() && !mGaplessQueued) {
+        if (mPlayback.getSupportsGapless() && mPlayback.isPlaying() && !mGaplessQueued) {
             long currentPosition = mPlayback.getCurrentStreamPosition()/1000;
             long duration = mQueueManager.getDuration()/1000;
             long delta = duration - currentPosition;
