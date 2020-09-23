@@ -2,7 +2,7 @@ package never.ending.splendor.app.utils
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import java.util.*
+import java.util.GregorianCalendar
 
 class DateKtTest {
     @Test

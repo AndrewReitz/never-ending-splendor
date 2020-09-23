@@ -18,8 +18,10 @@ import java.util.concurrent.TimeUnit
  * Manage the interactions among the container service, the queue manager and the actual playback.
  */
 class PlaybackManager(
-    private val mServiceCallback: PlaybackServiceCallback, private val mResources: Resources,
-    private val mMusicProvider: MusicProvider, private val mQueueManager: QueueManager,
+    private val mServiceCallback: PlaybackServiceCallback,
+    private val mResources: Resources,
+    private val mMusicProvider: MusicProvider,
+    private val mQueueManager: QueueManager,
     playback: Playback?
 ) : Playback.Callback {
 
@@ -47,7 +49,7 @@ class PlaybackManager(
                 if (mQueueManager.skipQueuePosition(1)) {
                     val currentMusic = mQueueManager.currentMusic
                     if (currentMusic != null) {
-                        //mServiceCallback.onPlaybackStart();
+                        // mServiceCallback.onPlaybackStart();
                         Timber.d("Queing up next track : %s", currentMusic.description.title)
                         playback!!.playNext(currentMusic)
                         mGaplessQueued = true
@@ -63,7 +65,7 @@ class PlaybackManager(
      * Handle a request to play music
      */
     fun handlePlayRequest() {
-        mGaplessQueued = false //this was a request from user.  mPlayback.play will cancel gapless
+        mGaplessQueued = false // this was a request from user.  mPlayback.play will cancel gapless
         Timber.d("handlePlayRequest: mState=%s", playback!!.state)
         val currentMusic = mQueueManager.currentMusic
         if (currentMusic != null) {
@@ -159,10 +161,10 @@ class PlaybackManager(
     private val availableActions: Long
         get() {
             var actions = PlaybackStateCompat.ACTION_PLAY or
-                    PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
-                    PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH or
-                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
+                PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH or
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT
             if (playback!!.isPlaying) {
                 actions = actions or PlaybackStateCompat.ACTION_PAUSE
             }
@@ -356,7 +358,7 @@ class PlaybackManager(
         // Action to thumbs up a media item
         private const val CUSTOM_ACTION_THUMBS_UP = "com.example.android.uamp.THUMBS_UP"
         private const val QUEUE_NEXT_TRACK_TIME: Long =
-            10 //queue next track N seconds before this one ends
+            10 // queue next track N seconds before this one ends
         private const val PROGRESS_UPDATE_INTERNAL: Long = 1000
         private const val PROGRESS_UPDATE_INITIAL_INTERVAL: Long = 100
     }

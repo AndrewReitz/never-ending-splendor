@@ -1,7 +1,7 @@
 package never.ending.splendor.app.model
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class Show {
     var id: Long = 0
@@ -16,6 +16,6 @@ class Show {
     val dateSimple: String
         get() {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-            return dateFormat.format(date)
+            return dateFormat.format(requireNotNull(date))
         }
 }

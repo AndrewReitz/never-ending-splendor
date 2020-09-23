@@ -11,7 +11,7 @@ import never.ending.splendor.app.utils.MediaIDHelper
 import never.ending.splendor.app.utils.QueueHelper
 import never.ending.splendor.app.utils.loadLargeAndSmallImage
 import timber.log.Timber
-import java.util.*
+import java.util.Collections
 import kotlin.math.max
 
 /**
@@ -80,15 +80,15 @@ class QueueManager(
     }
 
     fun setQueueFromSearch(query: String?, extras: Bundle?): Boolean {
-        val queue = QueueHelper.getPlayingQueueFromSearch(query, extras, musicProvider)
+        val queue = QueueHelper.getPlayingQueueFromSearch(query, extras)
         setCurrentQueue(resources.getString(R.string.search_queue_title), queue)
-        return queue != null && queue.isNotEmpty()
+        return queue.isNotEmpty()
     }
 
     fun setRandomQueue() {
         setCurrentQueue(
             resources.getString(R.string.random_queue_title),
-            QueueHelper.getRandomQueue(musicProvider)
+            QueueHelper.getRandomQueue()
         )
     }
 

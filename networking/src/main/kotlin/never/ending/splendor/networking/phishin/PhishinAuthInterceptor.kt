@@ -4,7 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 
-internal class PhishinAuthInterceptor(apiKey: PhishinApiKey): Interceptor {
+internal class PhishinAuthInterceptor(apiKey: PhishinApiKey) : Interceptor {
 
     private val authString = "Bearer ${apiKey.apiKey}"
 
@@ -12,7 +12,7 @@ internal class PhishinAuthInterceptor(apiKey: PhishinApiKey): Interceptor {
         val original: Request = chain.request()
 
         val builder: Request.Builder = original.newBuilder()
-                .header("Authorization", authString)
+            .header("Authorization", authString)
 
         val request: Request = builder.build()
         return chain.proceed(request)

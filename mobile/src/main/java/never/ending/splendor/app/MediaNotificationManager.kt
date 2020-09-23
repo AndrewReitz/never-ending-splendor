@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package never.ending.splendor.app
 
 import android.app.Notification
@@ -32,10 +17,16 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import never.ending.splendor.R
 import never.ending.splendor.app.ui.MusicPlayerActivity
-import com.squareup.picasso.Picasso
-import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.IOException
 
@@ -48,9 +39,9 @@ private const val REQUEST_CODE = 100
  * won't be killed during playback.
  */
 class MediaNotificationManager(
-        private val musicService: MusicService,
-        private val picasso: Picasso,
-        private val notificationManagerCompat: NotificationManagerCompat
+    private val musicService: MusicService,
+    private val picasso: Picasso,
+    private val notificationManagerCompat: NotificationManagerCompat
 ) : BroadcastReceiver() {
 
     private var sessionToken: MediaSessionCompat.Token? = null
@@ -59,39 +50,38 @@ class MediaNotificationManager(
     private var mPlaybackState: PlaybackStateCompat? = null
     private var mMetadata: MediaMetadataCompat? = null
 
-
     private val pauseIntent = PendingIntent.getBroadcast(
-            musicService,
-            REQUEST_CODE,
-            Intent(ACTION_PAUSE).setPackage(musicService.packageName),
-            PendingIntent.FLAG_CANCEL_CURRENT
+        musicService,
+        REQUEST_CODE,
+        Intent(ACTION_PAUSE).setPackage(musicService.packageName),
+        PendingIntent.FLAG_CANCEL_CURRENT
     )
 
     private val playIntent = PendingIntent.getBroadcast(
-            musicService,
-            REQUEST_CODE,
-            Intent(ACTION_PLAY).setPackage(musicService.packageName),
-            PendingIntent.FLAG_CANCEL_CURRENT
+        musicService,
+        REQUEST_CODE,
+        Intent(ACTION_PLAY).setPackage(musicService.packageName),
+        PendingIntent.FLAG_CANCEL_CURRENT
     )
 
     private val previousIntent = PendingIntent.getBroadcast(
-            musicService,
-            REQUEST_CODE,
-            Intent(ACTION_PREV).setPackage(musicService.packageName),
-            PendingIntent.FLAG_CANCEL_CURRENT
+        musicService,
+        REQUEST_CODE,
+        Intent(ACTION_PREV).setPackage(musicService.packageName),
+        PendingIntent.FLAG_CANCEL_CURRENT
     )
 
     private val nextIntent = PendingIntent.getBroadcast(
-            musicService,
-            REQUEST_CODE,
-            Intent(ACTION_NEXT).setPackage(musicService.packageName),
-            PendingIntent.FLAG_CANCEL_CURRENT
+        musicService,
+        REQUEST_CODE,
+        Intent(ACTION_NEXT).setPackage(musicService.packageName),
+        PendingIntent.FLAG_CANCEL_CURRENT
     )
     private val stopCastIntent = PendingIntent.getBroadcast(
-            musicService,
-            REQUEST_CODE,
-            Intent(ACTION_STOP_CASTING).setPackage(musicService.packageName),
-            PendingIntent.FLAG_CANCEL_CURRENT
+        musicService,
+        REQUEST_CODE,
+        Intent(ACTION_STOP_CASTING).setPackage(musicService.packageName),
+        PendingIntent.FLAG_CANCEL_CURRENT
     )
 
     private val notificationColor: Int = ContextCompat.getColor(musicService, R.color.primaryColor)
@@ -175,7 +165,8 @@ class MediaNotificationManager(
     private fun updateSessionToken() {
         val freshToken = musicService.sessionToken
         if (sessionToken == null && freshToken != null ||
-                sessionToken != null && sessionToken != freshToken) {
+            sessionToken != null && sessionToken != freshToken
+        ) {
             if (controller != null) {
                 controller!!.unregisterCallback(mCb)
             }
@@ -197,8 +188,10 @@ class MediaNotificationManager(
         if (description != null) {
             openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, description)
         }
-        return PendingIntent.getActivity(musicService, REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+        return PendingIntent.getActivity(
+            musicService, REQUEST_CODE, openUI,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
     }
 
     private val mCb: MediaControllerCompat.Callback = object : MediaControllerCompat.Callback(), CoroutineScope by MainScope() {
@@ -207,7 +200,8 @@ class MediaNotificationManager(
                 mPlaybackState = state
                 Timber.d("Received new playback state %s", state)
                 if (state.state == PlaybackStateCompat.STATE_STOPPED ||
-                        state.state == PlaybackStateCompat.STATE_NONE) {
+                    state.state == PlaybackStateCompat.STATE_NONE
+                ) {
                     stopNotification()
                 } else {
                     val notification = createNotification()
@@ -250,8 +244,10 @@ class MediaNotificationManager(
         var playPauseButtonPosition = 0
         // If skip to previous action is enabled
         if (mPlaybackState!!.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
-            notificationBuilder.addAction(R.drawable.ic_skip_previous_white_24dp,
-                    musicService.getString(R.string.label_previous), previousIntent)
+            notificationBuilder.addAction(
+                R.drawable.ic_skip_previous_white_24dp,
+                musicService.getString(R.string.label_previous), previousIntent
+            )
             // If there is a "skip to previous" button, the play/pause button will
             // be the second one. We need to keep track of it, because the MediaStyle notification
             // requires to specify the index of the buttons (actions) that should be visible
@@ -261,8 +257,10 @@ class MediaNotificationManager(
         addPlayPauseAction(notificationBuilder)
         // If skip to next action is enabled
         if (mPlaybackState!!.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
-            notificationBuilder.addAction(R.drawable.ic_skip_next_white_24dp,
-                    musicService.getString(R.string.label_next), nextIntent)
+            notificationBuilder.addAction(
+                R.drawable.ic_skip_next_white_24dp,
+                musicService.getString(R.string.label_next), nextIntent
+            )
         }
         val description = mMetadata!!.description
         var art: Bitmap? = null
@@ -274,47 +272,53 @@ class MediaNotificationManager(
 
             val job = CoroutineScope(Dispatchers.IO).launch {
                 art = // use a placeholder art while the remote art is being downloaded
-                        withContext(Dispatchers.Default) {
-                            try {
-                                picasso.load(artUrl)
-                                        .placeholder(R.drawable.ic_default_art)
-                                        .error(R.drawable.ic_default_art)
-                                        .get()
-                            } catch (e: IOException) {
-                                // use a placeholder art while the remote art is being downloaded
-                                BitmapFactory.decodeResource(musicService.resources,
-                                        R.drawable.ic_default_art)
-                            }
+                    withContext(Dispatchers.Default) {
+                        try {
+                            picasso.load(artUrl)
+                                .placeholder(R.drawable.ic_default_art)
+                                .error(R.drawable.ic_default_art)
+                                .get()
+                        } catch (e: IOException) {
+                            // use a placeholder art while the remote art is being downloaded
+                            BitmapFactory.decodeResource(
+                                musicService.resources,
+                                R.drawable.ic_default_art
+                            )
                         }
+                    }
             }
 
             job.cancelAndJoin()
         }
         notificationBuilder
-                .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(playPauseButtonPosition)
-                        // show only play/pause in compact view
-                        .setMediaSession(sessionToken))
-                .setColor(notificationColor)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setUsesChronometer(true)
-                .setContentIntent(createContentIntent(description))
-                .setContentTitle(description.title)
-                .setContentText(description.subtitle)
-                .setChannelId(MEDIA_PLAYER_NOTIFICATION)
-                .setSound(null)
-                .setVibrate(null)
-                .setLargeIcon(art)
+            .setStyle(
+                androidx.media.app.NotificationCompat.MediaStyle()
+                    .setShowActionsInCompactView(playPauseButtonPosition)
+                    // show only play/pause in compact view
+                    .setMediaSession(sessionToken)
+            )
+            .setColor(notificationColor)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setUsesChronometer(true)
+            .setContentIntent(createContentIntent(description))
+            .setContentTitle(description.title)
+            .setContentText(description.subtitle)
+            .setChannelId(MEDIA_PLAYER_NOTIFICATION)
+            .setSound(null)
+            .setVibrate(null)
+            .setLargeIcon(art)
 
         if (controller != null && controller!!.extras != null) {
             val castName = controller!!.extras.getString(MusicService.EXTRA_CONNECTED_CAST)
             if (castName != null) {
                 val castInfo = musicService.resources
-                        .getString(R.string.casting_to_device, castName)
+                    .getString(R.string.casting_to_device, castName)
                 notificationBuilder.setSubText(castInfo)
-                notificationBuilder.addAction(R.drawable.ic_close_black_24dp,
-                        musicService.getString(R.string.stop_casting), stopCastIntent)
+                notificationBuilder.addAction(
+                    R.drawable.ic_close_black_24dp,
+                    musicService.getString(R.string.stop_casting), stopCastIntent
+                )
             }
         }
 
@@ -346,20 +350,23 @@ class MediaNotificationManager(
             musicService.stopForeground(true)
             return
         }
-        if (mPlaybackState!!.state == PlaybackStateCompat.STATE_PLAYING
-                && mPlaybackState!!.position >= 0) {
-            Timber.d("updateNotificationPlaybackState. updating playback position to %s seconds",
-                    (System.currentTimeMillis() - mPlaybackState!!.position) / 1000)
+        if (mPlaybackState!!.state == PlaybackStateCompat.STATE_PLAYING &&
+            mPlaybackState!!.position >= 0
+        ) {
+            Timber.d(
+                "updateNotificationPlaybackState. updating playback position to %s seconds",
+                (System.currentTimeMillis() - mPlaybackState!!.position) / 1000
+            )
             builder
-                    .setWhen(System.currentTimeMillis() - mPlaybackState!!.position)
-                    .setShowWhen(true)
-                    .setUsesChronometer(true)
+                .setWhen(System.currentTimeMillis() - mPlaybackState!!.position)
+                .setShowWhen(true)
+                .setUsesChronometer(true)
         } else {
             Timber.d("updateNotificationPlaybackState. hiding playback position")
             builder
-                    .setWhen(0)
-                    .setShowWhen(false)
-                    .setUsesChronometer(false)
+                .setWhen(0)
+                .setShowWhen(false)
+                .setUsesChronometer(false)
         }
         // Make sure that the notification can be dismissed by the user when we are not playing:
         builder.setOngoing(mPlaybackState!!.state == PlaybackStateCompat.STATE_PLAYING)

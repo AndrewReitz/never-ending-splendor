@@ -1,8 +1,6 @@
 package never.ending.splendor.networking.phishin
 
 import com.google.common.truth.Truth.assertThat
-import never.ending.splendor.networking.phishin.PhishinApiKey
-import never.ending.splendor.networking.phishin.PhishinAuthInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
@@ -21,7 +19,7 @@ class PhishinAuthInterceptorTest {
         mockWebServer.enqueue(MockResponse())
 
         val okHttpClient: OkHttpClient = OkHttpClient().newBuilder()
-                .addInterceptor(classUnderTest).build()
+            .addInterceptor(classUnderTest).build()
         okHttpClient.newCall(Request.Builder().url(mockWebServer.url("/")).build()).execute()
 
         val request: RecordedRequest = mockWebServer.takeRequest()

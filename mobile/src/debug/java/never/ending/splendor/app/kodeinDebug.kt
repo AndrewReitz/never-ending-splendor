@@ -1,6 +1,5 @@
 package never.ending.splendor.app
 
-import never.ending.splendor.app.AppInitializer
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance

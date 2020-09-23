@@ -2,18 +2,18 @@ package never.ending.splendor.networking.moshi
 
 import com.google.common.truth.Truth.assertThat
 import com.squareup.moshi.Moshi
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.junit.jupiter.api.Test
-import org.kodein.di.DIAware
-import org.kodein.di.DI
-import org.kodein.di.instance
 import never.ending.splendor.networking.model.Track
 import never.ending.splendor.networking.networkingModule
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.junit.jupiter.api.Test
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.instance
 
 /**
  * Test both json adapters in the moshi package.
  */
-class HttpUrlAdapterTest: DIAware {
+class HttpUrlAdapterTest : DIAware {
 
     private val moshi: Moshi by instance()
 
@@ -21,10 +21,10 @@ class HttpUrlAdapterTest: DIAware {
     fun `should be bijective`() {
 
         val testData = Track(
-                id = "Rift",
-                title = "Rift",
-                mp3 = "http://example.com".toHttpUrl(),
-                duration = 10L
+            id = "Rift",
+            title = "Rift",
+            mp3 = "http://example.com".toHttpUrl(),
+            duration = 10L
         )
 
         val classUnderTest = moshi.adapter(Track::class.java)

@@ -5,13 +5,13 @@ import never.ending.splendor.networking.model.YearData
 import kotlin.Exception
 
 sealed class PhishinResponse<T>
-data class PhishinSuccess<T>(val data: T): PhishinResponse<T>()
-data class PhishinError<T>(val exception: Exception): PhishinResponse<T>()
+data class PhishinSuccess<T>(val data: T) : PhishinResponse<T>()
+data class PhishinError<T>(val exception: Exception) : PhishinResponse<T>()
 
 class PhishinRepository internal constructor(
-        private val phishinService: PhishinService
+    private val phishinService: PhishinService
 ) {
-    suspend fun years() : PhishinResponse<List<YearData>> {
+    suspend fun years(): PhishinResponse<List<YearData>> {
         return try {
             PhishinSuccess(phishinService.years().data)
         } catch (e: Exception) {

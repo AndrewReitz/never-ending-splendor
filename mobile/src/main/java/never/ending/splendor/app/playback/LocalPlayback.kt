@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaPlayer
-import android.media.MediaPlayer.*
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.WifiLock
 import android.os.PowerManager
@@ -27,8 +26,12 @@ import java.io.IOException
 class LocalPlayback(
     private val context: Context,
     private val musicProvider: MusicProvider
-) : Playback, OnAudioFocusChangeListener, OnCompletionListener, OnErrorListener,
-    OnPreparedListener, OnSeekCompleteListener {
+) : Playback,
+    OnAudioFocusChangeListener,
+    MediaPlayer.OnCompletionListener,
+    MediaPlayer.OnErrorListener,
+    MediaPlayer.OnPreparedListener,
+    MediaPlayer.OnSeekCompleteListener {
 
     override var state: Int = 0
 
@@ -55,8 +58,10 @@ class LocalPlayback(
     private val audioManager: AudioManager =
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-    private val wifiLock: WifiLock = (context.applicationContext
-        .getSystemService(Context.WIFI_SERVICE) as WifiManager)
+    private val wifiLock: WifiLock = (
+        context.applicationContext
+            .getSystemService(Context.WIFI_SERVICE) as WifiManager
+        )
         .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "uAmp_lock")
 
     @Volatile
@@ -144,7 +149,7 @@ class LocalPlayback(
 
     override fun play(item: MediaSessionCompat.QueueItem) {
 
-        //we never call this if we're auto-queued due to gapless
+        // we never call this if we're auto-queued due to gapless
         if (mediaPlayersSwapping) {
             mediaPlayersSwapping = false
         }
@@ -274,7 +279,7 @@ class LocalPlayback(
             if (state == PlaybackStateCompat.STATE_PLAYING) {
                 pause()
             }
-        } else {  // we have audio focus:
+        } else { // we have audio focus:
             if (audioFocus == AUDIO_NO_FOCUS_CAN_DUCK) {
                 mediaPlayer!!.setVolume(VOLUME_DUCK, VOLUME_DUCK) // we'll be relatively quiet
             } else {
@@ -363,9 +368,9 @@ class LocalPlayback(
             currentPosition = 0
             currentMediaId = mNextMediaId
             val old = mediaPlayer
-            mediaPlayer = nextMediaPlayer() //we're now using the new media player
+            mediaPlayer = nextMediaPlayer() // we're now using the new media player
             mediaPlayersSwapping = false
-            old!!.reset() //required for the next time we swap
+            old!!.reset() // required for the next time we swap
             callback!!.onPlaybackStatusChanged(state)
         }
         if (callback != null) {
@@ -381,7 +386,7 @@ class LocalPlayback(
     override fun onPrepared(player: MediaPlayer) {
         Timber.d("onPrepared from MediaPlayer")
         if (mediaPlayersSwapping) {
-            //when the next player is prepared, go ahead and set it as next
+            // when the next player is prepared, go ahead and set it as next
             requireNotNull(mediaPlayer).setNextMediaPlayer(nextMediaPlayer())
             return
         }

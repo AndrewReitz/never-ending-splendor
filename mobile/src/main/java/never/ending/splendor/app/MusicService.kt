@@ -17,23 +17,28 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
 import androidx.mediarouter.media.MediaRouter
-import never.ending.splendor.R
-import never.ending.splendor.app.model.MusicProvider
-import never.ending.splendor.app.playback.PlaybackManager.PlaybackServiceCallback
-import never.ending.splendor.app.playback.QueueManager.MetadataUpdateListener
-import never.ending.splendor.app.ui.MusicPlayerActivity
-import never.ending.splendor.app.utils.CarHelper
-import never.ending.splendor.app.utils.MediaIDHelper
 import com.google.android.gms.cast.ApplicationMetadata
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
 import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import never.ending.splendor.R
+import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.playback.CastPlayback
 import never.ending.splendor.app.playback.LocalPlayback
 import never.ending.splendor.app.playback.Playback
 import never.ending.splendor.app.playback.PlaybackManager
+import never.ending.splendor.app.playback.PlaybackManager.PlaybackServiceCallback
 import never.ending.splendor.app.playback.QueueManager
+import never.ending.splendor.app.playback.QueueManager.MetadataUpdateListener
+import never.ending.splendor.app.ui.MusicPlayerActivity
+import never.ending.splendor.app.utils.CarHelper
+import never.ending.splendor.app.utils.MediaIDHelper
 import org.kodein.di.DIAware
 import org.kodein.di.android.di
 import org.kodein.di.instance
@@ -123,8 +128,11 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
      * TODO move to it's own class
      */
     private val mCastConsumer: VideoCastConsumerImpl = object : VideoCastConsumerImpl() {
-        override fun onApplicationConnected(appMetadata: ApplicationMetadata, sessionId: String,
-                                            wasLaunched: Boolean) { // In case we are casting, send the device name as an extra on MediaSession metadata.
+        override fun onApplicationConnected(
+            appMetadata: ApplicationMetadata,
+            sessionId: String,
+            wasLaunched: Boolean
+        ) { // In case we are casting, send the device name as an extra on MediaSession metadata.
             mSessionExtras!!.putString(EXTRA_CONNECTED_CAST, videoCastManager.deviceName)
             mSession!!.setExtras(mSessionExtras)
             // Now we can switch to CastPlayback
@@ -159,39 +167,45 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         // To make the app more responsive, fetch and cache catalog information now.
         // This can help improve the response time in the method
         // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.
-        //musicProvider.retrieveMediaAsync(null /* Callback */);
+        // musicProvider.retrieveMediaAsync(null /* Callback */);
         mPackageValidator = PackageValidator(this)
-        val queueManager = QueueManager(musicProvider, resources,
-                picasso,
-                object : MetadataUpdateListener {
-                    override fun onMetadataChanged(metadata: MediaMetadataCompat) {
-                        mSession!!.setMetadata(metadata)
-                    }
+        val queueManager = QueueManager(
+            musicProvider, resources,
+            picasso,
+            object : MetadataUpdateListener {
+                override fun onMetadataChanged(metadata: MediaMetadataCompat) {
+                    mSession!!.setMetadata(metadata)
+                }
 
-                    override fun onMetadataRetrieveError() {
-                        mPlaybackManager!!.updatePlaybackState(getString(R.string.error_no_metadata))
-                    }
+                override fun onMetadataRetrieveError() {
+                    mPlaybackManager!!.updatePlaybackState(getString(R.string.error_no_metadata))
+                }
 
-                    override fun onCurrentQueueIndexUpdated(queueIndex: Int) {
-                        mPlaybackManager!!.handlePlayRequest()
-                    }
+                override fun onCurrentQueueIndexUpdated(queueIndex: Int) {
+                    mPlaybackManager!!.handlePlayRequest()
+                }
 
-                    override fun onQueueUpdated(title: String, newQueue: List<MediaSessionCompat.QueueItem>) {
-                        mSession!!.setQueue(newQueue)
-                        mSession!!.setQueueTitle(title)
-                    }
-                })
+                override fun onQueueUpdated(title: String, newQueue: List<MediaSessionCompat.QueueItem>) {
+                    mSession!!.setQueue(newQueue)
+                    mSession!!.setQueueTitle(title)
+                }
+            }
+        )
         val playback = LocalPlayback(this, musicProvider)
-        mPlaybackManager = PlaybackManager(this, resources, musicProvider, queueManager,
-                playback)
+        mPlaybackManager = PlaybackManager(
+            this, resources, musicProvider, queueManager,
+            playback
+        )
         // Start a new MediaSession
         mSession = MediaSessionCompat(this, "MusicService")
         setSessionToken(mSession!!.sessionToken)
         mSession!!.setCallback(mPlaybackManager!!.mediaSessionCallback)
         val context = applicationContext
         val intent = Intent(context, MusicPlayerActivity::class.java)
-        val pi = PendingIntent.getActivity(context, 99 /*request code*/,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pi = PendingIntent.getActivity(
+            context, 99 /*request code*/,
+            intent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
         mSession!!.setSessionActivity(pi)
         mSessionExtras = Bundle()
         CarHelper.setSlotReservationFlags(mSessionExtras as Bundle, true, true, true)
@@ -234,10 +248,15 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         cancel()
     }
 
-    override fun onGetRoot(clientPackageName: String, clientUid: Int,
-                           rootHints: Bundle?): BrowserRoot? {
-        Timber.d("OnGetRoot: clientPackageName=%s clientUid=%s rootHints=%s",
-                clientPackageName, clientUid, rootHints)
+    override fun onGetRoot(
+        clientPackageName: String,
+        clientUid: Int,
+        rootHints: Bundle?
+    ): BrowserRoot? {
+        Timber.d(
+            "OnGetRoot: clientPackageName=%s clientUid=%s rootHints=%s",
+            clientPackageName, clientUid, rootHints
+        )
         // To ensure you are not allowing any arbitrary app to browse your app's contents, you
         // need to check the origin:
         if (!mPackageValidator!!.isCallerAllowed(this, clientPackageName, clientUid)) {
@@ -310,8 +329,10 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
             override fun onReceive(context: Context, intent: Intent) {
                 val connectionEvent = intent.getStringExtra(CarHelper.MEDIA_CONNECTION_STATUS)
                 mIsConnectedToCar = CarHelper.MEDIA_CONNECTED == connectionEvent
-                Timber.i("Connection event to Android Auto: %s, isConnectedToCar=%s",
-                        connectionEvent, mIsConnectedToCar)
+                Timber.i(
+                    "Connection event to Android Auto: %s, isConnectedToCar=%s",
+                    connectionEvent, mIsConnectedToCar
+                )
             }
         }
         registerReceiver(mCarConnectionReceiver, filter)

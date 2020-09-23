@@ -9,6 +9,6 @@ val showsJson get() = loadFile("shows.json")
 val yearsJson get() = loadFile("years.json")
 
 private fun loadFile(fileName: String): BufferedSource =
-        ClassLoader.getSystemResourceAsStream(fileName)!!
-                .source()
-                .buffer()
+    ClassLoader.getSystemResourceAsStream(fileName)!!
+        .source()
+        .buffer()

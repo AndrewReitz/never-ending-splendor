@@ -9,18 +9,17 @@ import never.ending.splendor.R
 import never.ending.splendor.app.utils.MediaIDHelper
 import never.ending.splendor.networking.model.YearData
 import timber.log.Timber
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-
 
 /**
  * Simple data provider for music tracks. The actual metadata source is delegated to a
  * MusicProviderSource defined by a constructor argument of this class.
  */
 class MusicProvider(
-        private val context: Context,
-        private val source: MusicProviderSource
+    private val context: Context,
+    private val source: MusicProviderSource
 ) {
 
     private var cachedTracks: MutableMap<String, List<MediaMetadataCompat>> = Collections.synchronizedMap(mutableMapOf())
@@ -45,17 +44,17 @@ class MusicProvider(
 
     fun updateMusicArt(musicId: String?, albumArt: Bitmap?, icon: Bitmap?) {
         val metadata = MediaMetadataCompat.Builder(getMusic(musicId))
-                // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
-                // example, on the lockscreen background when the media session is active.
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
-                // set small version of the album art in the DISPLAY_ICON. This is used on
-                // the MediaDescription and thus it should be small to be serialized if
-                // necessary
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
-                .build()
+            // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
+            // example, on the lockscreen background when the media session is active.
+            .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
+            // set small version of the album art in the DISPLAY_ICON. This is used on
+            // the MediaDescription and thus it should be small to be serialized if
+            // necessary
+            .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
+            .build()
 
         val mutableMetadata = musicListById[musicId]
-                ?: throw IllegalStateException("Unexpected error: Inconsistent data structures in MusicProvider")
+            ?: throw IllegalStateException("Unexpected error: Inconsistent data structures in MusicProvider")
         mutableMetadata.metadata = metadata
     }
 
@@ -77,7 +76,7 @@ class MusicProvider(
         }
 
         if (MediaIDHelper.MEDIA_ID_ROOT == mediaId) {
-            //always refresh years so we get fresh show count
+            // always refresh years so we get fresh show count
             return source.years().toMediaItemList()
         }
 
@@ -104,13 +103,15 @@ class MusicProvider(
 
     private fun List<YearData>.toMediaItemList(): List<MediaBrowserCompat.MediaItem> = map {
         val description = MediaDescriptionCompat.Builder()
-                .setMediaId(MediaIDHelper.createMediaID(null, MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR, it.date))
-                .setTitle(it.date)
-                .setSubtitle("${it.show_count} shows")
-                .build()
+            .setMediaId(MediaIDHelper.createMediaID(null, MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR, it.date))
+            .setTitle(it.date)
+            .setSubtitle("${it.show_count} shows")
+            .build()
 
-        MediaBrowserCompat.MediaItem(description,
-                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE)
+        MediaBrowserCompat.MediaItem(
+            description,
+            MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
+        )
     }
 
     private fun List<MediaMetadataCompat>.toMediaItemListOfShows(): List<MediaBrowserCompat.MediaItem> = map { show ->
@@ -120,13 +121,15 @@ class MusicProvider(
         val date = show.getString(MediaMetadataCompat.METADATA_KEY_DATE)
 
         val description = MediaDescriptionCompat.Builder()
-                .setMediaId(MediaIDHelper.createMediaID(null, MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW, showId))
-                .setTitle(venue)
-                .setSubtitle(context.getString(R.string.browse_musics_by_genre_subtitle, date))
-                .setDescription(location)
-                .build()
-        MediaBrowserCompat.MediaItem(description,
-                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE)
+            .setMediaId(MediaIDHelper.createMediaID(null, MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW, showId))
+            .setTitle(venue)
+            .setSubtitle(context.getString(R.string.browse_musics_by_genre_subtitle, date))
+            .setDescription(location)
+            .build()
+        MediaBrowserCompat.MediaItem(
+            description,
+            MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
+        )
     }
 
     private fun List<MediaMetadataCompat>.toMediaItemListOfTracks(): List<MediaBrowserCompat.MediaItem> = map { track ->
@@ -136,14 +139,18 @@ class MusicProvider(
         // on where the music was selected from (by artist, by genre, random, etc)
         val venue = track.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE)
         val showId = track.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)
-        val hierarchyAwareMediaID = MediaIDHelper.createMediaID(track.description.mediaId,
-                MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW, showId)
+        val hierarchyAwareMediaID = MediaIDHelper.createMediaID(
+            track.description.mediaId,
+            MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW, showId
+        )
 
         val copy = MediaMetadataCompat.Builder(track)
-                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
-                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, venue)
-                .build()
-        MediaBrowserCompat.MediaItem(copy.description,
-                MediaBrowserCompat.MediaItem.FLAG_PLAYABLE)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, venue)
+            .build()
+        MediaBrowserCompat.MediaItem(
+            copy.description,
+            MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+        )
     }
 }

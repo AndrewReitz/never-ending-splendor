@@ -11,7 +11,6 @@ import never.ending.splendor.R
 import org.xmlpull.v1.XmlPullParserException
 import timber.log.Timber
 import java.io.IOException
-import java.util.*
 
 /**
  * Validates that the calling package is authorized to browse a
@@ -36,8 +35,8 @@ class PackageValidator(ctx: Context) {
         try {
             var eventType = parser.next()
             while (eventType != XmlResourceParser.END_DOCUMENT) {
-                if (eventType == XmlResourceParser.START_TAG
-                    && parser.name == "signing_certificate"
+                if (eventType == XmlResourceParser.START_TAG &&
+                    parser.name == "signing_certificate"
                 ) {
                     val name = parser.getAttributeValue(null, "name")
                     val packageName = parser.getAttributeValue(null, "package")
@@ -100,9 +99,11 @@ class PackageValidator(ctx: Context) {
                 callingPackage, signature
             )
             if (mValidCertificates.isEmpty()) {
-                Timber.w("The list of valid certificates is empty. Either your file " +
+                Timber.w(
+                    "The list of valid certificates is empty. Either your file " +
                         "res/xml/allowed_media_browser_callers.xml is empty or there was an " +
-                        "error while reading it. Check previous log messages.")
+                        "error while reading it. Check previous log messages."
+                )
             }
             return false
         }
@@ -123,7 +124,7 @@ class PackageValidator(ctx: Context) {
             """
     Caller has a valid certificate, but its package doesn't match any expected package for the given certificate. Caller's package is %s . Expected packages as defined in res/xml/allowed_media_browser_callers.xml are (%s). This caller's certificate is:
     %s
-    """.trimIndent(),
+            """.trimIndent(),
             callingPackage, expectedPackages, signature
         )
         return false

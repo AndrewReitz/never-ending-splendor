@@ -12,14 +12,14 @@ class VoiceSearchParamsTest {
         val classUnderTest = VoiceSearchParams("", null)
 
         assertThat(classUnderTest.toString())
-                .isEqualTo("query= isAny=true isUnstructured=false isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=null artist=null album=null song=null")
+            .isEqualTo("query= isAny=true isUnstructured=false isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=null artist=null album=null song=null")
     }
 
     @Test fun `on non-empty query`() {
         val classUnderTest = VoiceSearchParams("play music", null)
 
         assertThat(classUnderTest.toString())
-                .isEqualTo("query=play music isAny=false isUnstructured=true isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=null artist=null album=null song=null")
+            .isEqualTo("query=play music isAny=false isUnstructured=true isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=null artist=null album=null song=null")
     }
 
     @Test fun `EXTRA_MEDIA_FOCUS is Genres_ENTRY_CONTENT_TYPE`() {
@@ -30,7 +30,7 @@ class VoiceSearchParamsTest {
         val classUnderTest = VoiceSearchParams("Play Phish", extras)
 
         assertThat(classUnderTest.toString())
-                .isEqualTo("query=Play Phish isAny=false isUnstructured=false isGenreFocus=true isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=Jam artist=null album=null song=null")
+            .isEqualTo("query=Play Phish isAny=false isUnstructured=false isGenreFocus=true isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=Jam artist=null album=null song=null")
     }
 
     @Test fun `EXTRA_MEDIA_FOCUS is Artists_ENTRY_CONTENT_TYPE`() {
@@ -42,7 +42,7 @@ class VoiceSearchParamsTest {
         val classUnderTest = VoiceSearchParams("Play Phish", extras)
 
         assertThat(classUnderTest.toString())
-                .isEqualTo("query=Play Phish isAny=false isUnstructured=false isGenreFocus=false isArtistFocus=true isAlbumFocus=false isSongFocus=false genre=Jam artist=Phish album=null song=null")
+            .isEqualTo("query=Play Phish isAny=false isUnstructured=false isGenreFocus=false isArtistFocus=true isAlbumFocus=false isSongFocus=false genre=Jam artist=Phish album=null song=null")
     }
 
     @Test fun `EXTRA_MEDIA_FOCUS is Albums_ENTRY_CONTENT_TYPE`() {
@@ -55,7 +55,7 @@ class VoiceSearchParamsTest {
         val classUnderTest = VoiceSearchParams("Play Phish", extras)
 
         assertThat(classUnderTest.toString())
-                .isEqualTo("query=Play Phish isAny=false isUnstructured=false isGenreFocus=false isArtistFocus=false isAlbumFocus=true isSongFocus=false genre=Jam artist=Phish album=Dick's Sporting Goods Park 2015-09-05 song=null")
+            .isEqualTo("query=Play Phish isAny=false isUnstructured=false isGenreFocus=false isArtistFocus=false isAlbumFocus=true isSongFocus=false genre=Jam artist=Phish album=Dick's Sporting Goods Park 2015-09-05 song=null")
     }
 
     @Test fun `EXTRA_MEDIA_FOCUS is Media_ENTRY_CONTENT_TYPE`() {
@@ -70,7 +70,7 @@ class VoiceSearchParamsTest {
         val classUnderTest = VoiceSearchParams("Play Mama Dance by Phish at Dicks's Sporting Goods Park 2015", extras)
 
         assertThat(classUnderTest.toString())
-                .isEqualTo("query=Play Mama Dance by Phish at Dicks's Sporting Goods Park 2015 isAny=false isUnstructured=false isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=true genre=Jam artist=Phish album=Dick's Sporting Goods Park 2015-09-05 song=The Moma Dance")
+            .isEqualTo("query=Play Mama Dance by Phish at Dicks's Sporting Goods Park 2015 isAny=false isUnstructured=false isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=true genre=Jam artist=Phish album=Dick's Sporting Goods Park 2015-09-05 song=The Moma Dance")
     }
 
     @Test fun `unstructured extras`() {
@@ -80,6 +80,6 @@ class VoiceSearchParamsTest {
         val classUnderTest = VoiceSearchParams("Play Phish", extras)
 
         assertThat(classUnderTest.toString())
-                .isEqualTo("query=Play Phish isAny=false isUnstructured=true isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=null artist=null album=null song=null")
+            .isEqualTo("query=Play Phish isAny=false isUnstructured=true isGenreFocus=false isArtistFocus=false isAlbumFocus=false isSongFocus=false genre=null artist=null album=null song=null")
     }
 }

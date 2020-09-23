@@ -3,6 +3,10 @@ package never.ending.splendor.networking
 import com.jakewharton.byteunits.DecimalByteUnit.MEGABYTES
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import never.ending.splendor.networking.moshi.HttpUrlAdapter
+import never.ending.splendor.networking.phishin.PhishinAuthInterceptor
+import never.ending.splendor.networking.phishin.PhishinRepository
+import never.ending.splendor.networking.phishin.PhishinService
 import okhttp3.Cache
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -14,12 +18,8 @@ import org.kodein.di.instance
 import org.kodein.di.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import never.ending.splendor.networking.moshi.HttpUrlAdapter
-import never.ending.splendor.networking.phishin.PhishinAuthInterceptor
-import never.ending.splendor.networking.phishin.PhishinRepository
-import never.ending.splendor.networking.phishin.PhishinService
 import java.io.File
-import java.util.*
+import java.util.Date
 
 /**
  * Tag for networking module to provide the cache directory for http client
@@ -41,30 +41,29 @@ val networkingModule = DI.Module(name = "NetworkingModule") {
 
     bind<Retrofit>(tag = PHISHIN_RETROFIT_TAG) with singleton {
         Retrofit.Builder()
-                .client(instance())
-                .addConverterFactory(MoshiConverterFactory.create(instance()))
-                .baseUrl(PHISHIN_API_URL)
-                .build()
+            .client(instance())
+            .addConverterFactory(MoshiConverterFactory.create(instance()))
+            .baseUrl(PHISHIN_API_URL)
+            .build()
     }
 
     bind<Moshi>() with singleton {
         Moshi.Builder()
-                .add(Date::class.java, Rfc3339DateJsonAdapter())
-                .add(HttpUrlAdapter)
-                .build()
+            .add(Date::class.java, Rfc3339DateJsonAdapter())
+            .add(HttpUrlAdapter)
+            .build()
     }
 
     bind<OkHttpClient>() with singleton {
         OkHttpClient.Builder()
-                .cache(Cache(File(instance<File>(tag = CACHE_DIR_TAG), "http"), DISK_CACHE_SIZE.toLong()))
-                .apply { instance<List<Interceptor>>().forEach { addNetworkInterceptor(it) } }
-                .build()
-
+            .cache(Cache(File(instance<File>(tag = CACHE_DIR_TAG), "http"), DISK_CACHE_SIZE.toLong()))
+            .apply { instance<List<Interceptor>>().forEach { addNetworkInterceptor(it) } }
+            .build()
     }
 
     bind<MutableList<Interceptor>>() with singleton {
         mutableListOf<Interceptor>(
-                PhishinAuthInterceptor(instance())
+            PhishinAuthInterceptor(instance())
         )
     }
 }

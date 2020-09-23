@@ -122,23 +122,25 @@ class FullScreenPlayerActivity : ActionBarCastActivity() {
             val controls = supportMediaController!!.transportControls
             controls.skipToPrevious()
         }
-        mPlayPause?.setOnClickListener(View.OnClickListener { v: View? ->
-            val state = supportMediaController!!.playbackState
-            if (state != null) {
-                val controls = supportMediaController!!.transportControls
-                when (state.state) {
-                    PlaybackStateCompat.STATE_PLAYING, PlaybackStateCompat.STATE_BUFFERING -> {
-                        controls.pause()
-                        stopSeekbarUpdate()
+        mPlayPause?.setOnClickListener(
+            View.OnClickListener { v: View? ->
+                val state = supportMediaController!!.playbackState
+                if (state != null) {
+                    val controls = supportMediaController!!.transportControls
+                    when (state.state) {
+                        PlaybackStateCompat.STATE_PLAYING, PlaybackStateCompat.STATE_BUFFERING -> {
+                            controls.pause()
+                            stopSeekbarUpdate()
+                        }
+                        PlaybackStateCompat.STATE_PAUSED, PlaybackStateCompat.STATE_STOPPED -> {
+                            controls.play()
+                            scheduleSeekbarUpdate()
+                        }
+                        else -> Timber.d("onClick with state %s", state.state)
                     }
-                    PlaybackStateCompat.STATE_PAUSED, PlaybackStateCompat.STATE_STOPPED -> {
-                        controls.play()
-                        scheduleSeekbarUpdate()
-                    }
-                    else -> Timber.d("onClick with state %s", state.state)
                 }
             }
-        })
+        )
         mSeekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 mStart?.text = DateUtils.formatElapsedTime(progress / 1000.toLong())
@@ -182,8 +184,10 @@ class FullScreenPlayerActivity : ActionBarCastActivity() {
             updateDuration(metadata)
         }
         updateProgress()
-        if (state != null && (state.state == PlaybackStateCompat.STATE_PLAYING ||
-                    state.state == PlaybackStateCompat.STATE_BUFFERING)
+        if (state != null && (
+            state.state == PlaybackStateCompat.STATE_PLAYING ||
+                state.state == PlaybackStateCompat.STATE_BUFFERING
+            )
         ) {
             scheduleSeekbarUpdate()
         }
@@ -324,7 +328,7 @@ class FullScreenPlayerActivity : ActionBarCastActivity() {
             // latest position. This ensure that we do not repeatedly call the getPlaybackState()
             // on MediaControllerCompat.
             val timeDelta = SystemClock.elapsedRealtime() -
-                    mLastPlaybackState!!.lastPositionUpdateTime
+                mLastPlaybackState!!.lastPositionUpdateTime
             currentPosition += timeDelta.toInt() * mLastPlaybackState!!.playbackSpeed.toLong()
         }
         mSeekbar!!.progress = currentPosition.toInt()

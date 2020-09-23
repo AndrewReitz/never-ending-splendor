@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package never.ending.splendor.app.ui
 
 import android.annotation.SuppressLint
@@ -32,7 +17,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import never.ending.splendor.R
 import never.ending.splendor.app.MusicService
 import never.ending.splendor.app.inject
-import never.ending.splendor.app.utils.NetworkHelper
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,7 +24,9 @@ import javax.inject.Inject
  * Base activity for activities that need to show a playback control fragment when media is playing.
  */
 abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
-    private var mediaBrowser: MediaBrowserCompat? = null
+
+    override lateinit var mediaBrowser: MediaBrowserCompat
+
     private var controlsFragment: PlaybackControlsFragment? = null
 
     @Inject lateinit var googleApiAvailability: GoogleApiAvailability
@@ -56,15 +42,18 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
         // of the TaskDescription.
         @Suppress("DEPRECATION") // deprecated in api 29.
         val taskDesc = TaskDescription(
-                title.toString(),
-                BitmapFactory.decodeResource(resources, R.drawable.ic_launcher_white),
-                ContextCompat.getColor(this, R.color.primaryColor))
+            title.toString(),
+            BitmapFactory.decodeResource(resources, R.drawable.ic_launcher_white),
+            ContextCompat.getColor(this, R.color.primaryColor)
+        )
         setTaskDescription(taskDesc)
 
         // Connect a media browser just to get the media session token. There are other ways
         // this can be done, for example by sharing the session token directly.
-        mediaBrowser = MediaBrowserCompat(this,
-                ComponentName(this, MusicService::class.java), mConnectionCallback, null)
+        mediaBrowser = MediaBrowserCompat(
+            this,
+            ComponentName(this, MusicService::class.java), mConnectionCallback, null
+        )
     }
 
     /**
@@ -85,7 +74,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
         controlsFragment = supportFragmentManager.findFragmentById(R.id.fragment_playback_controls) as PlaybackControlsFragment?
         checkNotNull(controlsFragment) { "Mising fragment with id 'controls'. Cannot continue." }
         hidePlaybackControls()
-        mediaBrowser!!.connect()
+        mediaBrowser.connect()
     }
 
     override fun onStop() {
@@ -93,11 +82,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
         Timber.d("Activity onStop")
         val mediaController = MediaControllerCompat.getMediaController(this)
         mediaController?.unregisterCallback(mMediaControllerCallback)
-        mediaBrowser!!.disconnect()
-    }
-
-    override fun getMediaBrowser(): MediaBrowserCompat {
-        return mediaBrowser!!
+        mediaBrowser.disconnect()
     }
 
     protected open fun onMediaControllerConnected() {
@@ -106,21 +91,20 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
 
     protected fun showPlaybackControls() {
         Timber.d("showPlaybackControls")
-        if (NetworkHelper.isOnline(this)) {
-            supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(
-                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
-                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
-                    .show(controlsFragment!!)
-                    .commit()
-        }
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
+                R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom
+            )
+            .show(controlsFragment!!)
+            .commit()
     }
 
     protected fun hidePlaybackControls() {
         Timber.d("hidePlaybackControls")
         supportFragmentManager.beginTransaction()
-                .hide(controlsFragment!!)
-                .commit()
+            .hide(controlsFragment!!)
+            .commit()
     }
 
     /**
@@ -163,8 +147,11 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
             if (shouldShowControls()) {
                 showPlaybackControls()
             } else {
-                Timber.d("mediaControllerCallback.onPlaybackStateChanged: " +
-                        "hiding controls because state is %s", state.state)
+                Timber.d(
+                    "mediaControllerCallback.onPlaybackStateChanged: " +
+                        "hiding controls because state is %s",
+                    state.state
+                )
                 hidePlaybackControls()
             }
         }
@@ -174,8 +161,10 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
             if (shouldShowControls()) {
                 showPlaybackControls()
             } else {
-                Timber.d("mediaControllerCallback.onMetadataChanged: " +
-                        "hiding controls because metadata is null")
+                Timber.d(
+                    "mediaControllerCallback.onMetadataChanged: " +
+                        "hiding controls because metadata is null"
+                )
                 hidePlaybackControls()
             }
         }
@@ -184,7 +173,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
         override fun onConnected() {
             Timber.d("onConnected")
             try {
-                connectToSession(mediaBrowser!!.sessionToken)
+                connectToSession(mediaBrowser.sessionToken)
             } catch (e: RemoteException) {
                 Timber.e(e, "could not connect media controller")
                 hidePlaybackControls()

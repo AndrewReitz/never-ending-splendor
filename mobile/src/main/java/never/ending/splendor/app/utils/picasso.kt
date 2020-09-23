@@ -4,7 +4,11 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -33,16 +37,16 @@ fun Picasso.loadLargeAndSmallImage(url: String, callback: (ImageAndIcon) -> Unit
 private suspend fun Picasso.loadImage(url: String, maxWidth: Int, maxHeight: Int): Bitmap {
     return suspendCoroutine { continuation ->
         load(url).resize(maxWidth, maxHeight)
-                .centerInside()
-                .into(object : SimpleTarget() {
-                    override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom?) {
-                        continuation.resume(bitmap)
-                    }
+            .centerInside()
+            .into(object : SimpleTarget() {
+                override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom?) {
+                    continuation.resume(bitmap)
+                }
 
-                    override fun onBitmapFailed(e: Exception, errorDrawable: Drawable) {
-                        continuation.resumeWithException(e)
-                    }
-                })
+                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable) {
+                    continuation.resumeWithException(e)
+                }
+            })
     }
 }
 

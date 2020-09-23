@@ -1,10 +1,10 @@
 package never.ending.splendor.networking.phishin
 
-import retrofit2.http.GET
-import retrofit2.http.Path
 import never.ending.splendor.networking.model.Show
 import never.ending.splendor.networking.model.SuccessfulResponse
 import never.ending.splendor.networking.model.YearData
+import retrofit2.http.GET
+import retrofit2.http.Path
 
 internal interface PhishinService {
     @GET("api/v1/years?include_show_counts=true")

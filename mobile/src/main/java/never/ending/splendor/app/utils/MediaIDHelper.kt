@@ -1,7 +1,6 @@
 package never.ending.splendor.app.utils
 
 import timber.log.Timber
-import java.util.*
 
 /**
  * Utility class to help on queue related tasks.
@@ -29,7 +28,7 @@ object MediaIDHelper {
      * @param musicID Unique music ID for playable items, or null for browseable items.
      * @param categories hierarchy of categories representing this item's browsing parents
      * @return a hierarchy-aware media ID
-    </musicUniqueId></categoryValue></categoryType> */
+     </musicUniqueId></categoryValue></categoryType> */
     fun createMediaID(musicID: String?, vararg categories: String): String {
         val sb = StringBuilder()
         for (i in categories.indices) {
@@ -47,8 +46,8 @@ object MediaIDHelper {
 
     private fun isValidCategory(category: String?): Boolean {
         return category == null ||
-                category.indexOf(CATEGORY_SEPARATOR) < 0 &&
-                category.indexOf(LEAF_SEPARATOR) < 0
+            category.indexOf(CATEGORY_SEPARATOR) < 0 &&
+            category.indexOf(LEAF_SEPARATOR) < 0
     }
 
     /**
@@ -114,7 +113,7 @@ object MediaIDHelper {
         if (hierarchy.size <= 1) {
             return MEDIA_ID_ROOT
         }
-        val parentHierarchy = Arrays.copyOf(hierarchy, hierarchy.size - 1)
+        val parentHierarchy = hierarchy.copyOfRange(0, hierarchy.size - 1)
         return createMediaID(null, *parentHierarchy)
     }
 }

@@ -10,7 +10,6 @@ import never.ending.splendor.app.utils.MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW
 import never.ending.splendor.app.utils.MediaIDHelper.createMediaID
 import never.ending.splendor.app.utils.MediaIDHelper.getHierarchy
 import timber.log.Timber
-import java.util.*
 
 /**
  * Utility class to help on queue related tasks.
@@ -49,7 +48,7 @@ object QueueHelper {
 
     fun getPlayingQueueFromSearch(
         query: String?,
-        queryParams: Bundle?, musicProvider: MusicProvider?
+        queryParams: Bundle?
     ): List<MediaSessionCompat.QueueItem> {
         Timber.d(
             "Creating playing queue for musics from search: %s params=%s", query,
@@ -60,7 +59,7 @@ object QueueHelper {
         if (params.isAny) {
             // If isAny is true, we will play anything. This is app-dependent, and can be,
             // for example, favorite playlists, "I'm feeling lucky", most recent, etc.
-            return getRandomQueue(musicProvider)
+            return getRandomQueue()
         }
         val result: Iterable<MediaMetadataCompat>? = null
 
@@ -143,22 +142,10 @@ object QueueHelper {
     /**
      * Create a random queue with at most [.RANDOM_QUEUE_SIZE] elements.
      *
-     * @param musicProvider the provider used for fetching music.
      * @return list containing [MediaSessionCompat.QueueItem]'s
      */
-    fun getRandomQueue(musicProvider: MusicProvider?): List<MediaSessionCompat.QueueItem> {
+    fun getRandomQueue(): List<MediaSessionCompat.QueueItem> {
         val result: List<MediaMetadataCompat> = ArrayList(RANDOM_QUEUE_SIZE)
-
-/*
-        Iterable<MediaMetadataCompat> shuffled = musicProvider.getShuffledMusic();
-        for (MediaMetadataCompat metadata: shuffled) {
-            if (result.size() == RANDOM_QUEUE_SIZE) {
-                break;
-            }
-            result.add(metadata);
-        }
-        Timber.d("getRandomQueue: result.size=", result.size());
-*/
         return convertToQueue(result, MEDIA_ID_MUSICS_BY_SEARCH, "random")
     }
 

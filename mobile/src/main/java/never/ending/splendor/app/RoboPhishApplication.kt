@@ -8,17 +8,20 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
-import never.ending.splendor.R
-import never.ending.splendor.app.model.MusicProvider
-import never.ending.splendor.app.model.MusicProviderSource
-import never.ending.splendor.app.model.PhishProviderSource
-import never.ending.splendor.app.ui.FullScreenPlayerActivity
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import never.ending.splendor.BuildConfig
+import never.ending.splendor.R
+import never.ending.splendor.app.model.MusicProvider
+import never.ending.splendor.app.model.MusicProviderSource
+import never.ending.splendor.app.model.PhishProviderSource
+import never.ending.splendor.app.ui.FullScreenPlayerActivity
+import never.ending.splendor.networking.CACHE_DIR_TAG
+import never.ending.splendor.networking.networkingModule
+import never.ending.splendor.networking.phishin.PhishinApiKey
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.DIAware
@@ -26,12 +29,9 @@ import org.kodein.di.android.androidCoreModule
 import org.kodein.di.android.x.androidXModule
 import org.kodein.di.bind
 import org.kodein.di.instance
-import org.kodein.di.singleton
 import org.kodein.di.jxinject.Jx
 import org.kodein.di.jxinject.jxInjectorModule
-import never.ending.splendor.networking.CACHE_DIR_TAG
-import never.ending.splendor.networking.networkingModule
-import never.ending.splendor.networking.phishin.PhishinApiKey
+import org.kodein.di.singleton
 import timber.log.Timber
 import java.io.File
 
@@ -68,11 +68,11 @@ class RoboPhishApplication : Application(), DIAware {
 
         bind<Picasso>() with singleton {
             Picasso.Builder(instance())
-                    .downloader(OkHttp3Downloader(instance<OkHttpClient>()))
-                    .listener { _, uri, exception ->
-                        Timber.e(exception, "Error while loading image %s", uri)
-                    }
-                    .build()
+                .downloader(OkHttp3Downloader(instance<OkHttpClient>()))
+                .listener { _, uri, exception ->
+                    Timber.e(exception, "Error while loading image %s", uri)
+                }
+                .build()
         }
     }
 
@@ -86,22 +86,22 @@ class RoboPhishApplication : Application(), DIAware {
 
         val applicationId = resources.getString(R.string.cast_application_id)
         VideoCastManager.initialize(
-                applicationContext,
-                CastConfiguration.Builder(applicationId)
-                        .enableWifiReconnection()
-                        .enableAutoReconnect()
-                        .enableDebug()
-                        .setTargetActivity(FullScreenPlayerActivity::class.java)
-                        .build())
-
+            applicationContext,
+            CastConfiguration.Builder(applicationId)
+                .enableWifiReconnection()
+                .enableAutoReconnect()
+                .enableDebug()
+                .setTargetActivity(FullScreenPlayerActivity::class.java)
+                .build()
+        )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManagerCompat.createNotificationChannel(
-                    NotificationChannel(
-                            MEDIA_PLAYER_NOTIFICATION,
-                            MEDIA_PLAYER_NOTIFICATION,
-                            IMPORTANCE_LOW
-                    )
+                NotificationChannel(
+                    MEDIA_PLAYER_NOTIFICATION,
+                    MEDIA_PLAYER_NOTIFICATION,
+                    IMPORTANCE_LOW
+                )
             )
         }
     }

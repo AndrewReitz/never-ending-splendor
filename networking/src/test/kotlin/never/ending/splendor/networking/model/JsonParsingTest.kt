@@ -4,20 +4,17 @@ import com.google.common.truth.Truth.assertThat
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import never.ending.splendor.networking.model.Show
-import never.ending.splendor.networking.model.SuccessfulResponse
-import never.ending.splendor.networking.model.YearData
+import never.ending.splendor.networking.networkingModule
 import org.junit.jupiter.api.Test
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.instance
-import never.ending.splendor.networking.networkingModule
 
 /**
  * Test to ensure the models match what we expect from the [robophish.PhishinService], and
  * that the adapters are generated and setup correctly in [Moshi].
  */
-class JsonParsingTest: DIAware {
+class JsonParsingTest : DIAware {
 
     override val di = DI.lazy {
         import(networkingModule)

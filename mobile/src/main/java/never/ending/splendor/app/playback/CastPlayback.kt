@@ -49,7 +49,7 @@ class CastPlayback(
         get() {
             try {
                 return videoCastManager.isConnected &&
-                        videoCastManager.isRemoteMediaPlaying
+                    videoCastManager.isRemoteMediaPlaying
             } catch (e: TransientNetworkDisconnectionException) {
                 Timber.e(e, "Exception calling isRemoteMoviePlaying")
             } catch (e: NoConnectionException) {
@@ -131,39 +131,15 @@ class CastPlayback(
             } else {
                 loadMedia(currentMediaId, false)
             }
-        } catch (e: JSONException) {
+        } catch (e: Exception) {
             Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
-        } catch (e: CastException) {
-            Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
-        } catch (e: TransientNetworkDisconnectionException) {
-            Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
-        } catch (e: NoConnectionException) {
-            Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
-        } catch (e: IllegalArgumentException) {
-            Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
+            callback.onError(e.message)
         }
     }
 
     override fun seekTo(position: Int) {
         if (currentMediaId == null) {
-            if (callback != null) {
-                callback!!.onError("seekTo cannot be calling in the absence of mediaId.")
-            }
+            callback.onError("seekTo cannot be calling in the absence of mediaId.")
             return
         }
         try {
@@ -174,26 +150,9 @@ class CastPlayback(
                 currentPosition = position
                 loadMedia(currentMediaId, false)
             }
-        } catch (e: TransientNetworkDisconnectionException) {
+        } catch (e: Exception) {
             Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
-        } catch (e: NoConnectionException) {
-            Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
-        } catch (e: JSONException) {
-            Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
-        } catch (e: IllegalArgumentException) {
-            Timber.e(e, "Exception pausing cast playback")
-            if (callback != null) {
-                callback!!.onError(e.message)
-            }
+            callback.onError(e.message)
         }
     }
 

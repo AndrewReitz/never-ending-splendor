@@ -108,16 +108,18 @@ class VoiceSearchParams(private val query: String, extras: Bundle?) {
     }
 
     override fun toString(): String {
-        return ("query=" + query
-                + " isAny=" + isAny
-                + " isUnstructured=" + isUnstructured
-                + " isGenreFocus=" + isGenreFocus
-                + " isArtistFocus=" + isArtistFocus
-                + " isAlbumFocus=" + isAlbumFocus
-                + " isSongFocus=" + isSongFocus
-                + " genre=" + genre
-                + " artist=" + artist
-                + " album=" + album
-                + " song=" + song)
+        return (
+            "query=" + query +
+                " isAny=" + isAny +
+                " isUnstructured=" + isUnstructured +
+                " isGenreFocus=" + isGenreFocus +
+                " isArtistFocus=" + isArtistFocus +
+                " isAlbumFocus=" + isAlbumFocus +
+                " isSongFocus=" + isSongFocus +
+                " genre=" + genre +
+                " artist=" + artist +
+                " album=" + album +
+                " song=" + song
+            )
     }
 }

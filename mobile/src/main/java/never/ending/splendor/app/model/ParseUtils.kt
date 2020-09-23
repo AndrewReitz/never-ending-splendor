@@ -17,12 +17,12 @@ object ParseUtils {
         val show = Show()
         val showId = data.getLong("id")
         show.id = showId
-        val dateString = data.getString("date") //formatted as YYYY-MM-DD
+        val dateString = data.getString("date") // formatted as YYYY-MM-DD
         val date = SimpleDateFormat("yyyy-MM-dd").parse(dateString)
         show.date = date
         val venue = data.optJSONObject("venue")
         if (venue != null) {
-            //full show data contains a venue object
+            // full show data contains a venue object
             val venueName = venue.getString("name")
             show.venueName = venueName
             val location = venue.getString("location")
@@ -34,7 +34,7 @@ object ParseUtils {
             show.location = location
         }
 
-        //parse 'tracks' if available (if this is more that "simple data")
+        // parse 'tracks' if available (if this is more that "simple data")
         val tracks = data.optJSONArray("tracks")
         if (tracks != null) {
             for (i in 0 until tracks.length()) {
