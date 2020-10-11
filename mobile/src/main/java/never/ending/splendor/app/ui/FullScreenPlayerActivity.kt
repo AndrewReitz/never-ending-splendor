@@ -93,7 +93,7 @@ class FullScreenPlayerActivity : ActionBarCastActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_player)
         this.inject()
-        initializeToolbar()
+        initializeToolbar(TODO())
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             supportActionBar!!.title = ""

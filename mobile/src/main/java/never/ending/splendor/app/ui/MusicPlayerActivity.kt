@@ -10,6 +10,7 @@ import android.text.TextUtils
 import never.ending.splendor.R
 import never.ending.splendor.app.ui.MediaBrowserFragment.MediaFragmentListener
 import never.ending.splendor.app.utils.MediaIDHelper
+import never.ending.splendor.databinding.MusicPlayerActivityBinding
 import timber.log.Timber
 
 /**
@@ -19,12 +20,17 @@ import timber.log.Timber
  * connected while this activity is running.
  */
 class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
-    private var mVoiceSearchParams: Bundle? = null
+
+    private var voiceSearchParams: Bundle? = null
+
+    private lateinit var binding: MusicPlayerActivityBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("Activity onCreate")
-        setContentView(R.layout.activity_player)
-        initializeToolbar()
+        binding = MusicPlayerActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        initializeToolbar(binding.toolbarContainer.toolbar)
         initializeFromParams(savedInstanceState, intent)
 
         // Only check if a full screen player is needed on the first time:
@@ -43,42 +49,38 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
 
     override fun onMediaItemSelected(item: MediaBrowserCompat.MediaItem) {
         Timber.d("onMediaItemSelected, mediaId=%s", item.mediaId)
-        if (item.isPlayable) {
-            supportMediaController!!.transportControls
-                .playFromMediaId(item.mediaId, null)
-        } else if (item.isBrowsable) {
-            var title = ""
-            var subtitle = ""
-            if (item.description.title != null) {
-                title = item.description.title.toString()
+        when {
+            item.isPlayable -> {
+                supportMediaController!!.transportControls
+                    .playFromMediaId(item.mediaId, null)
             }
-            if (item.description.subtitle != null) {
-                subtitle = item.description.subtitle.toString()
+            item.isBrowsable -> {
+                var title = ""
+                var subtitle = ""
+                if (item.description.title != null) {
+                    title = item.description.title.toString()
+                }
+                if (item.description.subtitle != null) {
+                    subtitle = item.description.subtitle.toString()
+                }
+                navigateToBrowser(title, subtitle, item.mediaId)
             }
-            navigateToBrowser(title, subtitle, item.mediaId)
-        } else {
-            Timber.w(
-                "Ignoring MediaItem that is neither browsable nor playable: mediaId=%s",
-                item.mediaId
-            )
+            else -> {
+                Timber.w(
+                    "Ignoring MediaItem that is neither browsable nor playable: mediaId=%s",
+                    item.mediaId
+                )
+            }
         }
     }
 
     override fun setToolbarTitle(title: CharSequence) {
-        var title: CharSequence? = title
         Timber.d("Setting toolbar title to %s", title)
-        if (title == null) {
-            title = getString(R.string.app_name)
-        }
         setTitle(title)
     }
 
     override fun setToolbarSubTitle(subTitlle: CharSequence) {
-        var subTitlle: CharSequence? = subTitlle
         Timber.d("Setting toolbar title to %s", subTitlle)
-        if (subTitlle == null) {
-            subTitlle = ""
-        }
         setSubtitle(subTitlle)
     }
 
@@ -106,39 +108,42 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
         }
     }
 
-    protected fun initializeFromParams(savedInstanceState: Bundle?, intent: Intent) {
-        var mediaId: String? = null
+    private fun initializeFromParams(savedInstanceState: Bundle?, intent: Intent) {
+        Timber.d("initializeFromParams() savedInstanceState=%s intent=%s", savedInstanceState, intent)
+
         // check if we were started from a "Play XYZ" voice search. If so, we save the extras
         // (which contain the query details) in a parameter, so we can reuse it later, when the
         // MediaSession is connected.
-        if (intent.action != null &&
-            intent.action == MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH
-        ) {
-            mVoiceSearchParams = intent.extras
+        if (intent.action == MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) {
+            voiceSearchParams = intent.extras
             Timber.d(
                 "Starting from voice search query=%s",
-                mVoiceSearchParams!!.getString(SearchManager.QUERY)
+                voiceSearchParams?.getString(SearchManager.QUERY)
             )
-        } else if (intent.action != null &&
-            intent.action == MediaStore.INTENT_ACTION_MEDIA_SEARCH
-        ) {
+            return
+        }
+
+        // areitz - This was already here, uncertain when this actually happens
+        // since the docs don't really tell use much
+        if (intent.action == MediaStore.INTENT_ACTION_MEDIA_SEARCH) {
             navigateToBrowser(null, null, null)
-            val extras = intent.extras
-            val title = extras!!.getString("title")
+
+            val extras = requireNotNull(intent.extras)
+            val title = extras.getString("title")
             val subtitle = extras.getString("subtitle")
-            mediaId = extras.getString("showid")
-            val year = subtitle!!.split("-").toTypedArray()[0]
+            val mediaId = extras.getString("showid")
+            val year = requireNotNull(subtitle).split("-").toTypedArray()[0]
+
             // browse to year...
             navigateToBrowser(null, null, MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR + "/" + year)
 
             // now launch as show
             navigateToBrowser(title, subtitle, mediaId)
-        } else {
-            if (savedInstanceState != null) {
-                // If there is a saved media ID, use it
-                mediaId = savedInstanceState.getString(SAVED_MEDIA_ID)
-            }
-            navigateToBrowser(null, null, mediaId)
+            return
+        }
+
+        if (savedInstanceState != null) {
+            navigateToBrowser(null, null, savedInstanceState.getString(SAVED_MEDIA_ID))
         }
     }
 
@@ -168,20 +173,20 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
             val fragment = browseFragment ?: return null
             return fragment.mediaId
         }
+
     private val browseFragment: MediaBrowserFragment?
-        private get() = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as MediaBrowserFragment?
+        get() = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as MediaBrowserFragment?
 
     override fun onMediaControllerConnected() {
-        if (mVoiceSearchParams != null) {
+        voiceSearchParams?.let {
             // If there is a bootstrap parameter to start from a search query, we
             // send it to the media session and set it to null, so it won't play again
             // when the activity is stopped/started or recreated:
-            val query = mVoiceSearchParams!!.getString(SearchManager.QUERY)
-            supportMediaController!!.transportControls
-                .playFromSearch(query, mVoiceSearchParams)
-            mVoiceSearchParams = null
+            val query = it.getString(SearchManager.QUERY)
+            supportMediaController!!.transportControls.playFromSearch(query, voiceSearchParams)
+            voiceSearchParams = null
         }
-        browseFragment!!.onConnected()
+        browseFragment?.onConnected()
     }
 
     companion object {

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (C) 2014 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,10 @@
   limitations under the License.
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -35,19 +34,20 @@
         android:layout_alignParentTop="true"
         android:animateLayoutChanges="true"
         android:visibility="gone">
+
         <TextView
             android:id="@+id/error_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingRight="@dimen/error_horizontal_padding"
-            android:paddingLeft="@dimen/error_horizontal_padding"
-            android:paddingTop="@dimen/error_vertical_padding"
-            android:paddingBottom="@dimen/error_vertical_padding"
             android:background="@color/error_message_background"
             android:gravity="center"
-            tools:text="Connectivity error!"
+            android:paddingLeft="@dimen/error_horizontal_padding"
+            android:paddingTop="@dimen/error_vertical_padding"
+            android:paddingRight="@dimen/error_horizontal_padding"
+            android:paddingBottom="@dimen/error_vertical_padding"
             android:textColor="@android:color/white"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            tools:text="Connectivity error!" />
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.tabs.TabLayout
@@ -60,8 +60,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_below="@id/sliding_tabs">
+        android:layout_below="@id/sliding_tabs"
+        android:orientation="vertical">
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewpager"
@@ -72,52 +72,55 @@
                 android:id="@+id/tracks"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" >
-                <ListView
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/list_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    >
-                </ListView>
+                    />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/setlist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" >
+                android:orientation="vertical">
+
                 <WebView
                     android:id="@+id/setlist_webview"
-                    tools:text="Setlist goes here"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="24sp"/>
+                    android:textSize="24sp"
+                    tools:text="Setlist goes here" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/reviews"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" >
+                android:orientation="vertical">
+
                 <WebView
-                    tools:text="Reviews go here"
                     android:id="@+id/reviews_webview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="24sp"/>
+                    android:textSize="24sp"
+                    tools:text="Reviews go here" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/tapernotes"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" >
+                android:orientation="vertical">
+
                 <WebView
-                    tools:text="Taper notes go here"
                     android:id="@+id/tapernotes_webview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="24sp"/>
+                    android:textSize="24sp"
+                    tools:text="Taper notes go here" />
             </LinearLayout>
 
         </androidx.viewpager.widget.ViewPager>

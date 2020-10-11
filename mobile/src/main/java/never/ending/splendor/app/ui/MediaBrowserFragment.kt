@@ -1,6 +1,5 @@
 package never.ending.splendor.app.ui
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
@@ -8,19 +7,14 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.loopj.android.http.AsyncHttpClient
@@ -50,7 +44,17 @@ import java.util.Date
  * All [MediaBrowserCompat.MediaItem]'s that can be browsed are shown in a ListView.
  */
 class MediaBrowserFragment : Fragment() {
-    private var browserAdapter: BrowseAdapter? = null
+
+    private val browserAdapter: MediaBrowserAdapter by lazy {
+        // todo make this better
+        MediaBrowserAdapter(
+            requireActivity(),
+            MediaControllerCompat.getMediaController(requireActivity())
+        ) {
+            // todo
+        }
+    }
+
     private var mMediaId: String? = null
     private var mediaFragmentListener: MediaFragmentListener? = null
     private var errorView: View? = null
@@ -68,7 +72,7 @@ class MediaBrowserFragment : Fragment() {
                     "Received metadata change to media %s",
                     metadata.description.mediaId
                 )
-                browserAdapter!!.notifyDataSetChanged()
+                browserAdapter.notifyDataSetChanged()
                 progressBar!!.visibility =
                     View.INVISIBLE // hide progress bar when we receive metadata
             }
@@ -77,7 +81,7 @@ class MediaBrowserFragment : Fragment() {
                 super.onPlaybackStateChanged(state)
                 Timber.d("Received state change: %s", state)
                 checkForUserVisibleErrors(false)
-                browserAdapter!!.notifyDataSetChanged()
+                browserAdapter.notifyDataSetChanged()
             }
         }
 
@@ -94,11 +98,8 @@ class MediaBrowserFragment : Fragment() {
                     )
                     checkForUserVisibleErrors(children.isEmpty())
                     progressBar!!.visibility = View.INVISIBLE
-                    browserAdapter!!.clear()
-                    for (item in children) {
-                        browserAdapter!!.add(item)
-                    }
-                    browserAdapter!!.notifyDataSetChanged()
+                    browserAdapter.media = children
+                    browserAdapter.notifyDataSetChanged()
                 } catch (t: Throwable) {
                     Timber.e(t, "Error on childrenloaded")
                 }
@@ -118,10 +119,6 @@ class MediaBrowserFragment : Fragment() {
         mediaFragmentListener = activity as MediaFragmentListener?
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -130,7 +127,7 @@ class MediaBrowserFragment : Fragment() {
         Timber.d("fragment.onCreateView")
         val rootView: View
         val mediaId = mediaId
-        val listView: ListView
+        val listView: RecyclerView
         if (mediaId != null && isShow(mediaId)) {
             setHasOptionsMenu(true) // show option to download
             rootView = inflater.inflate(R.layout.fragment_list_show, container, false)
@@ -176,15 +173,6 @@ class MediaBrowserFragment : Fragment() {
                             e.printStackTrace()
                         }
                     }
-
-                    override fun onFailure(
-                        statusCode: Int,
-                        headers: Array<Header>,
-                        throwable: Throwable,
-                        errorResponse: JSONObject
-                    ) {
-                        super.onFailure(statusCode, headers, throwable, errorResponse)
-                    }
                 }
             ]
             val reviews = rootView.findViewById<WebView>(R.id.reviews_webview)
@@ -226,15 +214,6 @@ class MediaBrowserFragment : Fragment() {
                         } catch (e: JSONException) {
                             e.printStackTrace()
                         }
-                    }
-
-                    override fun onFailure(
-                        statusCode: Int,
-                        headers: Array<Header>,
-                        throwable: Throwable,
-                        errorResponse: JSONObject
-                    ) {
-                        super.onFailure(statusCode, headers, throwable, errorResponse)
                     }
                 }
             ]
@@ -280,15 +259,14 @@ class MediaBrowserFragment : Fragment() {
         errorMessage = errorView!!.findViewById(R.id.error_message)
         progressBar = rootView.findViewById(R.id.progress_bar)
         progressBar!!.visibility = View.VISIBLE
-        browserAdapter = BrowseAdapter(activity!!)
         listView = rootView.findViewById(R.id.list_view)
         listView.adapter = browserAdapter
-        listView.onItemClickListener =
-            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-                checkForUserVisibleErrors(false)
-                val item = browserAdapter!!.getItem(position)!!
-                mediaFragmentListener!!.onMediaItemSelected(item)
-            }
+//        listView.onItemClickListener =
+//            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+//                checkForUserVisibleErrors(false)
+//                val item = browserAdapter.media.getItem(position)!!
+//                mediaFragmentListener!!.onMediaItemSelected(item)
+//            }
         return rootView
     }
 
@@ -424,43 +402,42 @@ class MediaBrowserFragment : Fragment() {
         )
     }
 
-    // An adapter for showing the list of browsed MediaItem's
-    private class BrowseAdapter(context: Activity) : ArrayAdapter<MediaBrowserCompat.MediaItem?>(
-        context, R.layout.media_list_item, listOf<MediaBrowserCompat.MediaItem>()
-    ) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val item = getItem(position)
-            var itemState = MediaItemViewHolder.STATE_NONE
-            if (item!!.isPlayable) {
-                itemState = MediaItemViewHolder.STATE_PLAYABLE
-                val controller = (context as BaseActivity).supportMediaController
-                if (controller != null && controller.metadata != null) {
-                    val currentPlaying = controller.metadata.description.mediaId
-                    val musicId = extractMusicIDFromMediaID(item.description.mediaId!!)
-                    if (currentPlaying != null && currentPlaying == musicId) {
-                        val pbState = controller.playbackState
-                        itemState = if (pbState == null ||
-                            pbState.state == PlaybackStateCompat.STATE_ERROR
-                        ) {
-                            MediaItemViewHolder.STATE_NONE
-                        } else if (pbState.state == PlaybackStateCompat.STATE_PLAYING) {
-                            MediaItemViewHolder.STATE_PLAYING
-                        } else {
-                            MediaItemViewHolder.STATE_PAUSED
-                        }
-                    }
-                }
-            }
-            return MediaItemViewHolder.setupView(
-                activity = context as Activity,
-                convertView = convertView,
-                parent = parent,
-                description = item.description,
-                state = itemState
-            )
-        }
-    }
+//    class BrowseAdapter(context: Activity) : ArrayAdapter<MediaBrowserCompat.MediaItem>(
+//        context, R.layout.media_list_item, mutableListOf<MediaBrowserCompat.MediaItem>()
+//    ) {
+//
+//        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+//            val item = getItem(position)
+//            var itemState = MediaItemViewHolder.STATE_NONE
+//            if (item!!.isPlayable) {
+//                itemState = MediaItemViewHolder.STATE_PLAYABLE
+//                val controller = (context as BaseActivity).supportMediaController
+//                if (controller != null && controller.metadata != null) {
+//                    val currentPlaying = controller.metadata.description.mediaId
+//                    val musicId = extractMusicIDFromMediaID(item.description.mediaId!!)
+//                    if (currentPlaying != null && currentPlaying == musicId) {
+//                        val pbState = controller.playbackState
+//                        itemState = if (pbState == null ||
+//                            pbState.state == PlaybackStateCompat.STATE_ERROR
+//                        ) {
+//                            MediaItemViewHolder.STATE_NONE
+//                        } else if (pbState.state == PlaybackStateCompat.STATE_PLAYING) {
+//                            MediaItemViewHolder.STATE_PLAYING
+//                        } else {
+//                            MediaItemViewHolder.STATE_PAUSED
+//                        }
+//                    }
+//                }
+//            }
+//            return MediaItemViewHolder.setupView(
+//                activity = context as Activity,
+//                convertView = convertView,
+//                parent = parent,
+//                description = item.description,
+//                state = itemState
+//            )
+//        }
+//    }
 
     interface MediaFragmentListener : MediaBrowserProvider {
         fun onMediaItemSelected(item: MediaBrowserCompat.MediaItem)

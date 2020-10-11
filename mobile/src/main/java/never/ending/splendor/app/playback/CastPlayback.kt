@@ -11,7 +11,6 @@ import com.google.android.gms.cast.MediaStatus
 import com.google.android.gms.common.images.WebImage
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
 import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl
-import com.google.android.libraries.cast.companionlibrary.cast.exceptions.CastException
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConnectionException
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.TransientNetworkDisconnectionException
 import never.ending.splendor.app.model.MusicProvider

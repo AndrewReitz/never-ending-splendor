@@ -1,5 +1,6 @@
 package never.ending.splendor.app.utils
 
+import android.support.v4.media.MediaBrowserCompat
 import timber.log.Timber
 
 /**
@@ -56,15 +57,20 @@ object MediaIDHelper {
      * musicID. This is necessary so we know where the user selected the music from, when the music
      * exists in more than one music list, and thus we are able to correctly build the playing queue.
      *
-     * @param mediaID that contains the musicID
+     * @param mediaId that contains the musicID
      * @return musicID
      */
-    fun extractMusicIDFromMediaID(mediaID: String): String? {
-        val pos = mediaID.indexOf(LEAF_SEPARATOR)
+    @Deprecated(message = "Use musicId getter instead")
+    fun extractMusicIDFromMediaID(mediaId: String): String? {
+        val pos = mediaId.indexOf(LEAF_SEPARATOR)
         return if (pos >= 0) {
-            mediaID.substring(pos + 1)
+            mediaId.substring(pos + 1)
         } else null
     }
+
+    // TODO write tests.
+    val MediaBrowserCompat.MediaItem.musicId: String? get() = extractMusicIDFromMediaID(description.mediaId.orEmpty())
+
 
     fun extractShowFromMediaID(mediaID: String): String? {
         val pos = mediaID.indexOf(CATEGORY_SEPARATOR)

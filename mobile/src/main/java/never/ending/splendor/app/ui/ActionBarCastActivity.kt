@@ -2,9 +2,9 @@ package never.ending.splendor.app.ui
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.mediarouter.app.MediaRouteButton
@@ -27,13 +27,13 @@ import javax.inject.Inject
  * a [android.widget.ListView] with id 'drawerList'.
  */
 abstract class ActionBarCastActivity : AppCompatActivity() {
-    @Inject
-    var mCastManager: VideoCastManager? = null
-    private var mMediaRouteMenuItem: MenuItem? = null
-    private var mToolbar: Toolbar? = null
-    private var mToolbarInitialized = false
-    private val mItemToOpenWhenDrawerCloses = -1
-    private val mCastConsumer: VideoCastConsumerImpl = object : VideoCastConsumerImpl() {
+    @Inject lateinit var castManager: VideoCastManager
+
+    private lateinit var toolbar: Toolbar
+
+    private var mediaRouteMenuItem: MenuItem? = null
+
+    private val castConsumer: VideoCastConsumerImpl = object : VideoCastConsumerImpl() {
         override fun onFailed(resourceId: Int, statusCode: Int) {
             Timber.d("onFailed %s status %s", resourceId, statusCode)
         }
@@ -45,11 +45,11 @@ abstract class ActionBarCastActivity : AppCompatActivity() {
         override fun onConnectivityRecovered() {}
         override fun onCastAvailabilityChanged(castPresent: Boolean) {
             if (castPresent) {
-                Handler().postDelayed(
+                Handler(Looper.getMainLooper()).postDelayed(
                     {
-                        if (mMediaRouteMenuItem!!.isVisible) {
+                        if (mediaRouteMenuItem!!.isVisible) {
                             Timber.d("Cast Icon is visible")
-                            showFtu()
+                            showFirstTimeCastMessage()
                         }
                     },
                     DELAY_MILLIS.toLong()
@@ -65,39 +65,31 @@ abstract class ActionBarCastActivity : AppCompatActivity() {
 
         // Ensure that Google Play Service is available.
         VideoCastManager.checkGooglePlayServices(this)
-        mCastManager!!.reconnectSessionIfPossible()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        check(mToolbarInitialized) {
-            "You must run super.initializeToolbar at " +
-                "the end of your onCreate method"
-        }
+        castManager.reconnectSessionIfPossible()
     }
 
     public override fun onResume() {
         super.onResume()
-        mCastManager!!.addVideoCastConsumer(mCastConsumer)
-        mCastManager!!.incrementUiCounter()
+        castManager.addVideoCastConsumer(castConsumer)
+        castManager.incrementUiCounter()
     }
 
     public override fun onPause() {
         super.onPause()
-        mCastManager!!.removeVideoCastConsumer(mCastConsumer)
-        mCastManager!!.decrementUiCounter()
+        castManager.removeVideoCastConsumer(castConsumer)
+        castManager.decrementUiCounter()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.main, menu)
-        mMediaRouteMenuItem = mCastManager!!.addMediaRouterButton(menu, R.id.media_route_menu_item)
+        mediaRouteMenuItem = castManager.addMediaRouterButton(menu, R.id.media_route_menu_item)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // If not handled by drawerToggle, home needs to be handled by returning to previous
-        if (item != null && item.itemId == android.R.id.home) {
+        if (item.itemId == android.R.id.home) {
             onBackPressed()
             return true
         }
@@ -117,39 +109,34 @@ abstract class ActionBarCastActivity : AppCompatActivity() {
 
     override fun setTitle(title: CharSequence) {
         super.setTitle(title)
-        mToolbar!!.title = title
+        toolbar.title = title
     }
 
     fun setSubtitle(title: CharSequence?) {
-        mToolbar!!.subtitle = title
+        toolbar.subtitle = title
     }
 
     override fun setTitle(titleId: Int) {
         super.setTitle(titleId)
-        mToolbar!!.setTitle(titleId)
+        toolbar.setTitle(titleId)
     }
 
-    protected fun initializeToolbar() {
-        mToolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        checkNotNull(mToolbar) {
-            "Layout is required to include a Toolbar with id " +
-                "'toolbar'"
-        }
-        mToolbar!!.inflateMenu(R.menu.main)
-        setSupportActionBar(mToolbar)
-        mToolbarInitialized = true
+    protected fun initializeToolbar(toolbar: Toolbar) {
+        this.toolbar = toolbar
+        toolbar.inflateMenu(R.menu.main)
+        setSupportActionBar(toolbar)
     }
 
     /**
      * Shows the Cast First Time User experience to the user (an overlay that explains what is
      * the Cast icon)
      */
-    private fun showFtu() {
-        val menu = mToolbar!!.menu
+    private fun showFirstTimeCastMessage() {
+        val menu = toolbar.menu
         val view = menu.findItem(R.id.media_route_menu_item).actionView
         if (view is MediaRouteButton) {
             val overlay = IntroductoryOverlay.Builder(this)
-                .setMenuItem(mMediaRouteMenuItem)
+                .setMenuItem(mediaRouteMenuItem)
                 .setTitleText(R.string.touch_to_cast)
                 .setSingleTime()
                 .build()
