@@ -15,7 +15,7 @@ import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConn
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.TransientNetworkDisconnectionException
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.model.MusicProviderSource
-import never.ending.splendor.app.utils.MediaIDHelper
+import never.ending.splendor.app.utils.MediaIdHelper
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
@@ -156,7 +156,7 @@ class CastPlayback(
     }
 
     private fun loadMedia(mediaId: String?, autoPlay: Boolean) {
-        val musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId!!)
+        val musicId = MediaIdHelper.extractMusicIDFromMediaID(mediaId!!)
         val track = mMusicProvider.getMusic(musicId)
             ?: throw IllegalArgumentException("Invalid mediaId $mediaId")
         if (!TextUtils.equals(mediaId, currentMediaId)) {

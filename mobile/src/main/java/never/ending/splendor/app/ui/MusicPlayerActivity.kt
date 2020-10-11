@@ -9,7 +9,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.text.TextUtils
 import never.ending.splendor.R
 import never.ending.splendor.app.ui.MediaBrowserFragment.MediaFragmentListener
-import never.ending.splendor.app.utils.MediaIDHelper
+import never.ending.splendor.app.utils.MediaIdHelper
 import never.ending.splendor.databinding.MusicPlayerActivityBinding
 import timber.log.Timber
 
@@ -79,9 +79,9 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
         setTitle(title)
     }
 
-    override fun setToolbarSubTitle(subTitlle: CharSequence) {
-        Timber.d("Setting toolbar title to %s", subTitlle)
-        setSubtitle(subTitlle)
+    override fun setToolbarSubTitle(subtitle: CharSequence) {
+        Timber.d("Setting toolbar title to %s", subtitle)
+        setSubtitle(subtitle)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -135,7 +135,7 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
             val year = requireNotNull(subtitle).split("-").toTypedArray()[0]
 
             // browse to year...
-            navigateToBrowser(null, null, MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR + "/" + year)
+            navigateToBrowser(null, null, MediaIdHelper.MEDIA_ID_SHOWS_BY_YEAR + "/" + year)
 
             // now launch as show
             navigateToBrowser(title, subtitle, mediaId)
@@ -145,9 +145,15 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
         if (savedInstanceState != null) {
             navigateToBrowser(null, null, savedInstanceState.getString(SAVED_MEDIA_ID))
         }
+
+        navigateToBrowser(null, null, null)
     }
 
-    private fun navigateToBrowser(title: String?, subtitle: String?, mediaId: String?) {
+    private fun navigateToBrowser(
+        title: String? = null,
+        subtitle: String? = null,
+        mediaId: String? = null
+    ) {
         Timber.d("navigateToBrowser, mediaId=%s", mediaId)
         var fragment = browseFragment
         if (fragment == null || !TextUtils.equals(fragment.mediaId, mediaId)) {

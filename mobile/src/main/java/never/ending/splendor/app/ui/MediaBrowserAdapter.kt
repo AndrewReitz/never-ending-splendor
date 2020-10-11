@@ -11,7 +11,7 @@ import never.ending.splendor.databinding.MediaListItemBinding
 
 class MediaBrowserAdapter(
     private val context: Context,
-    private val mediaController: MediaControllerCompat,
+    private val mediaController: MediaControllerCompat?, // todo fix this
     private val itemClickListener: () -> Unit
 ) : RecyclerView.Adapter<MediaItemViewHolder>() {
 
@@ -35,4 +35,3 @@ class MediaBrowserAdapter(
 
     override fun getItemCount(): Int = media.size
 }
-

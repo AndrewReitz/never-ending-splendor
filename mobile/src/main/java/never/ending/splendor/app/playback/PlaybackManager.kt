@@ -8,7 +8,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import never.ending.splendor.R
 import never.ending.splendor.app.model.MusicProvider
-import never.ending.splendor.app.utils.MediaIDHelper.extractMusicIDFromMediaID
+import never.ending.splendor.app.utils.MediaIdHelper.extractMusicIDFromMediaID
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture

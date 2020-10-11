@@ -6,7 +6,7 @@ import timber.log.Timber
 /**
  * Utility class to help on queue related tasks.
  */
-object MediaIDHelper {
+object MediaIdHelper {
     const val MEDIA_ID_ROOT = "__ROOT__"
     const val MEDIA_ID_MUSICS_BY_SEARCH = "__BY_SEARCH__"
     const val MEDIA_ID_SHOWS_BY_YEAR = "__SHOWS_BY_YEAR__"
@@ -30,7 +30,7 @@ object MediaIDHelper {
      * @param categories hierarchy of categories representing this item's browsing parents
      * @return a hierarchy-aware media ID
      </musicUniqueId></categoryValue></categoryType> */
-    fun createMediaID(musicID: String?, vararg categories: String): String {
+    fun createMediaId(musicID: String?, vararg categories: String): String {
         val sb = StringBuilder()
         for (i in categories.indices) {
             require(isValidCategory(categories[i])) { "Invalid category: ${categories[0]}" }
@@ -70,7 +70,7 @@ object MediaIDHelper {
 
     // TODO write tests.
     val MediaBrowserCompat.MediaItem.musicId: String? get() = extractMusicIDFromMediaID(description.mediaId.orEmpty())
-
+    val String.musicId: String? get() = extractMusicIDFromMediaID(this)
 
     fun extractShowFromMediaID(mediaID: String): String? {
         val pos = mediaID.indexOf(CATEGORY_SEPARATOR)
@@ -114,12 +114,12 @@ object MediaIDHelper {
     fun getParentMediaID(mediaID: String): String {
         val hierarchy = getHierarchy(mediaID)
         if (!isBrowseable(mediaID)) {
-            return createMediaID(null, *hierarchy)
+            return createMediaId(null, *hierarchy)
         }
         if (hierarchy.size <= 1) {
             return MEDIA_ID_ROOT
         }
         val parentHierarchy = hierarchy.copyOfRange(0, hierarchy.size - 1)
-        return createMediaID(null, *parentHierarchy)
+        return createMediaId(null, *parentHierarchy)
     }
 }

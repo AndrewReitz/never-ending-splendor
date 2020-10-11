@@ -5,10 +5,10 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import never.ending.splendor.app.VoiceSearchParams
 import never.ending.splendor.app.model.MusicProvider
-import never.ending.splendor.app.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_SEARCH
-import never.ending.splendor.app.utils.MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW
-import never.ending.splendor.app.utils.MediaIDHelper.createMediaID
-import never.ending.splendor.app.utils.MediaIDHelper.getHierarchy
+import never.ending.splendor.app.utils.MediaIdHelper.MEDIA_ID_MUSICS_BY_SEARCH
+import never.ending.splendor.app.utils.MediaIdHelper.MEDIA_ID_TRACKS_BY_SHOW
+import never.ending.splendor.app.utils.MediaIdHelper.createMediaId
+import never.ending.splendor.app.utils.MediaIdHelper.getHierarchy
 import timber.log.Timber
 
 /**
@@ -122,7 +122,7 @@ object QueueHelper {
 
             // We create a hierarchy-aware mediaID, so we know what the queue is about by looking
             // at the QueueItem media IDs.
-            val hierarchyAwareMediaID = createMediaID(
+            val hierarchyAwareMediaID = createMediaId(
                 track.description.mediaId, *categories
             )
             val trackCopy = MediaMetadataCompat.Builder(track)

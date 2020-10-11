@@ -15,13 +15,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import never.ending.splendor.R
-import never.ending.splendor.app.utils.MediaIDHelper.musicId
+import never.ending.splendor.app.utils.MediaIdHelper.musicId
 import never.ending.splendor.databinding.MediaListItemBinding
 
 class MediaItemViewHolder(
     context: Context,
     binding: MediaListItemBinding,
-    private val mediaController: MediaControllerCompat
+    private val mediaController: MediaControllerCompat?
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val view: View = binding.root
@@ -63,9 +63,8 @@ class MediaItemViewHolder(
         val currentState = if (item.isPlayable) MediaState.PLAYABLE else MediaState.NONE
         val cachedState = view.tag as? MediaState
 
-        var itemState = MediaState.NONE
         if (item.isPlayable) {
-            if (mediaController.metadata != null) {
+            if (mediaController?.metadata != null) {
                 val currentlyPlaying = mediaController.metadata.description.mediaId
                 val musicId = item.musicId
                 if (currentlyPlaying == musicId) {

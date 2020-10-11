@@ -82,7 +82,7 @@ dependencies {
     implementation("com.google.android.libraries.cast.companionlibrary:ccl:2.9.1")
     implementation("com.google.android.material:material:1.2.1")
 
-    implementation("com.google.firebase:firebase-analytics:17.5.0")
+    implementation("com.google.firebase:firebase-analytics:17.6.0")
     implementation("com.google.firebase:firebase-crashlytics:17.2.2")
 
     implementation("androidx.appcompat:appcompat:1.2.0")
@@ -92,11 +92,10 @@ dependencies {
     implementation("androidx.media2:media2-widget:1.0.3")
     implementation("androidx.media2:media2-player:1.0.3")
 
-    implementation("androidx.constraintlayout:constraintlayout:2.0.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.2")
 
     // appears to be a bug in 1.4.10 where you can't use synchronous http anymore
     implementation("com.loopj.android:android-async-http:1.4.9")
-    implementation("com.google.guava:guava:29.0-android")
 
     implementation("org.kodein.di:kodein-di:7.0.0")
     implementation("org.kodein.di:kodein-di-framework-android-x:7.0.0")

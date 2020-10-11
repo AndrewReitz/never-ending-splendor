@@ -7,7 +7,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import com.squareup.picasso.Picasso
 import never.ending.splendor.R
 import never.ending.splendor.app.model.MusicProvider
-import never.ending.splendor.app.utils.MediaIDHelper
+import never.ending.splendor.app.utils.MediaIdHelper
 import never.ending.splendor.app.utils.QueueHelper
 import never.ending.splendor.app.utils.loadLargeAndSmallImage
 import timber.log.Timber
@@ -37,9 +37,9 @@ class QueueManager(
         }
 
     private fun isSameBrowsingCategory(mediaId: String): Boolean {
-        val newBrowseHierarchy = MediaIDHelper.getHierarchy(mediaId)
+        val newBrowseHierarchy = MediaIdHelper.getHierarchy(mediaId)
         val current = currentMusic ?: return false
-        val currentBrowseHierarchy = MediaIDHelper.getHierarchy(
+        val currentBrowseHierarchy = MediaIdHelper.getHierarchy(
             current.description.mediaId!!
         )
         return newBrowseHierarchy.contentEquals(currentBrowseHierarchy)
@@ -107,7 +107,7 @@ class QueueManager(
         if (!canReuseQueue) {
             val queueTitle = resources.getString(
                 R.string.browse_musics_by_genre_subtitle,
-                MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId)
+                MediaIdHelper.extractBrowseCategoryValueFromMediaID(mediaId)
             )
             setCurrentQueue(
                 queueTitle,
@@ -144,7 +144,7 @@ class QueueManager(
     val duration: Long
         get() {
             val currentMusic = currentMusic ?: return -1
-            val musicId = MediaIDHelper.extractMusicIDFromMediaID(
+            val musicId = MediaIdHelper.extractMusicIDFromMediaID(
                 currentMusic.description.mediaId!!
             )
             val metadata = musicProvider.getMusic(musicId)
@@ -159,7 +159,7 @@ class QueueManager(
             return
         }
 
-        val musicId = MediaIDHelper.extractMusicIDFromMediaID(
+        val musicId = MediaIdHelper.extractMusicIDFromMediaID(
             requireNotNull(currentMusic.description.mediaId)
         )
 
@@ -178,7 +178,7 @@ class QueueManager(
 
                 // If we are still playing the same music, notify the listeners:
                 val music = currentMusic
-                val currentPlayingId = MediaIDHelper.extractMusicIDFromMediaID(music.description.mediaId!!)
+                val currentPlayingId = MediaIdHelper.extractMusicIDFromMediaID(music.description.mediaId!!)
                 if (musicId == currentPlayingId) {
                     metadataUpdateListener.onMetadataChanged(requireNotNull(musicProvider.getMusic(currentPlayingId)))
                 }

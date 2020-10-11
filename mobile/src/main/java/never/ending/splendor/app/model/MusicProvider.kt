@@ -6,7 +6,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import never.ending.splendor.R
-import never.ending.splendor.app.utils.MediaIDHelper
+import never.ending.splendor.app.utils.MediaIdHelper
 import never.ending.splendor.networking.model.YearData
 import timber.log.Timber
 import java.util.Collections
@@ -71,22 +71,22 @@ class MusicProvider(
     }
 
     suspend fun childeren(mediaId: String): List<MediaBrowserCompat.MediaItem> {
-        if (!MediaIDHelper.isBrowseable(mediaId)) {
+        if (!MediaIdHelper.isBrowseable(mediaId)) {
             return emptyList()
         }
 
-        if (MediaIDHelper.MEDIA_ID_ROOT == mediaId) {
+        if (MediaIdHelper.MEDIA_ID_ROOT == mediaId) {
             // always refresh years so we get fresh show count
             return source.years().toMediaItemList()
         }
 
-        if (mediaId.startsWith(MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR)) {
-            val year = MediaIDHelper.getHierarchy(mediaId)[1]
+        if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_SHOWS_BY_YEAR)) {
+            val year = MediaIdHelper.getHierarchy(mediaId)[1]
             return source.showsInYear(year).toMediaItemListOfShows()
         }
 
-        if (mediaId.startsWith(MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW)) {
-            val showId = MediaIDHelper.getHierarchy(mediaId)[1]
+        if (mediaId.startsWith(MediaIdHelper.MEDIA_ID_TRACKS_BY_SHOW)) {
+            val showId = MediaIdHelper.getHierarchy(mediaId)[1]
             val tracks = source.tracksInShow(showId)
             cachedTracks[showId] = tracks
 
@@ -103,7 +103,7 @@ class MusicProvider(
 
     private fun List<YearData>.toMediaItemList(): List<MediaBrowserCompat.MediaItem> = map {
         val description = MediaDescriptionCompat.Builder()
-            .setMediaId(MediaIDHelper.createMediaID(null, MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR, it.date))
+            .setMediaId(MediaIdHelper.createMediaId(null, MediaIdHelper.MEDIA_ID_SHOWS_BY_YEAR, it.date))
             .setTitle(it.date)
             .setSubtitle("${it.show_count} shows")
             .build()
@@ -121,7 +121,7 @@ class MusicProvider(
         val date = show.getString(MediaMetadataCompat.METADATA_KEY_DATE)
 
         val description = MediaDescriptionCompat.Builder()
-            .setMediaId(MediaIDHelper.createMediaID(null, MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW, showId))
+            .setMediaId(MediaIdHelper.createMediaId(null, MediaIdHelper.MEDIA_ID_TRACKS_BY_SHOW, showId))
             .setTitle(venue)
             .setSubtitle(context.getString(R.string.browse_musics_by_genre_subtitle, date))
             .setDescription(location)
@@ -139,9 +139,9 @@ class MusicProvider(
         // on where the music was selected from (by artist, by genre, random, etc)
         val venue = track.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE)
         val showId = track.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)
-        val hierarchyAwareMediaID = MediaIDHelper.createMediaID(
+        val hierarchyAwareMediaID = MediaIdHelper.createMediaId(
             track.description.mediaId,
-            MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW, showId
+            MediaIdHelper.MEDIA_ID_TRACKS_BY_SHOW, showId
         )
 
         val copy = MediaMetadataCompat.Builder(track)

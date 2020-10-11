@@ -16,7 +16,7 @@ import android.text.TextUtils
 import never.ending.splendor.app.MusicService
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.model.MusicProviderSource
-import never.ending.splendor.app.utils.MediaIDHelper
+import never.ending.splendor.app.utils.MediaIdHelper
 import timber.log.Timber
 import java.io.IOException
 
@@ -124,7 +124,7 @@ class LocalPlayback(
             mNextMediaId = mediaId
         }
         val track = musicProvider.getMusic(
-            MediaIDHelper.extractMusicIDFromMediaID(item.description.mediaId!!)
+            MediaIdHelper.extractMusicIDFromMediaID(item.description.mediaId!!)
         )
         val source = track!!.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE)
         nextPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -168,7 +168,7 @@ class LocalPlayback(
             state = PlaybackStateCompat.STATE_STOPPED
             relaxResources(false) // release everything except MediaPlayer
             val track = musicProvider.getMusic(
-                MediaIDHelper.extractMusicIDFromMediaID(item.description.mediaId!!)
+                MediaIdHelper.extractMusicIDFromMediaID(item.description.mediaId!!)
             )
             val source = track!!.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE)
             try {

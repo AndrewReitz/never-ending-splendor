@@ -38,7 +38,7 @@ import never.ending.splendor.app.playback.QueueManager
 import never.ending.splendor.app.playback.QueueManager.MetadataUpdateListener
 import never.ending.splendor.app.ui.MusicPlayerActivity
 import never.ending.splendor.app.utils.CarHelper
-import never.ending.splendor.app.utils.MediaIDHelper
+import never.ending.splendor.app.utils.MediaIdHelper
 import org.kodein.di.DIAware
 import org.kodein.di.android.di
 import org.kodein.di.instance
@@ -272,7 +272,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
             // that should be different on cars, you should instead use the boolean flag
             // set by the BroadcastReceiver mCarConnectionReceiver (mIsConnectedToCar).
         }
-        return BrowserRoot(MediaIDHelper.MEDIA_ID_ROOT, null)
+        return BrowserRoot(MediaIdHelper.MEDIA_ID_ROOT, null)
     }
 
     override fun onLoadChildren(parentMediaId: String, result: Result<List<MediaBrowserCompat.MediaItem>>) {

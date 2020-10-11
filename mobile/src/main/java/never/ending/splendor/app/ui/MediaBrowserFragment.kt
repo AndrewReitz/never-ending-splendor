@@ -22,11 +22,10 @@ import com.loopj.android.http.JsonHttpResponseHandler
 import com.loopj.android.http.RequestParams
 import cz.msebera.android.httpclient.Header
 import never.ending.splendor.R
-import never.ending.splendor.app.utils.MediaIDHelper
-import never.ending.splendor.app.utils.MediaIDHelper.extractMusicIDFromMediaID
-import never.ending.splendor.app.utils.MediaIDHelper.extractShowFromMediaID
-import never.ending.splendor.app.utils.MediaIDHelper.getHierarchy
-import never.ending.splendor.app.utils.MediaIDHelper.isShow
+import never.ending.splendor.app.utils.MediaIdHelper
+import never.ending.splendor.app.utils.MediaIdHelper.extractShowFromMediaID
+import never.ending.splendor.app.utils.MediaIdHelper.getHierarchy
+import never.ending.splendor.app.utils.MediaIdHelper.isShow
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -51,6 +50,7 @@ class MediaBrowserFragment : Fragment() {
             requireActivity(),
             MediaControllerCompat.getMediaController(requireActivity())
         ) {
+            Timber.d("clicked!")
             // todo
         }
     }
@@ -85,7 +85,7 @@ class MediaBrowserFragment : Fragment() {
             }
         }
 
-    private val mSubscriptionCallback: MediaBrowserCompat.SubscriptionCallback =
+    private val subscriptionCallback: MediaBrowserCompat.SubscriptionCallback =
         object : MediaBrowserCompat.SubscriptionCallback() {
             override fun onChildrenLoaded(
                 parentId: String,
@@ -116,7 +116,7 @@ class MediaBrowserFragment : Fragment() {
         super.onAttach(context)
         // If used on an activity that doesn't implement MediaFragmentListener, it
         // will throw an exception as expected:
-        mediaFragmentListener = activity as MediaFragmentListener?
+        mediaFragmentListener = activity as MediaFragmentListener
     }
 
     override fun onCreateView(
@@ -138,6 +138,7 @@ class MediaBrowserFragment : Fragment() {
             tabLayout.setupWithViewPager(viewPager)
             val setlist = rootView.findViewById<WebView>(R.id.setlist_webview)
             setlist.settings.javaScriptEnabled = true
+
             val setlistClient = AsyncHttpClient()
             val setlistParams = RequestParams()
             setlistParams.put("api", "2.0")
@@ -175,6 +176,7 @@ class MediaBrowserFragment : Fragment() {
                     }
                 }
             ]
+
             val reviews = rootView.findViewById<WebView>(R.id.reviews_webview)
             reviews.settings.javaScriptEnabled = true
             val reviewsClient = AsyncHttpClient()
@@ -261,6 +263,7 @@ class MediaBrowserFragment : Fragment() {
         progressBar!!.visibility = View.VISIBLE
         listView = rootView.findViewById(R.id.list_view)
         listView.adapter = browserAdapter
+        // todo
 //        listView.onItemClickListener =
 //            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
 //                checkForUserVisibleErrors(false)
@@ -346,7 +349,7 @@ class MediaBrowserFragment : Fragment() {
         // subscriber or if the media content changes on the service side, so we need to
         // unsubscribe first.
         mediaFragmentListener!!.mediaBrowser.unsubscribe(mMediaId!!)
-        mediaFragmentListener!!.mediaBrowser.subscribe(mMediaId!!, mSubscriptionCallback)
+        mediaFragmentListener!!.mediaBrowser.subscribe(mMediaId!!, subscriptionCallback)
 
         // Add MediaController callback so we can redraw the list when metadata changes:
         val controller = (activity as BaseActivity?)?.supportMediaController
@@ -374,18 +377,18 @@ class MediaBrowserFragment : Fragment() {
     }
 
     private fun updateTitle() {
-        if (mMediaId!!.startsWith(MediaIDHelper.MEDIA_ID_SHOWS_BY_YEAR)) {
+        if (mMediaId!!.startsWith(MediaIdHelper.MEDIA_ID_SHOWS_BY_YEAR)) {
             val year = getHierarchy(mMediaId!!)[1]
             mediaFragmentListener!!.setToolbarTitle(year)
             mediaFragmentListener!!.setToolbarSubTitle("")
             return
         }
-        if (mMediaId!!.startsWith(MediaIDHelper.MEDIA_ID_TRACKS_BY_SHOW)) {
+        if (mMediaId!!.startsWith(MediaIdHelper.MEDIA_ID_TRACKS_BY_SHOW)) {
             mediaFragmentListener!!.setToolbarTitle(title.orEmpty())
             mediaFragmentListener!!.setToolbarSubTitle(subTitle.orEmpty())
             return
         }
-        if (MediaIDHelper.MEDIA_ID_ROOT == mMediaId) {
+        if (MediaIdHelper.MEDIA_ID_ROOT == mMediaId) {
             mediaFragmentListener!!.setToolbarTitle("")
             return
         }
@@ -402,47 +405,10 @@ class MediaBrowserFragment : Fragment() {
         )
     }
 
-//    class BrowseAdapter(context: Activity) : ArrayAdapter<MediaBrowserCompat.MediaItem>(
-//        context, R.layout.media_list_item, mutableListOf<MediaBrowserCompat.MediaItem>()
-//    ) {
-//
-//        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-//            val item = getItem(position)
-//            var itemState = MediaItemViewHolder.STATE_NONE
-//            if (item!!.isPlayable) {
-//                itemState = MediaItemViewHolder.STATE_PLAYABLE
-//                val controller = (context as BaseActivity).supportMediaController
-//                if (controller != null && controller.metadata != null) {
-//                    val currentPlaying = controller.metadata.description.mediaId
-//                    val musicId = extractMusicIDFromMediaID(item.description.mediaId!!)
-//                    if (currentPlaying != null && currentPlaying == musicId) {
-//                        val pbState = controller.playbackState
-//                        itemState = if (pbState == null ||
-//                            pbState.state == PlaybackStateCompat.STATE_ERROR
-//                        ) {
-//                            MediaItemViewHolder.STATE_NONE
-//                        } else if (pbState.state == PlaybackStateCompat.STATE_PLAYING) {
-//                            MediaItemViewHolder.STATE_PLAYING
-//                        } else {
-//                            MediaItemViewHolder.STATE_PAUSED
-//                        }
-//                    }
-//                }
-//            }
-//            return MediaItemViewHolder.setupView(
-//                activity = context as Activity,
-//                convertView = convertView,
-//                parent = parent,
-//                description = item.description,
-//                state = itemState
-//            )
-//        }
-//    }
-
     interface MediaFragmentListener : MediaBrowserProvider {
         fun onMediaItemSelected(item: MediaBrowserCompat.MediaItem)
         fun setToolbarTitle(title: CharSequence)
-        fun setToolbarSubTitle(title: CharSequence)
+        fun setToolbarSubTitle(subtitle: CharSequence)
     }
 
     companion object {
