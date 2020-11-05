@@ -1,0 +1,8 @@
+idea {
+    module {
+        testSourceDirs += sourceSets.integrationTest.allSource.srcDirs
+        testResourceDirs += sourceSets.integrationTest.resources.srcDirs
+        scopes.TEST.plus += [configurations.integrationTestCompileClasspath]
+        scopes.TEST.plus += [configurations.integrationTestRuntimeClasspath]
+    }
+}

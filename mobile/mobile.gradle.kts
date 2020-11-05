@@ -87,15 +87,12 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.cardview:cardview:1.0.0")
-    implementation("androidx.mediarouter:mediarouter:1.1.0")
+    implementation("androidx.mediarouter:mediarouter:1.2.0")
     implementation("androidx.media2:media2-session:1.0.3")
     implementation("androidx.media2:media2-widget:1.0.3")
     implementation("androidx.media2:media2-player:1.0.3")
 
     implementation("androidx.constraintlayout:constraintlayout:2.0.2")
-
-    // appears to be a bug in 1.4.10 where you can't use synchronous http anymore
-    implementation("com.loopj.android:android-async-http:1.4.9")
 
     implementation("org.kodein.di:kodein-di:7.0.0")
     implementation("org.kodein.di:kodein-di-framework-android-x:7.0.0")

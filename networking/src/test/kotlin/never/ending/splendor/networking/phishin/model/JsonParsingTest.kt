@@ -1,10 +1,13 @@
-package never.ending.splendor.networking.model
+package never.ending.splendor.networking.phishin.model
 
 import com.google.common.truth.Truth.assertThat
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import never.ending.splendor.networking.networkingModule
+import never.ending.splendor.networking.phishin.model.Show
+import never.ending.splendor.networking.phishin.model.SuccessfulResponse
+import never.ending.splendor.networking.phishin.model.YearData
 import org.junit.jupiter.api.Test
 import org.kodein.di.DI
 import org.kodein.di.DIAware

@@ -7,7 +7,7 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import never.ending.splendor.R
 import never.ending.splendor.app.utils.MediaIdHelper
-import never.ending.splendor.networking.model.YearData
+import never.ending.splendor.networking.phishin.model.YearData
 import timber.log.Timber
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap

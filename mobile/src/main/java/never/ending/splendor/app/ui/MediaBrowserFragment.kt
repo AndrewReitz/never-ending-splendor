@@ -17,21 +17,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import com.loopj.android.http.AsyncHttpClient
-import com.loopj.android.http.JsonHttpResponseHandler
-import com.loopj.android.http.RequestParams
-import cz.msebera.android.httpclient.Header
 import never.ending.splendor.R
 import never.ending.splendor.app.utils.MediaIdHelper
 import never.ending.splendor.app.utils.MediaIdHelper.extractShowFromMediaID
 import never.ending.splendor.app.utils.MediaIdHelper.getHierarchy
 import never.ending.splendor.app.utils.MediaIdHelper.isShow
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.Date
 
 /**
  * A Fragment that lists all the various browsable queues available
@@ -60,7 +51,6 @@ class MediaBrowserFragment : Fragment() {
     private var errorView: View? = null
     private var errorMessage: TextView? = null
     private var progressBar: ProgressBar? = null
-    private var showData: JSONObject? = null
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -125,10 +115,14 @@ class MediaBrowserFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         Timber.d("fragment.onCreateView")
+
         val rootView: View
         val mediaId = mediaId
         val listView: RecyclerView
+
         if (mediaId != null && isShow(mediaId)) {
+            Timber.d("display show info: mediaId = %s and media is a show" , mediaId)
+
             setHasOptionsMenu(true) // show option to download
             rootView = inflater.inflate(R.layout.fragment_list_show, container, false)
             val viewPager: ViewPager = rootView.findViewById(R.id.viewpager)
@@ -139,124 +133,23 @@ class MediaBrowserFragment : Fragment() {
             val setlist = rootView.findViewById<WebView>(R.id.setlist_webview)
             setlist.settings.javaScriptEnabled = true
 
-            val setlistClient = AsyncHttpClient()
-            val setlistParams = RequestParams()
-            setlistParams.put("api", "2.0")
-            setlistParams.put("method", "pnet.shows.setlists.get")
-            setlistParams.put("showdate", subTitle)
-            setlistParams.put("apikey", "C01AEE2002E80723E9E7")
-            setlistParams.put("format", "json")
-            setlistClient[
-                "http://api.phish.net/api.js", setlistParams, object :
-                    JsonHttpResponseHandler() {
-                    override fun onSuccess(
-                        statusCode: Int,
-                        headers: Array<Header>,
-                        response: JSONArray
-                    ) {
-                        super.onSuccess(statusCode, headers, response)
-                        try {
-                            val result = response.getJSONObject(0)
-                            val city = result.getString("city")
-                            val state = result.getString("state")
-                            val country = result.getString("country")
-                            val venue = result.getString("venue")
-                            val header = "<h1>" + venue + "</h1>" + "<h2>" + city +
-                                ", " + state + "<br/>" + country + "</h2>"
-                            val setlistdata = result.getString("setlistdata")
-                            val setlistnotes = result.getString("setlistnotes")
-                            setlist.loadData(
-                                header + setlistdata + setlistnotes,
-                                "text/html",
-                                null
-                            )
-                        } catch (e: JSONException) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            ]
+            // TODO Load setlist
 
             val reviews = rootView.findViewById<WebView>(R.id.reviews_webview)
             reviews.settings.javaScriptEnabled = true
-            val reviewsClient = AsyncHttpClient()
-            val reviewsParams = RequestParams()
-            reviewsParams.put("api", "2.0")
-            reviewsParams.put("method", "pnet.reviews.query")
-            reviewsParams.put("showdate", subTitle)
-            reviewsParams.put("apikey", "C01AEE2002E80723E9E7")
-            reviewsParams.put("format", "json")
-            reviewsClient[
-                "http://api.phish.net/api.js", reviewsParams, object :
-                    JsonHttpResponseHandler() {
-                    override fun onSuccess(
-                        statusCode: Int,
-                        headers: Array<Header>,
-                        response: JSONArray
-                    ) {
-                        super.onSuccess(statusCode, headers, response)
-                        try {
-                            val display = StringBuilder()
-                            val len = response.length()
-                            for (i in 0 until len) {
-                                val entry = response.getJSONObject(i)
-                                val author = entry.getString("author")
-                                val review = entry.getString("review")
-                                val tstamp = entry.getString("tstamp")
-                                val reviewTime = Date(tstamp.toLong() * 1000)
-                                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                                val reviewDate = dateFormat.format(reviewTime)
-                                val reviewSubs = review.replace("\n".toRegex(), "<br/>")
-                                display.append("<h2>").append(author).append("</h2>")
-                                    .append("<h4>")
-                                    .append(reviewDate).append("</h4>")
-                                display.append(reviewSubs).append("<br/>")
-                            }
-                            reviews.loadData(display.toString(), "text/html", null)
-                        } catch (e: JSONException) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            ]
+
+            // todo load reviews
+
+
             val tapernotesWebview = rootView.findViewById<WebView>(R.id.tapernotes_webview)
             tapernotesWebview.settings.javaScriptEnabled = true
             val showId = extractShowFromMediaID(mediaId)
-            val tapernotesClient = AsyncHttpClient()
-            tapernotesClient[
-                "http://phish.in/api/v1/shows/$showId.json", null, object :
-                    JsonHttpResponseHandler() {
-                    override fun onSuccess(
-                        statusCode: Int,
-                        headers: Array<Header>,
-                        response: JSONObject
-                    ) {
-                        super.onSuccess(statusCode, headers, response)
-                        try {
-                            showData = response
-                            val data = response.getJSONObject("data")
-                            var tapernotes = data.getString("taper_notes")
-                            if (tapernotes == "null") tapernotes = "Not available"
-                            val notesSubs = tapernotes.replace("\n".toRegex(), "<br/>")
-                            tapernotesWebview.loadData(notesSubs, "text/html", null)
-                        } catch (e: JSONException) {
-                            e.printStackTrace()
-                        }
-                    }
 
-                    override fun onFailure(
-                        statusCode: Int,
-                        headers: Array<Header>,
-                        throwable: Throwable,
-                        errorResponse: JSONObject
-                    ) {
-                        super.onFailure(statusCode, headers, throwable, errorResponse)
-                    }
-                }
-            ]
+            // todo load tapper notes
         } else {
             rootView = inflater.inflate(R.layout.fragment_list, container, false)
         }
+
         errorView = rootView.findViewById(R.id.playback_error)
         errorMessage = errorView!!.findViewById(R.id.error_message)
         progressBar = rootView.findViewById(R.id.progress_bar)

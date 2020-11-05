@@ -1,7 +1,7 @@
 package never.ending.splendor.networking.phishin
 
-import never.ending.splendor.networking.model.Show
-import never.ending.splendor.networking.model.YearData
+import never.ending.splendor.networking.phishin.model.Show
+import never.ending.splendor.networking.phishin.model.YearData
 import kotlin.Exception
 
 sealed class PhishinResponse<T>

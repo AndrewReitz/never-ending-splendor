@@ -1,8 +1,8 @@
 package never.ending.splendor.networking.phishin
 
-import never.ending.splendor.networking.model.Show
-import never.ending.splendor.networking.model.SuccessfulResponse
-import never.ending.splendor.networking.model.YearData
+import never.ending.splendor.networking.phishin.model.Show
+import never.ending.splendor.networking.phishin.model.SuccessfulResponse
+import never.ending.splendor.networking.phishin.model.YearData
 import retrofit2.http.GET
 import retrofit2.http.Path
 

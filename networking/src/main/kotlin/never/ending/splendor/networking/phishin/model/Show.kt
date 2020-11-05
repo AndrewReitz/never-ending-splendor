@@ -1,4 +1,4 @@
-package never.ending.splendor.networking.model
+package never.ending.splendor.networking.phishin.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
