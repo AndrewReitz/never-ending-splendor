@@ -24,7 +24,7 @@ import java.io.IOException
  * version of the caller certificate that has not been validated. You can copy from logcat and
  * paste into allowed_media_browser_callers.xml. Spaces and newlines are ignored.
  */
-class PackageValidator(ctx: Context) {
+class PackageValidator(context: Context) {
     /**
      * Map allowed callers' certificate keys to the expected caller information.
      *
@@ -134,7 +134,7 @@ class PackageValidator(ctx: Context) {
 
     init {
         mValidCertificates = readValidCertificates(
-            ctx.resources.getXml(
+            context.resources.getXml(
                 R.xml.allowed_media_browser_callers
             )
         )

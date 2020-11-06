@@ -91,6 +91,7 @@ class FullScreenPlayerActivity : ActionBarCastActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("onCreate")
         setContentView(R.layout.activity_full_player)
         this.inject()
         initializeToolbar(TODO())

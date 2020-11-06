@@ -14,6 +14,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
@@ -89,7 +90,6 @@ class MediaBrowserFragment : Fragment() {
                     checkForUserVisibleErrors(children.isEmpty())
                     progressBar!!.visibility = View.INVISIBLE
                     browserAdapter.media = children
-                    browserAdapter.notifyDataSetChanged()
                 } catch (t: Throwable) {
                     Timber.e(t, "Error on childrenloaded")
                 }
@@ -104,6 +104,8 @@ class MediaBrowserFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        Timber.d("onAttach")
+
         // If used on an activity that doesn't implement MediaFragmentListener, it
         // will throw an exception as expected:
         mediaFragmentListener = activity as MediaFragmentListener
@@ -121,7 +123,7 @@ class MediaBrowserFragment : Fragment() {
         val listView: RecyclerView
 
         if (mediaId != null && isShow(mediaId)) {
-            Timber.d("display show info: mediaId = %s and media is a show" , mediaId)
+            Timber.d("display show info: mediaId = %s and media is a show", mediaId)
 
             setHasOptionsMenu(true) // show option to download
             rootView = inflater.inflate(R.layout.fragment_list_show, container, false)
@@ -140,7 +142,6 @@ class MediaBrowserFragment : Fragment() {
 
             // todo load reviews
 
-
             val tapernotesWebview = rootView.findViewById<WebView>(R.id.tapernotes_webview)
             tapernotesWebview.settings.javaScriptEnabled = true
             val showId = extractShowFromMediaID(mediaId)
@@ -155,6 +156,7 @@ class MediaBrowserFragment : Fragment() {
         progressBar = rootView.findViewById(R.id.progress_bar)
         progressBar!!.visibility = View.VISIBLE
         listView = rootView.findViewById(R.id.list_view)
+        listView.layoutManager = LinearLayoutManager(context)
         listView.adapter = browserAdapter
         // todo
 //        listView.onItemClickListener =
@@ -246,7 +248,7 @@ class MediaBrowserFragment : Fragment() {
 
         // Add MediaController callback so we can redraw the list when metadata changes:
         val controller = (activity as BaseActivity?)?.supportMediaController
-        controller?.registerCallback(mediaControllerCallback)
+        requireNotNull(controller).registerCallback(mediaControllerCallback)
     }
 
     private fun checkForUserVisibleErrors(forceError: Boolean) {

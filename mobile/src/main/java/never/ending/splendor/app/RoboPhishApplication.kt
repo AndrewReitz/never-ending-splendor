@@ -74,6 +74,10 @@ class RoboPhishApplication : Application(), DIAware {
                 }
                 .build()
         }
+
+        bind<PackageValidator>() with singleton {
+            PackageValidator(instance())
+        }
     }
 
     private val appInitializer: AppInitializer by instance()

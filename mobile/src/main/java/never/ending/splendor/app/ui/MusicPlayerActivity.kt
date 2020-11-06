@@ -26,6 +26,7 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
     private lateinit var binding: MusicPlayerActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate savedInstanceState=%s", savedInstanceState)
         super.onCreate(savedInstanceState)
         binding = MusicPlayerActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -40,6 +41,7 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        Timber.d("onSaveInstanceState bundle=%s", outState)
         val mediaId = mediaId
         if (mediaId != null) {
             outState.putString(SAVED_MEDIA_ID, mediaId)

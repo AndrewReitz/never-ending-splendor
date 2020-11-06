@@ -3,10 +3,10 @@ package never.ending.splendor.app.model
 import android.support.v4.media.MediaMetadataCompat
 import com.squareup.picasso.Picasso
 import never.ending.splendor.app.utils.toSimpleFormat
-import never.ending.splendor.networking.phishin.model.YearData
 import never.ending.splendor.networking.phishin.PhishinError
 import never.ending.splendor.networking.phishin.PhishinRepository
 import never.ending.splendor.networking.phishin.PhishinSuccess
+import never.ending.splendor.networking.phishin.model.YearData
 import never.ending.splendor.networking.phishin.retry
 import timber.log.Timber
 

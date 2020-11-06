@@ -40,7 +40,7 @@ class MusicProvider(
      *
      * @param musicId The unique, non-hierarchical music ID.
      */
-    fun getMusic(musicId: String?): MediaMetadataCompat? = if (musicListById.containsKey(musicId)) musicListById[musicId]!!.metadata else null
+    fun getMusic(musicId: String?): MediaMetadataCompat? = musicListById[musicId]?.metadata
 
     fun updateMusicArt(musicId: String?, albumArt: Bitmap?, icon: Bitmap?) {
         val metadata = MediaMetadataCompat.Builder(getMusic(musicId))
@@ -70,7 +70,7 @@ class MusicProvider(
         return favoriteTracks.contains(musicId)
     }
 
-    suspend fun childeren(mediaId: String): List<MediaBrowserCompat.MediaItem> {
+    suspend fun children(mediaId: String): List<MediaBrowserCompat.MediaItem> {
         if (!MediaIdHelper.isBrowseable(mediaId)) {
             return emptyList()
         }

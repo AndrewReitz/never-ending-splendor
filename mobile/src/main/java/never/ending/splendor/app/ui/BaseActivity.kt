@@ -27,7 +27,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
 
     override lateinit var mediaBrowser: MediaBrowserCompat
 
-    private var controlsFragment: PlaybackControlsFragment? = null
+    private lateinit var controlsFragment: PlaybackControlsFragment
 
     @Inject lateinit var googleApiAvailability: GoogleApiAvailability
 
@@ -71,8 +71,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
     override fun onStart() {
         super.onStart()
         Timber.d("Activity onStart")
-        controlsFragment = supportFragmentManager.findFragmentById(R.id.fragment_playback_controls) as PlaybackControlsFragment?
-        checkNotNull(controlsFragment) { "Mising fragment with id 'controls'. Cannot continue." }
+        controlsFragment = supportFragmentManager.findFragmentById(R.id.fragment_playback_controls) as PlaybackControlsFragment
         hidePlaybackControls()
         mediaBrowser.connect()
     }
@@ -123,7 +122,6 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
         }
     }
 
-    @Throws(RemoteException::class)
     private fun connectToSession(token: MediaSessionCompat.Token) {
         val mediaController = MediaControllerCompat(this, token)
         MediaControllerCompat.setMediaController(this, mediaController)
@@ -134,9 +132,7 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
             Timber.d("connectionCallback.onConnected: hiding controls because metadata is null")
             hidePlaybackControls()
         }
-        if (controlsFragment != null) {
-            controlsFragment!!.onConnected()
-        }
+        controlsFragment.onConnected()
         onMediaControllerConnected()
     }
 

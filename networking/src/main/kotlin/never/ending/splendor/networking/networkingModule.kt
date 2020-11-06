@@ -21,9 +21,7 @@ import org.kodein.di.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
-import java.time.Duration
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 /**
  * Tag for networking module to provide the cache directory for http client

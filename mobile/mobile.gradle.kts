@@ -75,14 +75,14 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.3.2")
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
     implementation("com.google.android.gms:play-services-cast:19.0.0")
     implementation("com.google.android.libraries.cast.companionlibrary:ccl:2.9.1")
     implementation("com.google.android.material:material:1.2.1")
 
-    implementation("com.google.firebase:firebase-analytics:17.6.0")
+    implementation("com.google.firebase:firebase-analytics:18.0.0")
     implementation("com.google.firebase:firebase-crashlytics:17.2.2")
 
     implementation("androidx.appcompat:appcompat:1.2.0")
@@ -92,19 +92,22 @@ dependencies {
     implementation("androidx.media2:media2-widget:1.0.3")
     implementation("androidx.media2:media2-player:1.0.3")
 
-    implementation("androidx.constraintlayout:constraintlayout:2.0.2")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
 
-    implementation("org.kodein.di:kodein-di:7.0.0")
-    implementation("org.kodein.di:kodein-di-framework-android-x:7.0.0")
-    implementation("org.kodein.di:kodein-di-jxinject-jvm:7.0.0")
+    implementation("org.kodein.di:kodein-di:7.1.0")
+    implementation("org.kodein.di:kodein-di-framework-android-x:7.1.0")
+    implementation("org.kodein.di:kodein-di-jxinject-jvm:7.1.0")
 
     implementation("com.squareup.picasso:picasso:2.71828")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.8.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
     implementation("com.jakewharton.timber:timber:4.7.1")
 
-    testImplementation("junit:junit:4.13")
-    testImplementation("com.google.truth:truth:1.0.1")
-    testImplementation("org.mockito:mockito-core:3.5.10")
+    implementation("com.xwray:groupie:2.8.1")
+    implementation("com.xwray:groupie-viewbinding:2.8.1")
+
+    testImplementation("junit:junit:4.13.1")
+    testImplementation("com.google.truth:truth:1.1")
+    testImplementation("org.mockito:mockito-core:3.5.15")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 }

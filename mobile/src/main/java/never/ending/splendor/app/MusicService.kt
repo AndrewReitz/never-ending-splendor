@@ -109,14 +109,19 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
     private var mSessionExtras: Bundle? = null
     private val mDelayedStopHandler = DelayedStopHandler(this)
     private var mMediaRouter: MediaRouter? = null
-    private var mPackageValidator: PackageValidator? = null
-    private var mIsConnectedToCar = false
-    private var mCarConnectionReceiver: BroadcastReceiver? = null
+
+    private val packageValidator: PackageValidator by instance()
+
+    // car stuff not actually sure if this is needed
+    private var isConnectedToCar = false
+    private var carConnectionReceiver: BroadcastReceiver? = null
 
     private val videoCastManager: VideoCastManager by instance()
     private val musicProvider: MusicProvider by instance()
     private val picasso: Picasso by instance()
     private val notificationManager: NotificationManagerCompat by instance()
+
+    // todo move to DI
     private val mediaNotificationManager: MediaNotificationManager by lazy {
         MediaNotificationManager(this, picasso, notificationManager)
     }
@@ -164,11 +169,6 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         super.onCreate()
         Timber.d("onCreate")
 
-        // To make the app more responsive, fetch and cache catalog information now.
-        // This can help improve the response time in the method
-        // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.
-        // musicProvider.retrieveMediaAsync(null /* Callback */);
-        mPackageValidator = PackageValidator(this)
         val queueManager = QueueManager(
             musicProvider, resources,
             picasso,
@@ -213,6 +213,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         mPlaybackManager!!.updatePlaybackState(null)
         videoCastManager.addVideoCastConsumer(mCastConsumer)
         mMediaRouter = MediaRouter.getInstance(applicationContext)
+
         registerCarConnectionReceiver()
     }
 
@@ -259,7 +260,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         )
         // To ensure you are not allowing any arbitrary app to browse your app's contents, you
         // need to check the origin:
-        if (!mPackageValidator!!.isCallerAllowed(this, clientPackageName, clientUid)) {
+        if (!packageValidator!!.isCallerAllowed(this, clientPackageName, clientUid)) {
             // If the request comes from an untrusted package, return null. No further calls will
             // be made to other media browsing methods.
             Timber.w("OnGetRoot: IGNORING request from untrusted package %s", clientPackageName)
@@ -279,7 +280,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         launch {
             Timber.d("OnLoadChildren: parentMediaId=%s", parentMediaId)
             withContext(Dispatchers.IO) {
-                val media = musicProvider.childeren(parentMediaId)
+                val media = musicProvider.children(parentMediaId)
 
                 withContext(Dispatchers.Main) {
                     result.sendResult(media)
@@ -325,21 +326,21 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
 
     private fun registerCarConnectionReceiver() {
         val filter = IntentFilter(CarHelper.ACTION_MEDIA_STATUS)
-        mCarConnectionReceiver = object : BroadcastReceiver() {
+        carConnectionReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val connectionEvent = intent.getStringExtra(CarHelper.MEDIA_CONNECTION_STATUS)
-                mIsConnectedToCar = CarHelper.MEDIA_CONNECTED == connectionEvent
+                isConnectedToCar = CarHelper.MEDIA_CONNECTED == connectionEvent
                 Timber.i(
                     "Connection event to Android Auto: %s, isConnectedToCar=%s",
-                    connectionEvent, mIsConnectedToCar
+                    connectionEvent, isConnectedToCar
                 )
             }
         }
-        registerReceiver(mCarConnectionReceiver, filter)
+        registerReceiver(carConnectionReceiver, filter)
     }
 
     private fun unregisterCarConnectionReceiver() {
-        unregisterReceiver(mCarConnectionReceiver)
+        unregisterReceiver(carConnectionReceiver)
     }
 
     /**
