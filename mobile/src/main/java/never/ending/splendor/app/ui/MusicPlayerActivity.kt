@@ -57,14 +57,14 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
                     .playFromMediaId(item.mediaId, null)
             }
             item.isBrowsable -> {
-                var title = ""
-                var subtitle = ""
-                if (item.description.title != null) {
-                    title = item.description.title.toString()
-                }
-                if (item.description.subtitle != null) {
-                    subtitle = item.description.subtitle.toString()
-                }
+                val title = if (item.description.title != null) {
+                    item.description.title.toString()
+                } else ""
+
+                val subtitle = if (item.description.subtitle != null) {
+                    item.description.subtitle.toString()
+                } else ""
+
                 navigateToBrowser(title, subtitle, item.mediaId)
             }
             else -> {

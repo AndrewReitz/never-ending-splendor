@@ -1,6 +1,5 @@
 package never.ending.splendor.app.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -9,21 +8,22 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
 import never.ending.splendor.R
 import never.ending.splendor.app.utils.MediaIdHelper
 import never.ending.splendor.app.utils.MediaIdHelper.extractShowFromMediaID
 import never.ending.splendor.app.utils.MediaIdHelper.getHierarchy
 import never.ending.splendor.app.utils.MediaIdHelper.isShow
+import never.ending.splendor.databinding.FragmentListBinding
+import never.ending.splendor.databinding.FragmentListShowBinding
 import timber.log.Timber
+
 
 /**
  * A Fragment that lists all the various browsable queues available
@@ -41,17 +41,49 @@ class MediaBrowserFragment : Fragment() {
         MediaBrowserAdapter(
             requireActivity(),
             MediaControllerCompat.getMediaController(requireActivity())
-        ) {
-            Timber.d("clicked!")
-            // todo
+        ) { item ->
+            checkForUserVisibleErrors(false)
+            mediaFragmentListener.onMediaItemSelected(item)
         }
     }
 
+    private var _fragmentListBinding: FragmentListBinding? = null
+    private val fragmentListBinding get() = requireNotNull(_fragmentListBinding)
+
+    private var _fragmentListShowBinding: FragmentListShowBinding? = null
+    private val fragmentListShowBinding get() = requireNotNull(_fragmentListShowBinding)
+
     private var mMediaId: String? = null
-    private var mediaFragmentListener: MediaFragmentListener? = null
-    private var errorView: View? = null
-    private var errorMessage: TextView? = null
-    private var progressBar: ProgressBar? = null
+
+    private val mediaFragmentListener get() = activity as MediaFragmentListener
+
+    private val errorView: View
+        get() = when {
+            _fragmentListBinding != null -> fragmentListBinding.playbackError
+            _fragmentListShowBinding != null -> fragmentListShowBinding.playbackError
+            else -> error("somehow neither are null")
+        }
+
+    private val errorMessage: TextView
+        get() = when {
+            _fragmentListBinding != null -> fragmentListBinding.errorMessage
+            _fragmentListShowBinding != null -> fragmentListShowBinding.errorMessage
+            else -> error("somehow neither are null")
+        }
+
+    private val progressBar: ProgressBar
+        get() = when {
+            _fragmentListBinding != null -> fragmentListBinding.progressBar
+            _fragmentListShowBinding != null -> fragmentListShowBinding.progressBar
+            else -> error("somehow neither are null")
+        }
+
+    private val listView: RecyclerView
+        get() = when {
+            _fragmentListBinding != null -> fragmentListBinding.listView
+            _fragmentListShowBinding != null -> fragmentListShowBinding.listView
+            else -> error("somehow neither are null")
+        }
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -64,7 +96,7 @@ class MediaBrowserFragment : Fragment() {
                     metadata.description.mediaId
                 )
                 browserAdapter.notifyDataSetChanged()
-                progressBar!!.visibility =
+                progressBar.visibility =
                     View.INVISIBLE // hide progress bar when we receive metadata
             }
 
@@ -88,7 +120,7 @@ class MediaBrowserFragment : Fragment() {
                         parentId, children.size
                     )
                     checkForUserVisibleErrors(children.isEmpty())
-                    progressBar!!.visibility = View.INVISIBLE
+                    progressBar.visibility = View.INVISIBLE
                     browserAdapter.media = children
                 } catch (t: Throwable) {
                     Timber.e(t, "Error on childrenloaded")
@@ -102,15 +134,6 @@ class MediaBrowserFragment : Fragment() {
             }
         }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Timber.d("onAttach")
-
-        // If used on an activity that doesn't implement MediaFragmentListener, it
-        // will throw an exception as expected:
-        mediaFragmentListener = activity as MediaFragmentListener
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -118,53 +141,47 @@ class MediaBrowserFragment : Fragment() {
     ): View? {
         Timber.d("fragment.onCreateView")
 
-        val rootView: View
         val mediaId = mediaId
-        val listView: RecyclerView
 
-        if (mediaId != null && isShow(mediaId)) {
+        val rootView = if (mediaId != null && isShow(mediaId)) {
             Timber.d("display show info: mediaId = %s and media is a show", mediaId)
+            _fragmentListShowBinding = FragmentListShowBinding.inflate(inflater, container, false)
 
-            setHasOptionsMenu(true) // show option to download
-            rootView = inflater.inflate(R.layout.fragment_list_show, container, false)
-            val viewPager: ViewPager = rootView.findViewById(R.id.viewpager)
-            viewPager.adapter = ShowPagerAdapter(rootView)
-            viewPager.offscreenPageLimit = 3
-            val tabLayout: TabLayout = rootView.findViewById(R.id.sliding_tabs)
-            tabLayout.setupWithViewPager(viewPager)
-            val setlist = rootView.findViewById<WebView>(R.id.setlist_webview)
-            setlist.settings.javaScriptEnabled = true
+            with(fragmentListShowBinding) {
+                viewpager.adapter = ShowPagerAdapter(root)
+                viewpager.offscreenPageLimit = 3
 
-            // TODO Load setlist
+                slidingTabs.setupWithViewPager(viewpager)
 
-            val reviews = rootView.findViewById<WebView>(R.id.reviews_webview)
-            reviews.settings.javaScriptEnabled = true
+                setlistWebview.settings.javaScriptEnabled = true
+                // TODO Load setlist
 
-            // todo load reviews
+                reviewsWebview.settings.javaScriptEnabled = true
+                // todo load reviews
 
-            val tapernotesWebview = rootView.findViewById<WebView>(R.id.tapernotes_webview)
-            tapernotesWebview.settings.javaScriptEnabled = true
-            val showId = extractShowFromMediaID(mediaId)
+                tapernotesWebview.settings.javaScriptEnabled = true
+                val showId = extractShowFromMediaID(mediaId)
+                // todo load tapper notes
+            }
 
-            // todo load tapper notes
+            fragmentListShowBinding.root
         } else {
-            rootView = inflater.inflate(R.layout.fragment_list, container, false)
+            _fragmentListBinding = FragmentListBinding.inflate(inflater, container, false)
+            fragmentListBinding.root
         }
 
-        errorView = rootView.findViewById(R.id.playback_error)
-        errorMessage = errorView!!.findViewById(R.id.error_message)
-        progressBar = rootView.findViewById(R.id.progress_bar)
-        progressBar!!.visibility = View.VISIBLE
-        listView = rootView.findViewById(R.id.list_view)
+        progressBar.visibility = View.VISIBLE
+
+        val layoutManager = LinearLayoutManager(context)
         listView.layoutManager = LinearLayoutManager(context)
         listView.adapter = browserAdapter
-        // todo
-//        listView.onItemClickListener =
-//            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-//                checkForUserVisibleErrors(false)
-//                val item = browserAdapter.media.getItem(position)!!
-//                mediaFragmentListener!!.onMediaItemSelected(item)
-//            }
+
+        val dividerItemDecoration = DividerItemDecoration(
+            listView.context,
+            layoutManager.orientation
+        )
+        listView.addItemDecoration(dividerItemDecoration)
+
         return rootView
     }
 
@@ -184,7 +201,7 @@ class MediaBrowserFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        val mediaBrowser = mediaFragmentListener!!.mediaBrowser
+        val mediaBrowser = mediaFragmentListener.mediaBrowser
         if (mediaBrowser.isConnected && mMediaId != null) {
             mediaBrowser.unsubscribe(mMediaId!!)
         }
@@ -192,9 +209,10 @@ class MediaBrowserFragment : Fragment() {
         controller.unregisterCallback(mediaControllerCallback)
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        mediaFragmentListener = null
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _fragmentListBinding = null
+        _fragmentListShowBinding = null
     }
 
     val mediaId: String?
@@ -202,11 +220,13 @@ class MediaBrowserFragment : Fragment() {
             val args = arguments
             return args?.getString(ARG_MEDIA_ID)
         }
+
     val title: String?
         get() {
             val args = arguments
             return args?.getString(ARG_TITLE)
         }
+
     val subTitle: String?
         get() {
             val args = arguments
@@ -243,8 +263,8 @@ class MediaBrowserFragment : Fragment() {
         // subscriber or not. Currently this only happens if the mediaID has no previous
         // subscriber or if the media content changes on the service side, so we need to
         // unsubscribe first.
-        mediaFragmentListener!!.mediaBrowser.unsubscribe(mMediaId!!)
-        mediaFragmentListener!!.mediaBrowser.subscribe(mMediaId!!, subscriptionCallback)
+        mediaFragmentListener.mediaBrowser.unsubscribe(mMediaId!!)
+        mediaFragmentListener.mediaBrowser.subscribe(mMediaId!!, subscriptionCallback)
 
         // Add MediaController callback so we can redraw the list when metadata changes:
         val controller = (activity as BaseActivity?)?.supportMediaController
@@ -256,15 +276,15 @@ class MediaBrowserFragment : Fragment() {
         // otherwise, if state is ERROR and metadata!=null, use playback state error message:
         val controller = (activity as BaseActivity?)?.supportMediaController
         if (controller != null && controller.metadata != null && controller.playbackState != null && controller.playbackState.state == PlaybackStateCompat.STATE_ERROR && controller.playbackState.errorMessage != null) {
-            errorMessage!!.text = controller.playbackState.errorMessage
+            errorMessage.text = controller.playbackState.errorMessage
             showError = true
         } else if (forceError) {
             // Finally, if the caller requested to show error, show a generic message:
-            errorMessage!!.setText(R.string.error_loading_media)
+            errorMessage.setText(R.string.error_loading_media)
             showError = true
         }
-        errorView!!.visibility = if (showError) View.VISIBLE else View.GONE
-        if (showError) progressBar!!.visibility = View.INVISIBLE
+        errorView.visibility = if (showError) View.VISIBLE else View.GONE
+        if (showError) progressBar.visibility = View.INVISIBLE
         Timber.d(
             "checkForUserVisibleErrors. forceError=%s  showError=%s", forceError,
             showError
@@ -274,25 +294,25 @@ class MediaBrowserFragment : Fragment() {
     private fun updateTitle() {
         if (mMediaId!!.startsWith(MediaIdHelper.MEDIA_ID_SHOWS_BY_YEAR)) {
             val year = getHierarchy(mMediaId!!)[1]
-            mediaFragmentListener!!.setToolbarTitle(year)
-            mediaFragmentListener!!.setToolbarSubTitle("")
+            mediaFragmentListener.setToolbarTitle(year)
+            mediaFragmentListener.setToolbarSubTitle("")
             return
         }
         if (mMediaId!!.startsWith(MediaIdHelper.MEDIA_ID_TRACKS_BY_SHOW)) {
-            mediaFragmentListener!!.setToolbarTitle(title.orEmpty())
-            mediaFragmentListener!!.setToolbarSubTitle(subTitle.orEmpty())
+            mediaFragmentListener.setToolbarTitle(title.orEmpty())
+            mediaFragmentListener.setToolbarSubTitle(subTitle.orEmpty())
             return
         }
         if (MediaIdHelper.MEDIA_ID_ROOT == mMediaId) {
-            mediaFragmentListener!!.setToolbarTitle("")
+            mediaFragmentListener.setToolbarTitle("")
             return
         }
-        val mediaBrowser = mediaFragmentListener!!.mediaBrowser
+        val mediaBrowser = mediaFragmentListener.mediaBrowser
         mediaBrowser.getItem(
             mMediaId!!,
             object : MediaBrowserCompat.ItemCallback() {
                 override fun onItemLoaded(item: MediaBrowserCompat.MediaItem) {
-                    mediaFragmentListener!!.setToolbarTitle(
+                    mediaFragmentListener.setToolbarTitle(
                         item.description.title ?: ""
                     )
                 }

@@ -100,6 +100,7 @@ import java.lang.ref.WeakReference
  *
  * @see [README.md](README.md) for more details.
  */
+// todo fix main scope to be part of the lifecycle (kill in ondestroy)
 class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAware, CoroutineScope by MainScope() {
 
     override val di by di()

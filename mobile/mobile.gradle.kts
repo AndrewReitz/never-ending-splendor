@@ -103,9 +103,6 @@ dependencies {
 
     implementation("com.jakewharton.timber:timber:4.7.1")
 
-    implementation("com.xwray:groupie:2.8.1")
-    implementation("com.xwray:groupie-viewbinding:2.8.1")
-
     testImplementation("junit:junit:4.13.1")
     testImplementation("com.google.truth:truth:1.1")
     testImplementation("org.mockito:mockito-core:3.5.15")

@@ -44,7 +44,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="false"
         android:layout_centerHorizontal="false"
-        android:background="#ffff00"
         />
 
 </RelativeLayout>

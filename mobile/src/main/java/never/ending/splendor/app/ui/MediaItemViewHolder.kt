@@ -52,13 +52,9 @@ class MediaItemViewHolder(
             .let { requireNotNull(it) }
             .also { DrawableCompat.setTintList(it, colorStatePlaying) }
 
-    fun bind(item: MediaBrowserCompat.MediaItem, clickListener: () -> Unit) {
+    fun bind(item: MediaBrowserCompat.MediaItem) {
         title.text = item.description.title
         description.text = item.description.subtitle
-
-        view.setOnClickListener {
-            clickListener()
-        }
 
         val currentState = if (item.isPlayable) MediaState.PLAYABLE else MediaState.NONE
         val cachedState = view.tag as? MediaState
