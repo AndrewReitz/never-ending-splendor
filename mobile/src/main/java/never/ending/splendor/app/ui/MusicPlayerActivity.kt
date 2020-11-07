@@ -78,7 +78,9 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
 
     override fun setToolbarTitle(title: CharSequence) {
         Timber.d("Setting toolbar title to %s", title)
-        setTitle(title)
+
+        val titleToSet = if (title.isEmpty()) getString(R.string.app_name) else title
+        setTitle(titleToSet)
     }
 
     override fun setToolbarSubTitle(subtitle: CharSequence) {

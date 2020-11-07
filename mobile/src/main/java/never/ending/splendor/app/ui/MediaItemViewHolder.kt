@@ -78,8 +78,6 @@ class MediaItemViewHolder(
             }
         }
 
-        playImage.visibility = View.VISIBLE
-
         // If the state of convertView is different, we need to adapt the view to the
         // new state.
         if (cachedState != currentState) {

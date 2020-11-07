@@ -24,7 +24,7 @@ class MediaBrowserAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         MediaItemViewHolder(
             context = context,
-            binding = MediaListItemBinding.inflate(parent.layoutInflator),
+            binding = MediaListItemBinding.inflate(parent.layoutInflator, parent, false),
             mediaController = mediaController
         )
 
