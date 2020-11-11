@@ -37,7 +37,6 @@ import timber.log.Timber
 class MediaBrowserFragment : Fragment() {
 
     private val browserAdapter: MediaBrowserAdapter by lazy {
-        // todo make this better
         MediaBrowserAdapter(
             requireActivity(),
             MediaControllerCompat.getMediaController(requireActivity())

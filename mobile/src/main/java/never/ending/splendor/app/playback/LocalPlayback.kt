@@ -33,7 +33,7 @@ class LocalPlayback(
     MediaPlayer.OnPreparedListener,
     MediaPlayer.OnSeekCompleteListener {
 
-    override var state: Int = 0
+    override var state: Int = PlaybackStateCompat.STATE_NONE
 
     private var playOnFocusGain = false
 
@@ -59,9 +59,9 @@ class LocalPlayback(
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private val wifiLock: WifiLock = (
-        context.applicationContext
-            .getSystemService(Context.WIFI_SERVICE) as WifiManager
-        )
+            context.applicationContext
+                .getSystemService(Context.WIFI_SERVICE) as WifiManager
+            )
         .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "uAmp_lock")
 
     @Volatile
@@ -91,10 +91,13 @@ class LocalPlayback(
     override fun start() = Unit
 
     override fun stop(notifyListeners: Boolean) {
+        Timber.d("stop notifyListeners=%s", notifyListeners)
         state = PlaybackStateCompat.STATE_STOPPED
-        if (notifyListeners && callback != null) {
-            callback!!.onPlaybackStatusChanged(state)
+
+        if (notifyListeners) {
+            callback.onPlaybackStatusChanged(state)
         }
+
         currentPosition = currentStreamPosition
         // Give up Audio focus
         giveUpAudioFocus()
@@ -107,7 +110,7 @@ class LocalPlayback(
     override val isPlaying: Boolean get() = playOnFocusGain || mediaPlayer != null && mediaPlayer!!.isPlaying
 
     override var currentStreamPosition: Int = 0
-        get() = if (mediaPlayer != null) mediaPlayer!!.currentPosition else currentPosition
+        get() = if (mediaPlayer != null) mediaPlayer!!.currentPosition else field
 
     override fun updateLastKnownStreamPosition() {
         if (mediaPlayer != null) {
@@ -116,7 +119,8 @@ class LocalPlayback(
     }
 
     override fun playNext(item: MediaSessionCompat.QueueItem): Boolean {
-        val nextPlayer: MediaPlayer? = if (mediaPlayer === mediaPlayerA) mediaPlayerB else mediaPlayerA
+        val nextPlayer: MediaPlayer? =
+            if (mediaPlayer === mediaPlayerA) mediaPlayerB else mediaPlayerA
 
         val mediaId = item.description.mediaId
         val mediaHasChanged = !TextUtils.equals(mediaId, currentMediaId)
@@ -188,14 +192,10 @@ class LocalPlayback(
                 // Wifi lock, which prevents the Wifi radio from going to
                 // sleep while the song is playing.
                 wifiLock.acquire()
-                if (callback != null) {
-                    callback!!.onPlaybackStatusChanged(state)
-                }
+                callback.onPlaybackStatusChanged(state)
             } catch (ex: IOException) {
                 Timber.e(ex, "Exception playing song")
-                if (callback != null) {
-                    callback!!.onError(ex.message)
-                }
+                callback.onError(ex.message)
             }
         }
     }
@@ -212,9 +212,7 @@ class LocalPlayback(
             giveUpAudioFocus()
         }
         state = PlaybackStateCompat.STATE_PAUSED
-        if (callback != null) {
-            callback!!.onPlaybackStatusChanged(state)
-        }
+        callback.onPlaybackStatusChanged(state)
         unregisterAudioNoisyReceiver()
     }
 
@@ -228,9 +226,7 @@ class LocalPlayback(
                 state = PlaybackStateCompat.STATE_BUFFERING
             }
             mediaPlayer!!.seekTo(position)
-            if (callback != null) {
-                callback!!.onPlaybackStatusChanged(state)
-            }
+            callback.onPlaybackStatusChanged(state)
         }
     }
 
@@ -305,9 +301,7 @@ class LocalPlayback(
                 playOnFocusGain = false
             }
         }
-        if (callback != null) {
-            callback!!.onPlaybackStatusChanged(state)
-        }
+        callback.onPlaybackStatusChanged(state)
     }
 
     /**
@@ -501,10 +495,5 @@ class LocalPlayback(
 
         // we have full audio focus
         private const val AUDIO_FOCUSED = 2
-    }
-
-    init {
-        // Create the Wifi lock (this does not acquire the lock, this just creates it)
-        state = PlaybackStateCompat.STATE_NONE
     }
 }

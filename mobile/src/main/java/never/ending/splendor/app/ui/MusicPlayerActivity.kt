@@ -32,6 +32,8 @@ class MusicPlayerActivity : BaseActivity(), MediaFragmentListener {
         setContentView(binding.root)
 
         initializeToolbar(binding.toolbarContainer.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         initializeFromParams(savedInstanceState, intent)
 
         // Only check if a full screen player is needed on the first time:

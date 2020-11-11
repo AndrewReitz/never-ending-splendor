@@ -111,10 +111,10 @@ class RoboPhishApplication : Application(), DIAware {
     }
 }
 
-val Context.di get() = (applicationContext as RoboPhishApplication).di
+val Context.oldDI get() = (applicationContext as RoboPhishApplication).di
 
 fun Activity.inject() {
-    Jx.of(di).inject(this)
+    Jx.of(oldDI).inject(this)
 }
 
 fun Fragment.inject() {
@@ -122,5 +122,5 @@ fun Fragment.inject() {
 }
 
 fun Context.inject(any: Any) {
-    Jx.of(di).inject(any)
+    Jx.of(oldDI).inject(any)
 }

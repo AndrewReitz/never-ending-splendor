@@ -6,4 +6,8 @@ import android.support.v4.media.MediaMetadataCompat
  * Holder class that encapsulates a MediaMetadata and allows the actual metadata to be modified
  * without requiring to rebuild the collections the metadata is in.
  */
-data class MutableMediaMetadata(val trackId: String, var metadata: MediaMetadataCompat)
+data class MutableMediaMetadata(
+    val trackId: String,
+    @Deprecated("todo make immutable")
+    var metadata: MediaMetadataCompat
+)
