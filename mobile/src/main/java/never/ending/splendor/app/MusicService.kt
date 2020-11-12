@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -261,7 +262,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
         )
         // To ensure you are not allowing any arbitrary app to browse your app's contents, you
         // need to check the origin:
-        if (!packageValidator!!.isCallerAllowed(this, clientPackageName, clientUid)) {
+        if (!packageValidator.isCallerAllowed(this, clientPackageName, clientUid)) {
             // If the request comes from an untrusted package, return null. No further calls will
             // be made to other media browsing methods.
             Timber.w("OnGetRoot: IGNORING request from untrusted package %s", clientPackageName)
@@ -347,7 +348,7 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
     /**
      * A simple handler that stops the service if playback is not active (playing)
      */
-    private class DelayedStopHandler(service: MusicService) : Handler() {
+    private class DelayedStopHandler(service: MusicService) : Handler(Looper.getMainLooper()) {
         private val mWeakReference: WeakReference<MusicService> = WeakReference(service)
 
         override fun handleMessage(msg: Message) {

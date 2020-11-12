@@ -115,7 +115,7 @@ class PlaybackControlsFragment : Fragment(), DIAware {
         if (activity == null) {
             Timber.w(
                 "onMetadataChanged called when getActivity null," +
-                        "this should not happen if the callback was properly unregistered. Ignoring."
+                    "this should not happen if the callback was properly unregistered. Ignoring."
             )
             return
         }
@@ -150,7 +150,7 @@ class PlaybackControlsFragment : Fragment(), DIAware {
         if (activity == null) {
             Timber.w(
                 "onPlaybackStateChanged called when getActivity null," +
-                        "this should not happen if the callback was properly unregistered. Ignoring."
+                    "this should not happen if the callback was properly unregistered. Ignoring."
             )
             return
         }

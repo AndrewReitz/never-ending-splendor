@@ -1,13 +1,11 @@
 package never.ending.splendor.app
 
-import android.app.Activity
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
-import androidx.fragment.app.Fragment
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
@@ -29,8 +27,6 @@ import org.kodein.di.android.androidCoreModule
 import org.kodein.di.android.x.androidXModule
 import org.kodein.di.bind
 import org.kodein.di.instance
-import org.kodein.di.jxinject.Jx
-import org.kodein.di.jxinject.jxInjectorModule
 import org.kodein.di.singleton
 import timber.log.Timber
 import java.io.File
@@ -42,7 +38,6 @@ class RoboPhishApplication : Application(), DIAware {
     override val di = DI.lazy {
         import(androidCoreModule(this@RoboPhishApplication))
         import(androidXModule(this@RoboPhishApplication))
-        import(jxInjectorModule)
         import(networkingModule)
 
         /**
@@ -109,18 +104,4 @@ class RoboPhishApplication : Application(), DIAware {
             )
         }
     }
-}
-
-val Context.oldDI get() = (applicationContext as RoboPhishApplication).di
-
-fun Activity.inject() {
-    Jx.of(oldDI).inject(this)
-}
-
-fun Fragment.inject() {
-    requireActivity().inject(this)
-}
-
-fun Context.inject(any: Any) {
-    Jx.of(oldDI).inject(any)
 }

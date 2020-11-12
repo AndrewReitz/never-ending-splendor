@@ -69,7 +69,9 @@ object MediaIdHelper {
     }
 
     // TODO write tests.
+    @Suppress("DEPRECATION")
     val MediaBrowserCompat.MediaItem.musicId: String? get() = extractMusicIDFromMediaID(description.mediaId.orEmpty())
+    @Suppress("DEPRECATION")
     val String.musicId: String? get() = extractMusicIDFromMediaID(this)
 
     fun extractShowFromMediaID(mediaID: String): String? {

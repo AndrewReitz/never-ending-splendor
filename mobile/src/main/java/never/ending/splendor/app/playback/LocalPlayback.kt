@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaPlayer
@@ -16,7 +17,7 @@ import android.text.TextUtils
 import never.ending.splendor.app.MusicService
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.model.MusicProviderSource
-import never.ending.splendor.app.utils.MediaIdHelper
+import never.ending.splendor.app.utils.MediaIdHelper.musicId
 import timber.log.Timber
 import java.io.IOException
 
@@ -59,9 +60,9 @@ class LocalPlayback(
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private val wifiLock: WifiLock = (
-            context.applicationContext
-                .getSystemService(Context.WIFI_SERVICE) as WifiManager
-            )
+        context.applicationContext
+            .getSystemService(Context.WIFI_SERVICE) as WifiManager
+        )
         .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "uAmp_lock")
 
     @Volatile
@@ -128,17 +129,20 @@ class LocalPlayback(
             mNextMediaId = mediaId
         }
         val track = musicProvider.getMusic(
-            MediaIdHelper.extractMusicIDFromMediaID(item.description.mediaId!!)
+            item.description.mediaId?.musicId
         )
         val source = track!!.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE)
-        nextPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        nextPlayer!!.setAudioAttributes(
+            AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .build()
+        )
         try {
             nextPlayer.setDataSource(source)
         } catch (ex: IOException) {
             Timber.e(ex, "Exception playing song")
-            if (callback != null) {
-                callback!!.onError(ex.message)
-            }
+            callback.onError(ex.message)
         }
 
         // Starts preparing the media player in the background. When
@@ -172,13 +176,18 @@ class LocalPlayback(
             state = PlaybackStateCompat.STATE_STOPPED
             relaxResources(false) // release everything except MediaPlayer
             val track = musicProvider.getMusic(
-                MediaIdHelper.extractMusicIDFromMediaID(item.description.mediaId!!)
+                item.description.mediaId?.musicId
             )
             val source = track!!.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE)
             try {
                 createMediaPlayerIfNeeded()
                 state = PlaybackStateCompat.STATE_BUFFERING
-                mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
+                mediaPlayer!!.setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+                )
                 mediaPlayer!!.setDataSource(source)
 
                 // Starts preparing the media player in the background. When
@@ -236,6 +245,7 @@ class LocalPlayback(
     private fun tryToGetAudioFocus() {
         Timber.d("tryToGetAudioFocus")
         if (audioFocus != AUDIO_FOCUSED) {
+            @Suppress("DEPRECATION") // new way to do this isn't availalble until api 26.
             val result = audioManager.requestAudioFocus(
                 this, AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN
@@ -252,6 +262,7 @@ class LocalPlayback(
     private fun giveUpAudioFocus() {
         Timber.d("giveUpAudioFocus")
         if (audioFocus == AUDIO_FOCUSED) {
+            @Suppress("DEPRECATION") // new api not available until api 26
             if (audioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 audioFocus = AUDIO_NO_FOCUS_NO_DUCK
             }
@@ -334,8 +345,6 @@ class LocalPlayback(
 
     /**
      * Called when MediaPlayer has completed a seek
-     *
-     * @see OnSeekCompleteListener
      */
     override fun onSeekComplete(mp: MediaPlayer) {
         Timber.d("onSeekComplete from MediaPlayer: %s", mp.currentPosition)
@@ -344,15 +353,11 @@ class LocalPlayback(
             mediaPlayer!!.start()
             state = PlaybackStateCompat.STATE_PLAYING
         }
-        if (callback != null) {
-            callback!!.onPlaybackStatusChanged(state)
-        }
+        callback.onPlaybackStatusChanged(state)
     }
 
     /**
      * Called when media player is done playing current song.
-     *
-     * @see OnCompletionListener
      */
     override fun onCompletion(player: MediaPlayer) {
         Timber.d("onCompletion from MediaPlayer")
@@ -365,17 +370,13 @@ class LocalPlayback(
             mediaPlayer = nextMediaPlayer() // we're now using the new media player
             mediaPlayersSwapping = false
             old!!.reset() // required for the next time we swap
-            callback!!.onPlaybackStatusChanged(state)
+            callback.onPlaybackStatusChanged(state)
         }
-        if (callback != null) {
-            callback!!.onCompletion()
-        }
+        callback.onCompletion()
     }
 
     /**
      * Called when media player is done preparing.
-     *
-     * @see OnPreparedListener
      */
     override fun onPrepared(player: MediaPlayer) {
         Timber.d("onPrepared from MediaPlayer")
@@ -393,15 +394,11 @@ class LocalPlayback(
     /**
      * Called when there's an error playing media. When this happens, the media
      * player goes to the Error state. We warn the user about the error and
-     * reset the media player.
-     *
-     * @see OnErrorListener
+     * reset the media player
      */
     override fun onError(mp: MediaPlayer, what: Int, extra: Int): Boolean {
         Timber.e("Media player error: what=%s extra=%s", what, extra)
-        if (callback != null) {
-            callback!!.onError("MediaPlayer error $what ($extra)")
-        }
+        callback.onError("MediaPlayer error $what ($extra)")
         return true // true indicates we handled the error
     }
 
@@ -417,29 +414,29 @@ class LocalPlayback(
      * already exists.
      */
     private fun createMediaPlayer(player: MediaPlayer?): MediaPlayer {
-        var player = player
-        Timber.d("createMediaPlayerIfNeeded. needed? %s", player == null)
-        if (player == null) {
-            player = MediaPlayer()
+        var nextPlayer = player
+        Timber.d("createMediaPlayerIfNeeded. needed? %s", nextPlayer == null)
+        if (nextPlayer == null) {
+            nextPlayer = MediaPlayer()
 
             // Make sure the media player will acquire a wake-lock while
             // playing. If we don't do that, the CPU might go to sleep while the
             // song is playing, causing playback to stop.
-            player.setWakeMode(
+            nextPlayer.setWakeMode(
                 context.applicationContext,
                 PowerManager.PARTIAL_WAKE_LOCK
             )
 
             // we want the media player to notify us when it's ready preparing,
             // and when it's done playing:
-            player.setOnPreparedListener(this)
-            player.setOnCompletionListener(this)
-            player.setOnErrorListener(this)
-            player.setOnSeekCompleteListener(this)
+            nextPlayer.setOnPreparedListener(this)
+            nextPlayer.setOnCompletionListener(this)
+            nextPlayer.setOnErrorListener(this)
+            nextPlayer.setOnSeekCompleteListener(this)
         } else {
-            player.reset()
+            nextPlayer.reset()
         }
-        return player
+        return nextPlayer
     }
 
     /**

@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.RemoteException
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
@@ -47,7 +48,7 @@ class FullScreenPlayerActivity : ActionBarCastActivity(), DIAware {
     }
 
     private var mCurrentArtUrl: String? = null
-    private val mHandler = Handler()
+    private val mHandler = Handler(Looper.getMainLooper())
     private var mMediaBrowser: MediaBrowserCompat? = null
 
     private val picasso: Picasso by instance()
@@ -104,7 +105,8 @@ class FullScreenPlayerActivity : ActionBarCastActivity(), DIAware {
             val controls = supportMediaController!!.transportControls
             controls.skipToPrevious()
         }
-        binding.playPause?.setOnClickListener {
+
+        binding.playPause.setOnClickListener {
             val state = supportMediaController!!.playbackState
             if (state != null) {
                 val controls = supportMediaController!!.transportControls
@@ -166,9 +168,9 @@ class FullScreenPlayerActivity : ActionBarCastActivity(), DIAware {
         }
         updateProgress()
         if (state != null && (
-                    state.state == PlaybackStateCompat.STATE_PLAYING ||
-                            state.state == PlaybackStateCompat.STATE_BUFFERING
-                    )
+            state.state == PlaybackStateCompat.STATE_PLAYING ||
+                state.state == PlaybackStateCompat.STATE_BUFFERING
+            )
         ) {
             scheduleSeekbarUpdate()
         }
@@ -309,7 +311,7 @@ class FullScreenPlayerActivity : ActionBarCastActivity(), DIAware {
             // latest position. This ensure that we do not repeatedly call the getPlaybackState()
             // on MediaControllerCompat.
             val timeDelta = SystemClock.elapsedRealtime() -
-                    mLastPlaybackState!!.lastPositionUpdateTime
+                mLastPlaybackState!!.lastPositionUpdateTime
             currentPosition += timeDelta.toInt() * mLastPlaybackState!!.playbackSpeed.toLong()
         }
         binding.seekBar1.progress = currentPosition.toInt()

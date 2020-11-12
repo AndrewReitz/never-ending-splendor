@@ -16,9 +16,8 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import never.ending.splendor.R
 import never.ending.splendor.app.MusicService
-import never.ending.splendor.app.inject
+import org.kodein.di.instance
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Base activity for activities that need to show a playback control fragment when media is playing.
@@ -29,12 +28,11 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
 
     private lateinit var controlsFragment: PlaybackControlsFragment
 
-    @Inject lateinit var googleApiAvailability: GoogleApiAvailability
+    private val googleApiAvailability: GoogleApiAvailability by instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("Activity onCreate")
-        this.inject()
         checkPlayServices()
 
         // Since our app icon has the same color as colorPrimary, our entry in the Recent Apps
@@ -95,14 +93,14 @@ abstract class BaseActivity : ActionBarCastActivity(), MediaBrowserProvider {
                 R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
                 R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom
             )
-            .show(controlsFragment!!)
+            .show(controlsFragment)
             .commit()
     }
 
     protected fun hidePlaybackControls() {
         Timber.d("hidePlaybackControls")
         supportFragmentManager.beginTransaction()
-            .hide(controlsFragment!!)
+            .hide(controlsFragment)
             .commit()
     }
 

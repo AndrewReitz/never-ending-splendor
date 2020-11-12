@@ -40,7 +40,7 @@ class MediaIdHelperTest {
             "Classic 70's",
             MediaIdHelper.extractBrowseCategoryValueFromMediaID(mediaID)
         )
-        Assert.assertNull(MediaIdHelper.extractMusicIDFromMediaID(mediaID))
+        Assert.assertNull(mediaID.musicId)
     }
 
     @Test(expected = IllegalArgumentException::class)

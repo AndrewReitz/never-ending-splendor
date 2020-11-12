@@ -12,9 +12,11 @@ import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
 import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl
 import com.google.android.libraries.cast.companionlibrary.widgets.IntroductoryOverlay
 import never.ending.splendor.R
-import never.ending.splendor.app.inject
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.android.di
+import org.kodein.di.instance
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Abstract activity with toolbar, navigation drawer and cast support. Needs to be extended by
@@ -26,8 +28,11 @@ import javax.inject.Inject
  * a [androidx.drawerlayout.widget.DrawerLayout] with id 'drawerLayout' and
  * a [android.widget.ListView] with id 'drawerList'.
  */
-abstract class ActionBarCastActivity : AppCompatActivity() {
-    @Inject lateinit var castManager: VideoCastManager
+abstract class ActionBarCastActivity : AppCompatActivity(), DIAware {
+
+    override val di: DI by di()
+
+    private val castManager: VideoCastManager by instance()
 
     private lateinit var toolbar: Toolbar
 
@@ -61,7 +66,6 @@ abstract class ActionBarCastActivity : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("Activity onCreate")
-        this.inject()
 
         // Ensure that Google Play Service is available.
         VideoCastManager.checkGooglePlayServices(this)

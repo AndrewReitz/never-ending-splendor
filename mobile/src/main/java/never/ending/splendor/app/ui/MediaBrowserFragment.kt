@@ -24,7 +24,6 @@ import never.ending.splendor.databinding.FragmentListBinding
 import never.ending.splendor.databinding.FragmentListShowBinding
 import timber.log.Timber
 
-
 /**
  * A Fragment that lists all the various browsable queues available
  * from a [android.service.media.MediaBrowserService].
@@ -188,7 +187,7 @@ class MediaBrowserFragment : Fragment() {
         super.onStart()
 
         // fetch browsing information to fill the listview:
-        val mediaBrowser = mediaFragmentListener!!.mediaBrowser
+        val mediaBrowser = mediaFragmentListener.mediaBrowser
         Timber.d(
             "fragment.onStart, mediaId=%s onConnected=%s", mMediaId,
             mediaBrowser.isConnected
@@ -249,7 +248,7 @@ class MediaBrowserFragment : Fragment() {
         }
         mMediaId = mediaId
         if (mMediaId == null) {
-            mMediaId = mediaFragmentListener!!.mediaBrowser.root
+            mMediaId = mediaFragmentListener.mediaBrowser.root
         }
         updateTitle()
 
