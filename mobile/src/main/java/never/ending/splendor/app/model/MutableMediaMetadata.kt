@@ -8,6 +8,6 @@ import android.support.v4.media.MediaMetadataCompat
  */
 data class MutableMediaMetadata(
     val trackId: String,
-    @Deprecated("todo make immutable")
+    // todo make immutable
     var metadata: MediaMetadataCompat
 )

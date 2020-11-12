@@ -77,16 +77,18 @@ class PackageValidator(context: Context) {
         val packageInfo: PackageInfo
         packageInfo = try {
             packageManager.getPackageInfo(
-                callingPackage, PackageManager.GET_SIGNATURES
+                callingPackage, PackageManager.GET_SIGNING_CERTIFICATES
             )
         } catch (e: PackageManager.NameNotFoundException) {
             Timber.w(e, "Package manager can't find package: %s", callingPackage)
             return false
         }
+        @Suppress("DEPRECATION") // not available until pi 26
         if (packageInfo.signatures.size != 1) {
             Timber.w("Caller has more than one signature certificate!")
             return false
         }
+        @Suppress("DEPRECATION") // not available until pi 26
         val signature = Base64.encodeToString(
             packageInfo.signatures[0].toByteArray(), Base64.NO_WRAP
         )

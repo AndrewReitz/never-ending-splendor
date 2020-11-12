@@ -8,6 +8,7 @@ import com.squareup.picasso.Picasso
 import never.ending.splendor.R
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.utils.MediaIdHelper
+import never.ending.splendor.app.utils.MediaIdHelper.musicId
 import never.ending.splendor.app.utils.QueueHelper
 import never.ending.splendor.app.utils.loadLargeAndSmallImage
 import timber.log.Timber
@@ -144,9 +145,7 @@ class QueueManager(
     val duration: Long
         get() {
             val currentMusic = currentMusic ?: return -1
-            val musicId = MediaIdHelper.extractMusicIDFromMediaID(
-                currentMusic.description.mediaId!!
-            )
+            val musicId = currentMusic.description.mediaId?.musicId
             val metadata = musicProvider.getMusic(musicId)
                 ?: throw IllegalArgumentException("Invalid musicId $musicId")
             return metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
@@ -159,9 +158,7 @@ class QueueManager(
             return
         }
 
-        val musicId = MediaIdHelper.extractMusicIDFromMediaID(
-            requireNotNull(currentMusic.description.mediaId)
-        )
+        val musicId = requireNotNull(currentMusic.description.mediaId?.musicId)
 
         val metadata = musicProvider.getMusic(musicId)
             ?: throw IllegalArgumentException("Invalid musicId $musicId")
@@ -178,7 +175,7 @@ class QueueManager(
 
                 // If we are still playing the same music, notify the listeners:
                 val music = currentMusic
-                val currentPlayingId = MediaIdHelper.extractMusicIDFromMediaID(music.description.mediaId!!)
+                val currentPlayingId = music.description.mediaId?.musicId
                 if (musicId == currentPlayingId) {
                     metadataUpdateListener.onMetadataChanged(requireNotNull(musicProvider.getMusic(currentPlayingId)))
                 }

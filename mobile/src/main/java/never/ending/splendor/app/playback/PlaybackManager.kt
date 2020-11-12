@@ -3,12 +3,13 @@ package never.ending.splendor.app.playback
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import never.ending.splendor.R
 import never.ending.splendor.app.model.MusicProvider
-import never.ending.splendor.app.utils.MediaIdHelper.extractMusicIDFromMediaID
+import never.ending.splendor.app.utils.MediaIdHelper.musicId
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -31,7 +32,7 @@ class PlaybackManager(
     private val mMediaSessionCallback: MediaSessionCallback
     private val mScheduleFuture: ScheduledFuture<*>
     private val mExecutorService = Executors.newSingleThreadScheduledExecutor()
-    private val mHandler = Handler()
+    private val mHandler = Handler(Looper.getMainLooper())
     private var mGaplessQueued = false
     val mediaSessionCallback: MediaSessionCompat.Callback
         get() = mMediaSessionCallback
@@ -141,7 +142,7 @@ class PlaybackManager(
         val currentMusic = mQueueManager.currentMusic ?: return
         // Set appropriate "Favorite" icon on Custom action:
         val mediaId = currentMusic.description.mediaId ?: return
-        val musicId = extractMusicIDFromMediaID(mediaId)
+        val musicId = mediaId.musicId
         val favoriteIcon =
             if (mMusicProvider.isFavorite(musicId)) R.drawable.ic_star_on else R.drawable.ic_star_off
         Timber.d(
@@ -306,7 +307,7 @@ class PlaybackManager(
                 if (currentMusic != null) {
                     val mediaId = currentMusic.description.mediaId
                     if (mediaId != null) {
-                        val musicId = extractMusicIDFromMediaID(mediaId)
+                        val musicId = mediaId.musicId
                         mMusicProvider.setFavorite(musicId!!, !mMusicProvider.isFavorite(musicId))
                     }
                 }

@@ -15,7 +15,7 @@ import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConn
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.TransientNetworkDisconnectionException
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.model.MusicProviderSource
-import never.ending.splendor.app.utils.MediaIdHelper
+import never.ending.splendor.app.utils.MediaIdHelper.musicId
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
@@ -156,7 +156,7 @@ class CastPlayback(
     }
 
     private fun loadMedia(mediaId: String?, autoPlay: Boolean) {
-        val musicId = MediaIdHelper.extractMusicIDFromMediaID(mediaId!!)
+        val musicId = mediaId?.musicId
         val track = mMusicProvider.getMusic(musicId)
             ?: throw IllegalArgumentException("Invalid mediaId $mediaId")
         if (!TextUtils.equals(mediaId, currentMediaId)) {
@@ -181,9 +181,7 @@ class CastPlayback(
                 val remoteMediaId = customData.getString(ITEM_ID)
                 if (!TextUtils.equals(currentMediaId, remoteMediaId)) {
                     currentMediaId = remoteMediaId
-                    if (callback != null) {
-                        callback!!.setCurrentMediaId(remoteMediaId)
-                    }
+                    callback.setCurrentMediaId(remoteMediaId)
                     updateLastKnownStreamPosition()
                 }
             }
@@ -202,29 +200,21 @@ class CastPlayback(
         Timber.d("onRemoteMediaPlayerStatusUpdated %s", status)
         when (status) {
             MediaStatus.PLAYER_STATE_IDLE -> if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
-                if (callback != null) {
-                    callback!!.onCompletion()
-                }
+                callback.onCompletion()
             }
             MediaStatus.PLAYER_STATE_BUFFERING -> {
                 state = PlaybackStateCompat.STATE_BUFFERING
-                if (callback != null) {
-                    callback!!.onPlaybackStatusChanged(state)
-                }
+                callback.onPlaybackStatusChanged(state)
             }
             MediaStatus.PLAYER_STATE_PLAYING -> {
                 state = PlaybackStateCompat.STATE_PLAYING
                 setMetadataFromRemote()
-                if (callback != null) {
-                    callback!!.onPlaybackStatusChanged(state)
-                }
+                callback.onPlaybackStatusChanged(state)
             }
             MediaStatus.PLAYER_STATE_PAUSED -> {
                 state = PlaybackStateCompat.STATE_PAUSED
                 setMetadataFromRemote()
-                if (callback != null) {
-                    callback!!.onPlaybackStatusChanged(state)
-                }
+                callback.onPlaybackStatusChanged(state)
             }
             else -> Timber.d("State default : %s", status)
         }
