@@ -1,9 +1,12 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
-
 plugins {
+    idea
+    `java-library`
+
     kotlin("jvm")
     kotlin("kapt")
-    idea
+
+    id("api-key-provider")
+    id("kotlin-config-writer")
 }
 
 tasks.test {
@@ -22,7 +25,7 @@ dependencies {
     // api to expose Interceptors and HttpUrl to consumers
     api("com.squareup.okhttp3:okhttp:4.9.0")
 
-    api("com.natpryce:result4k:2.0.0")
+    api("dev.forkhandles:result4k:1.2.0.0")
 
     implementation("com.jakewharton.byteunits:byteunits:0.9.1")
 
@@ -46,6 +49,16 @@ dependencies {
 
 }
 
+kotlinConfigWriter {
+    packageName = "nes.networking"
+
+    val phishNetApiKey: String by project
+    put("PHISH_NET_API_KEY", phishNetApiKey)
+
+    val phishinApiKey: String by project
+    put("PHISH_IN_API_KEY", phishinApiKey)
+}
+
 sourceSets {
     create("integrationTest") {
         compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
@@ -63,7 +76,7 @@ tasks.register<Test>("integrationTest") {
     group = "verification"
     testClassesDirs = integrationTest.output.classesDirs
     classpath = integrationTest.runtimeClasspath
-    mustRunAfter(tasks.named("test").get())
+    mustRunAfter(tasks.named("compileKotlin").get())
     outputs.upToDateWhen { false }
 
     useJUnitPlatform()

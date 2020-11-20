@@ -6,7 +6,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 
-    id("phishin-api-key-provider")
+    id("api-key-provider")
     id("signing-config")
 }
 
@@ -41,9 +41,6 @@ android {
         versionCode = 1 // tood auto update
         versionName = "One"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        val phishinApiKey: String by project
-        buildConfigField("String", "PHISHIN_API_KEY", "\"$phishinApiKey\"")
     }
 
     compileOptions {

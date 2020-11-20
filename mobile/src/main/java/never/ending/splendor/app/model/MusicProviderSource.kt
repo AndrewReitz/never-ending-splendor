@@ -1,7 +1,7 @@
 package never.ending.splendor.app.model
 
 import android.support.v4.media.MediaMetadataCompat
-import never.ending.splendor.networking.phishin.model.YearData
+import nes.networking.phishin.model.YearData
 
 interface MusicProviderSource {
     suspend fun years(): List<YearData>

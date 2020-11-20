@@ -74,6 +74,8 @@ object MediaIdHelper {
     @Suppress("DEPRECATION")
     val String.musicId: String? get() = extractMusicIDFromMediaID(this)
 
+    // TODO write tests
+    // TODO make an extension?
     fun extractShowFromMediaID(mediaID: String): String? {
         val pos = mediaID.indexOf(CATEGORY_SEPARATOR)
         return if (pos >= 0) {

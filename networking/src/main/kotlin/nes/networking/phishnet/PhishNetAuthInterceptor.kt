@@ -1,4 +1,4 @@
-package never.ending.splendor.networking.phishnet
+package nes.networking.phishnet
 
 import okhttp3.Interceptor
 import okhttp3.Request

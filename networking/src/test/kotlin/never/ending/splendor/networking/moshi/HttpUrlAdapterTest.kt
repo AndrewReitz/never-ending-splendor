@@ -1,9 +1,9 @@
-package never.ending.splendor.networking.moshi
+package nes.networking.moshi
 
 import com.google.common.truth.Truth.assertThat
 import com.squareup.moshi.Moshi
-import never.ending.splendor.networking.networkingModule
-import never.ending.splendor.networking.phishin.model.Track
+import nes.networking.networkingModule
+import nes.networking.phishin.model.Track
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.jupiter.api.Test
 import org.kodein.di.DI

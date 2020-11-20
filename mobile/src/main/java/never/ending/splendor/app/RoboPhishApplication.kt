@@ -11,15 +11,13 @@ import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
-import never.ending.splendor.BuildConfig
+import nes.networking.CACHE_DIR_TAG
+import nes.networking.networkingModule
 import never.ending.splendor.R
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.model.MusicProviderSource
 import never.ending.splendor.app.model.PhishProviderSource
 import never.ending.splendor.app.ui.FullScreenPlayerActivity
-import never.ending.splendor.networking.CACHE_DIR_TAG
-import never.ending.splendor.networking.networkingModule
-import never.ending.splendor.networking.phishin.PhishinApiKey
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.DIAware
@@ -55,7 +53,6 @@ class RoboPhishApplication : Application(), DIAware {
 
         bind<GoogleApiAvailability>() with singleton { GoogleApiAvailability.getInstance() }
 
-        bind<PhishinApiKey>() with singleton { PhishinApiKey(BuildConfig.PHISHIN_API_KEY) }
         bind<File>(tag = CACHE_DIR_TAG) with singleton { instance<Context>().cacheDir }
 
         bind<MusicProvider>() with singleton { MusicProvider(instance(), instance()) }

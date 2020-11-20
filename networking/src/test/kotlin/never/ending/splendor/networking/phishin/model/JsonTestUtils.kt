@@ -1,4 +1,4 @@
-package never.ending.splendor.networking.phishin.model
+package nes.networking.phishin.model
 
 import okio.BufferedSource
 import okio.buffer

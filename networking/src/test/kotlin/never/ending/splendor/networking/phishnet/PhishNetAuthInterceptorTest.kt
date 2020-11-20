@@ -1,4 +1,4 @@
-package never.ending.splendor.networking.phishnet
+package nes.networking.phishnet
 
 import com.google.common.truth.Truth.assertThat
 import okhttp3.OkHttpClient

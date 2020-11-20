@@ -12,3 +12,10 @@ loadPropertyIntoExtra(
         systemPropertyKey = "PHISHIN_API_KEY",
         defaultValue = ""
 )
+
+loadPropertyIntoExtra(
+        extraKey = "phishNetApiKey",
+        projectPropertyKey = "phishNetApiKey",
+        systemPropertyKey = "PHISH_NET_API_KEY",
+        defaultValue = ""
+)

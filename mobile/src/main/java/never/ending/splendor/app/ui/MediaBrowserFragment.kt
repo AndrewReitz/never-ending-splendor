@@ -15,6 +15,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dev.forkhandles.result4k.Failure
+import dev.forkhandles.result4k.Success
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import nes.networking.phishin.PhishInRepository
+import nes.networking.phishnet.PhishNetRepository
 import never.ending.splendor.R
 import never.ending.splendor.app.utils.MediaIdHelper
 import never.ending.splendor.app.utils.MediaIdHelper.extractShowFromMediaID
@@ -22,6 +30,10 @@ import never.ending.splendor.app.utils.MediaIdHelper.getHierarchy
 import never.ending.splendor.app.utils.MediaIdHelper.isShow
 import never.ending.splendor.databinding.FragmentListBinding
 import never.ending.splendor.databinding.FragmentListShowBinding
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.android.x.di
+import org.kodein.di.instance
 import timber.log.Timber
 
 /**
@@ -33,7 +45,14 @@ import timber.log.Timber
  * Once connected, the fragment subscribes to get all the children.
  * All [MediaBrowserCompat.MediaItem]'s that can be browsed are shown in a ListView.
  */
-class MediaBrowserFragment : Fragment() {
+class MediaBrowserFragment : Fragment(), DIAware {
+
+    private lateinit var foreground: CoroutineScope
+
+    override val di: DI by di()
+
+    private val phishNetRepository: PhishNetRepository by instance()
+    private val phishInRepository: PhishInRepository by instance()
 
     private val browserAdapter: MediaBrowserAdapter by lazy {
         MediaBrowserAdapter(
@@ -138,6 +157,7 @@ class MediaBrowserFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         Timber.d("fragment.onCreateView")
+        foreground = MainScope()
 
         val mediaId = mediaId
 
@@ -150,15 +170,87 @@ class MediaBrowserFragment : Fragment() {
                 viewpager.offscreenPageLimit = 3
 
                 slidingTabs.setupWithViewPager(viewpager)
+                foreground.launch {
+                    // todo better way to get show date.
+                    val setlistResult = phishNetRepository.setlist(
+                        requireNotNull(subTitle).replace(
+                            ".",
+                            "-"
+                        )
+                    )
 
-                setlistWebview.settings.javaScriptEnabled = true
-                // TODO Load setlist
+                    when (setlistResult) {
+                        is Success -> {
+                            val data = setlistResult.value[0]
 
-                reviewsWebview.settings.javaScriptEnabled = true
-                // todo load reviews
+                            // todo check if extra showid extractShowFromMediaID is the same
+                            // if it is use that instead.
+                            val showid = data.showid
+                            val header = "<h1>" + data.venue + "</h1>" +
+                                    "<h2>" + data.location + "</h2>"
 
-                tapernotesWebview.settings.javaScriptEnabled = true
-                val showId = extractShowFromMediaID(mediaId)
+                            val setlistData = data.setlistdata
+                            val setlistnotes: String = data.setlistnotes
+
+                            setlistWebview.loadData(
+                                header + setlistData + setlistnotes,
+                                "text/html",
+                                null
+                            )
+
+                            when (val reviewsResult =
+                                phishNetRepository.reviews(showid.toString())) {
+                                is Success -> {
+                                    val display = StringBuilder()
+                                    reviewsResult.value.forEach {
+                                        val reviewSubs = it.reviewtext.replace("\n", "<br/>")
+                                        display.append("<h2>")
+                                            .append(it.username)
+                                            .append("</h2>")
+                                            .append("<h4>")
+                                            .append(it.posted_date)
+                                            .append("</h4>")
+                                            .append(reviewSubs)
+                                            .append("<br/>")
+                                    }
+                                }
+                                is Failure -> reviewsWebview.loadData(
+                                    "<div>Error loading Reviews</div>",
+                                    "text/html",
+                                    null
+                                )
+                            }
+                        }
+                        is Failure -> {
+                            setlistWebview.loadData(
+                                "<div>Error loading Setlist</div>",
+                                "text/html",
+                                null
+                            )
+                            reviewsWebview.loadData(
+                                "<div>Error loading Reviews</div>",
+                                "text/html",
+                                null
+                            )
+                        }
+                    }
+                }
+
+                val showId = requireNotNull(extractShowFromMediaID(mediaId))
+                foreground.launch {
+                    when(val showResult = phishInRepository.show(showId)) {
+                        is Success -> {
+                            val tapernotes = showResult.value.taper_notes ?: "Not available"
+                            val notesSubs = tapernotes.replace("\n".toRegex(), "<br/>")
+                            tapernotesWebview.loadData(notesSubs, "text/html", null)
+                        }
+                        is Failure -> tapernotesWebview.loadData(
+                            "<div>Error loading Taper Notes</div>",
+                            "text/html",
+                            null
+                        )
+                    }
+                }
                 // todo load tapper notes
             }
 
@@ -199,6 +291,7 @@ class MediaBrowserFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+
         val mediaBrowser = mediaFragmentListener.mediaBrowser
         if (mediaBrowser.isConnected && mMediaId != null) {
             mediaBrowser.unsubscribe(mMediaId!!)
@@ -211,6 +304,7 @@ class MediaBrowserFragment : Fragment() {
         super.onDestroyView()
         _fragmentListBinding = null
         _fragmentListShowBinding = null
+        foreground.cancel()
     }
 
     val mediaId: String?

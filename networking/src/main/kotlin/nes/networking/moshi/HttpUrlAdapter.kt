@@ -1,4 +1,4 @@
-package never.ending.splendor.networking.moshi
+package nes.networking.moshi
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
