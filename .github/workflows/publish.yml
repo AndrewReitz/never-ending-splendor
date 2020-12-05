@@ -24,9 +24,8 @@ jobs:
         run:  echo $NEVER_ENDING_SPLENDOR_PUBLISH_KEY > keys/publish-key.json
       - name: Build with Gradle
         run: >
-          ./gradlew build --no-daemon
+          ./gradlew build publishRelease --no-daemon
           -DNEVER_ENDING_SPLENDOR_ACCEPT_BUILD_SCAN_AGREEMENT=yes
           -Dorg.gradle.jvmargs="-Xmx4G -Xms1G -XX:+AggressiveOpts -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
           -DNEVER_ENDING_SPLENDOR_BUILD_NUMBER=BUILD_NUMBER=$GITHUB_RUN_ID
           -DNEVER_ENDING_SPLENDOR_KEYSTORE_LOCATION=./keys/keystore.jks
-        # add back uploadReleasePrivateBundle when signing + publishing is all figured out
