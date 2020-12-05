@@ -68,10 +68,6 @@ class RoboPhishApplication : Application(), DIAware {
                 .build()
         }
 
-        bind<PackageValidator>() with singleton {
-            PackageValidator(instance())
-        }
-
         bind<FirebaseCrashlytics>() with singleton { FirebaseCrashlytics.getInstance() }
     }
 

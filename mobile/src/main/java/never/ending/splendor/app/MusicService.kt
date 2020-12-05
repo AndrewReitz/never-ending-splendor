@@ -112,8 +112,6 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
     private val mDelayedStopHandler = DelayedStopHandler(this)
     private var mMediaRouter: MediaRouter? = null
 
-    private val packageValidator: PackageValidator by instance()
-
     // car stuff not actually sure if this is needed
     private var isConnectedToCar = false
     private var carConnectionReceiver: BroadcastReceiver? = null
@@ -260,21 +258,6 @@ class MusicService : MediaBrowserServiceCompat(), PlaybackServiceCallback, DIAwa
             "OnGetRoot: clientPackageName=%s clientUid=%s rootHints=%s",
             clientPackageName, clientUid, rootHints
         )
-        // To ensure you are not allowing any arbitrary app to browse your app's contents, you
-        // need to check the origin:
-        if (!packageValidator.isCallerAllowed(this, clientPackageName, clientUid)) {
-            // If the request comes from an untrusted package, return null. No further calls will
-            // be made to other media browsing methods.
-            Timber.w("OnGetRoot: IGNORING request from untrusted package %s", clientPackageName)
-            return null
-        }
-        if (CarHelper.isValidCarPackage(clientPackageName)) {
-            // Optional: if your app needs to adapt the music library to show a different subset
-            // when connected to the car, this is where you should handle it.
-            // If you want to adapt other runtime behaviors, like tweak ads or change some behavior
-            // that should be different on cars, you should instead use the boolean flag
-            // set by the BroadcastReceiver mCarConnectionReceiver (mIsConnectedToCar).
-        }
         return BrowserRoot(MediaIdHelper.MEDIA_ID_ROOT, null)
     }
 
