@@ -15,7 +15,7 @@ plugins {
 
 play {
     serviceAccountCredentials.set(
-        rootProject.file(properties["never.ending.splendor.publish-key"] ?:"keys/publish-key.json")
+        rootProject.file(properties["never.ending.splendor.publish-key"] ?: "keys/publish-key.json")
     )
     track.set("internal")
     defaultToAppBundles.set(true)
@@ -91,8 +91,9 @@ dependencies {
     implementation("com.google.android.libraries.cast.companionlibrary:ccl:2.9.1")
     implementation("com.google.android.material:material:1.2.1")
 
-    implementation("com.google.firebase:firebase-analytics:18.0.0")
-    implementation("com.google.firebase:firebase-crashlytics:17.2.2")
+    implementation(platform("com.google.firebase:firebase-bom:26.1.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
 
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.cardview:cardview:1.0.0")
