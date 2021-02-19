@@ -7,11 +7,7 @@ include(":mobile", "networking")
 rootProject.name = "Never-Ending-Splendor"
 
 rootProject.children.forEach {
-    if(file("${it.projectDir}/${it.name}.gradle.kts").exists()) {
-        it.buildFileName = "${it.name}.gradle.kts"
-    } else {
-        it.buildFileName = "${it.name}.gradle"
-    }
+    it.buildFileName = "${it.name}.gradle.kts"
 }
 
 gradleEnterprise {

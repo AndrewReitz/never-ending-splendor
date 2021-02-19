@@ -20,12 +20,12 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     // api to expose networkingModule.kt to consumers
-    api("org.kodein.di:kodein-di:7.1.0")
+    api("org.kodein.di:kodein-di:7.3.1")
 
     // api to expose Interceptors and HttpUrl to consumers
-    api("com.squareup.okhttp3:okhttp:4.9.0")
+    api("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
 
-    api("dev.forkhandles:result4k:1.2.0.0")
+    api("dev.forkhandles:result4k:1.8.2.0")
 
     implementation("com.jakewharton.byteunits:byteunits:0.9.1")
 
@@ -42,10 +42,10 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
-    testImplementation("com.google.truth:truth:1.1")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.8.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.0")
-    testImplementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    testImplementation("com.google.truth:truth:1.1.2")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.0.0-alpha.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+    testImplementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
 
 }
 
