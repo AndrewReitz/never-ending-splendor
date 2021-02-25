@@ -50,7 +50,7 @@ android {
         minSdkVersion(23)
         targetSdkVersion(30)
         versionCode = buildNumber.toInt()
-        versionName = "About to Run"
+        versionName = "Bathtub Gin"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
