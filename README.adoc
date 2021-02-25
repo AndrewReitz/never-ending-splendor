@@ -3,7 +3,14 @@
 A Open Source Phish music player, utilizing the Phish.in API for streaming 
 audio.
 
+Install From the https://play.google.com/store/apps/details?id=never.ending.splendor[Play Store]
+
 == Building
+
+Standard gradle commands. 
+
+`./gradlew installDebug` to install the test build
+`./gradlew build` will build release and debug builds as well as run all checks.
 
 === Build Scans
 
