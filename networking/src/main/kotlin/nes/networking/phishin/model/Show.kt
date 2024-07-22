@@ -1,11 +1,13 @@
 package nes.networking.phishin.model
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
+import nes.networking.adpters.DateJsonAdapter
 import java.util.Date
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Show(
-    val id: String,
+    val id: Int,
+    @Serializable(with = DateJsonAdapter::class)
     val date: Date,
     val venue_name: String,
     val taper_notes: String?,

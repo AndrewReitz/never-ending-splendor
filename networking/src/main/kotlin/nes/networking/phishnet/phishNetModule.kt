@@ -1,14 +1,16 @@
 package nes.networking.phishnet
 
+import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 const val PHISH_NET_RETROFIT_TAG = "phish.net"
 const val PHISH_NET_URL_TAG = PHISH_NET_RETROFIT_TAG
@@ -28,7 +30,9 @@ val phishNetModule = DI.Module(name = "PhishNetModule") {
                     .addInterceptor(PhishNetAuthInterceptor(instance()))
                     .build()
             )
-            .addConverterFactory(MoshiConverterFactory.create(instance()))
+            .addConverterFactory(
+                instance<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType())
+            )
             .baseUrl(instance<HttpUrl>(PHISH_NET_URL_TAG))
             .build()
     }

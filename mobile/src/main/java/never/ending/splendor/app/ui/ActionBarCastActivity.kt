@@ -100,6 +100,7 @@ abstract class ActionBarCastActivity : AppCompatActivity(), DIAware {
         return super.onOptionsItemSelected(item)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         // Otherwise, it may return to the previous fragment stack
         val fragmentManager = supportFragmentManager

@@ -5,6 +5,8 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
@@ -24,7 +26,7 @@ abstract class KotlinConfigWriterTask : DefaultTask() {
     abstract var packageName: String
 
     @get:OutputDirectory
-    abstract var kotlinConfigFile: File
+    abstract var kotlinConfigFile: Provider<RegularFile>
 
     @TaskAction
     fun generate() {
@@ -42,7 +44,9 @@ abstract class KotlinConfigWriterTask : DefaultTask() {
                     .build()
             ).build()
 
-        file.writeTo(kotlinConfigFile)
+        val outputFile = kotlinConfigFile.get().asFile
+        require(outputFile.mkdirs() || outputFile.exists()) { "could not create config output directory" }
+        file.writeTo(outputFile)
     }
 }
 

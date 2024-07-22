@@ -1,9 +1,7 @@
 package nes.networking
 
 import com.jakewharton.byteunits.DecimalByteUnit.MEGABYTES
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import nes.networking.moshi.HttpUrlAdapter
+import kotlinx.serialization.json.Json
 import nes.networking.phishin.phishInModule
 import nes.networking.phishnet.phishNetModule
 import okhttp3.Cache
@@ -15,9 +13,7 @@ import org.kodein.di.bindSet
 import org.kodein.di.instance
 import org.kodein.di.singleton
 import java.io.File
-import java.time.Duration
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 /**
  * Tag for networking module to provide the cache directory for http client
@@ -31,11 +27,10 @@ val networkingModule = DI.Module(name = "NetworkingModule") {
     import(phishInModule)
     import(phishNetModule)
 
-    bind<Moshi>() with singleton {
-        Moshi.Builder()
-            .add(Date::class.java, Rfc3339DateJsonAdapter())
-            .add(HttpUrlAdapter)
-            .build()
+    bind<Json>() with singleton {
+        Json {
+            ignoreUnknownKeys = true
+        }
     }
 
     bind<OkHttpClient>() with singleton {

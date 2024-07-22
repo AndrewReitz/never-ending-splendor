@@ -1,9 +1,8 @@
 package nes.networking.phishnet.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Review(
     val reviewid: Int,
     val uid: Int,
@@ -14,8 +13,6 @@ data class Review(
     val city: String,
     val state: String,
     val country: String,
-    @Json(name = "review_text")
-    val reviewText: String,
-    @Json(name = "posted_at")
-    val postedAt: String
+    val review_text: String,
+    val posted_at: String
 )

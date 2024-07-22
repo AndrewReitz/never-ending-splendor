@@ -1,7 +1,8 @@
-package nes.networking.moshi
+package never.ending.splendor.networking.adapter
 
 import com.google.common.truth.Truth.assertThat
-import com.squareup.moshi.Moshi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import nes.networking.networkingModule
 import nes.networking.phishin.model.Track
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -10,26 +11,22 @@ import org.kodein.di.DIAware
 import org.kodein.di.instance
 import kotlin.test.Test
 
-/**
- * Test both json adapters in the moshi package.
- */
 class HttpUrlAdapterTest : DIAware {
 
-    private val moshi: Moshi by instance()
+    private val json: Json by instance()
 
     @Test
     fun `should be bijective`() {
 
         val testData = Track(
-            id = "Rift",
+            id = 123,
             title = "Rift",
             mp3 = "http://example.com".toHttpUrl(),
             duration = 10L
         )
 
-        val classUnderTest = moshi.adapter(Track::class.java)
-        val json = classUnderTest.toJson(testData)
-        val result = classUnderTest.fromJson(json)
+        val jsonVale = json.encodeToString(testData)
+        val result = json.decodeFromString<Track>(jsonVale)
 
         assertThat(result).isEqualTo(testData)
     }

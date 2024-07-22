@@ -1,8 +1,8 @@
 package nes.networking.phishnet.model
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class PhishNetWrapper<T>(
     val error_message: String = "",
     val data: List<T>

@@ -4,7 +4,7 @@ plugins {
 
     kotlin("jvm")
 
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.serialization)
 
     id("api-key-provider")
     id("kotlin-config-writer")
@@ -34,8 +34,7 @@ dependencies {
 
     implementation(libs.bundles.retrofit)
 
-    implementation(libs.bundles.moshi)
-    ksp(libs.moshi.codegen)
+    implementation(libs.kotlinx.serialization)
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("reflect"))

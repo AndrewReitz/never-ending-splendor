@@ -2,6 +2,9 @@
 
 == First Tube
 
+- Including Compose to develop a new better UI
+- Updating android sdk from 34 to 35
+
 == Esther 7/17/2024
 
 - Updated to Android 34

@@ -1,8 +1,8 @@
 package nes.networking.phishin.model
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Venue(
     val name: String,
     val location: String

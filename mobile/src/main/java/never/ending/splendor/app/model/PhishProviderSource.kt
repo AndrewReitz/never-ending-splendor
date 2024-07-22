@@ -13,13 +13,12 @@ import timber.log.Timber
 
 class PhishProviderSource(
     private val phishinRepository: PhishInRepository,
-    private val picasso: Picasso,
     private val images: Images
 ) : MusicProviderSource {
 
     override suspend fun years(): List<YearData> =
         when (val result = retry { phishinRepository.years() }) {
-            is Success -> result.value.asReversed()
+            is Success -> result.value
             is Failure -> {
                 Timber.e(result.reason, "There was an error loading years from phishin api")
                 emptyList()
@@ -31,7 +30,7 @@ class PhishProviderSource(
         return when (val result = retry { phishinRepository.shows(year) }) {
             is Success -> result.value.map { show ->
                 MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, show.id)
+                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, show.id.toString())
                     .putString(MediaMetadataCompat.METADATA_KEY_DATE, show.date.toSimpleFormat())
                     .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, show.venue_name)
                     // we're using 'Author' here for taper notes
@@ -64,7 +63,7 @@ class PhishProviderSource(
                         // the session metadata can be accessed by notification listeners. This is done in this
                         // sample for convenience only.
                         MediaMetadataCompat.Builder()
-                            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, track.id)
+                            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, track.id.toString())
                             .putString(
                                 MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE,
                                 track.mp3.toString()
@@ -74,7 +73,7 @@ class PhishProviderSource(
                             // pretty hokey, but we're overloading these fields so we can save venue and location, and showId
                             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.venue_name)
                             .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, show.taper_notes)
-                            .putString(MediaMetadataCompat.METADATA_KEY_COMPILATION, show.id)
+                            .putString(MediaMetadataCompat.METADATA_KEY_COMPILATION, show.id.toString())
                             .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, track.title)
                             .putString(
                                 MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,

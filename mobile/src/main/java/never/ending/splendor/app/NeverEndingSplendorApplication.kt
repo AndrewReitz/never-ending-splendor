@@ -18,6 +18,7 @@ import never.ending.splendor.R
 import never.ending.splendor.app.model.MusicProvider
 import never.ending.splendor.app.model.MusicProviderSource
 import never.ending.splendor.app.model.PhishProviderSource
+import never.ending.splendor.app.newui.NewUiViewModel
 import never.ending.splendor.app.ui.FullScreenPlayerActivity
 import never.ending.splendor.app.utils.Images
 import okhttp3.OkHttpClient
@@ -26,6 +27,7 @@ import org.kodein.di.DIAware
 import org.kodein.di.android.androidCoreModule
 import org.kodein.di.android.x.androidXModule
 import org.kodein.di.bind
+import org.kodein.di.bindProvider
 import org.kodein.di.instance
 import org.kodein.di.singleton
 import timber.log.Timber
@@ -58,7 +60,7 @@ class NeverEndingSplendorApplication : Application(), DIAware {
         bind<File>(tag = CACHE_DIR_TAG) with singleton { instance<Context>().cacheDir }
 
         bind<MusicProvider>() with singleton { MusicProvider(instance(), instance()) }
-        bind<MusicProviderSource>() with singleton { PhishProviderSource(instance(), instance(), instance()) }
+        bind<MusicProviderSource>() with singleton { PhishProviderSource(instance(), instance()) }
 
         bind<Images>() with singleton { Images(instance()) }
 
@@ -72,6 +74,8 @@ class NeverEndingSplendorApplication : Application(), DIAware {
         }
 
         bind<FirebaseCrashlytics>() with singleton { FirebaseCrashlytics.getInstance() }
+
+        bindProvider { NewUiViewModel(instance()) }
     }
 
     private val appInitializer: AppInitializer by instance()

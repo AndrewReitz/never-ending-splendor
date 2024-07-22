@@ -208,12 +208,12 @@ class MediaBrowserFragment : Fragment(), DIAware {
                                 is Success -> {
                                     val display = StringBuilder()
                                     reviewsResult.value.forEach {
-                                        val reviewSubs = it.reviewText.replace("\n", "<br/>")
+                                        val reviewSubs = it.review_text.replace("\n", "<br/>")
                                         display.append("<h2>")
                                             .append(it.username)
                                             .append("</h2>")
                                             .append("<h4>")
-                                            .append(it.postedAt)
+                                            .append(it.posted_at)
                                             .append("</h4>")
                                             .append(reviewSubs)
                                             .append("<br/>")

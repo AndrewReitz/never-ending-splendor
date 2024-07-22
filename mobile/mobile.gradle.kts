@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     alias(libs.plugins.compose.compiler)
     id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.serialization)
 
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
@@ -29,7 +30,7 @@ play {
 
 android {
     namespace = "never.ending.splendor"
-    compileSdk = 34
+    compileSdk = libs.versions.android.sdk.get().toInt()
 
     signingConfigs {
         val keystoreLocation: String by project
@@ -55,7 +56,7 @@ android {
         val buildNumber: String by project
         applicationId = "never.ending.splendor"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = libs.versions.android.sdk.get().toInt()
         versionCode = buildNumber.toInt()
         versionName = "First Tube"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -105,22 +106,27 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.serialization)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.play.services.cast)
     implementation(libs.play.services.cast.companion)
     implementation(libs.android.material)
 
-    implementation(platform("com.google.firebase:firebase-bom:${libs.versions.firebase.get()}"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation(platform(libs.firebase.bom))
+
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.firebase)
 
     implementation(libs.bundles.androidx)
     implementation(libs.bundles.compose)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.bundles.navigation)
+
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.kodein)
-    implementation(libs.kodein.android)
+    implementation(libs.kodein.compose)
 
     implementation(libs.picasso)
     implementation(libs.okhttp.logging.interceptor)

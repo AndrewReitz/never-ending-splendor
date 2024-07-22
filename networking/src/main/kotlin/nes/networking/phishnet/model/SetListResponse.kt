@@ -1,8 +1,8 @@
 package nes.networking.phishnet.model
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SetListResponse(
     val showid: Long,
     val showdate: String,

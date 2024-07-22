@@ -11,6 +11,7 @@ import org.junit.jupiter.api.io.TempDir
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.bind
+import org.kodein.di.bindSet
 import org.kodein.di.inSet
 import org.kodein.di.instance
 import org.kodein.di.singleton
@@ -27,8 +28,12 @@ class PhishInServiceIntegrationTest : DIAware {
 
         bind<File>(tag = CACHE_DIR_TAG) with singleton { tempDir }
 
-        bind<Interceptor>().inSet() with singleton {
-            HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        bindSet<Interceptor> {
+            bind {
+                singleton {
+                    HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+                }
+            }
         }
     }
 

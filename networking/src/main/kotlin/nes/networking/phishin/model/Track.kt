@@ -1,18 +1,23 @@
 package nes.networking.phishin.model
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
+import nes.networking.adpters.HttpUrlAdapter
 import okhttp3.HttpUrl
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Track(
-    val id: String,
+    val id: Int,
     val title: String,
+
+    @Serializable(with = HttpUrlAdapter::class)
     val mp3: HttpUrl,
     val duration: Long
 ) {
     val formatedDuration: String get() {
         return String.format(
+            locale = Locale.US,
             "%d:%02d",
             TimeUnit.MILLISECONDS.toMinutes(duration),
             TimeUnit.MILLISECONDS.toSeconds(duration) -

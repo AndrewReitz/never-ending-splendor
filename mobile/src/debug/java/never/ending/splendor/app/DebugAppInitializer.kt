@@ -7,7 +7,7 @@ import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
-import com.facebook.flipper.plugins.leakcanary2.FlipperLeakListener
+import com.facebook.flipper.plugins.leakcanary2.FlipperLeakEventListener
 import com.facebook.flipper.plugins.leakcanary2.LeakCanary2FlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
@@ -26,7 +26,7 @@ class DebugAppInitializer(
         SoLoader.init(context, false)
 
         LeakCanary.config = LeakCanary.config.copy(
-            onHeapAnalyzedListener = FlipperLeakListener()
+            eventListeners = LeakCanary.config.eventListeners + FlipperLeakEventListener(),
         )
 
         if (FlipperUtils.shouldEnableFlipper(context)) {

@@ -11,6 +11,8 @@ import org.junit.jupiter.api.io.TempDir
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.bind
+import org.kodein.di.bindSet
+import org.kodein.di.inBindSet
 import org.kodein.di.inSet
 import org.kodein.di.instance
 import org.kodein.di.singleton
@@ -24,12 +26,16 @@ class PhishNetServiceIntegrationTest : DIAware {
     lateinit var tempDir: File
 
     override val di = DI.lazy {
-        import(networkingModule)
+        import(networkingModule, true)
 
         bind<File>(tag = CACHE_DIR_TAG) with singleton { tempDir }
 
-        bind<Interceptor>().inSet() with singleton {
-            HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        inBindSet<Interceptor> {
+            add {
+                singleton {
+                    HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+                }
+            }
         }
     }
 

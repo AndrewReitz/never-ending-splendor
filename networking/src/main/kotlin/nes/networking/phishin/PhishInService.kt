@@ -7,6 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface PhishInService {
+
     @GET("api/v1/years?include_show_counts=true")
     suspend fun years(): SuccessfulResponse<List<YearData>>
 

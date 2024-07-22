@@ -10,7 +10,7 @@ class PhishInRepository internal constructor(
     private val phishInService: PhishInService
 ) {
     suspend fun years(): Result<List<YearData>, Exception> = resultFrom {
-        phishInService.years().data
+        phishInService.years().data.reversed()
     }
 
     suspend fun shows(year: String): Result<List<Show>, Exception> = resultFrom {
