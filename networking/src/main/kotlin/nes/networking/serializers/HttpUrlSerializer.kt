@@ -1,4 +1,4 @@
-package nes.networking.adpters
+package nes.networking.serializers
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -9,7 +9,7 @@ import kotlinx.serialization.encoding.Encoder
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
-internal object HttpUrlAdapter: KSerializer<HttpUrl> {
+internal object HttpUrlSerializer: KSerializer<HttpUrl> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("HttpUrl", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): HttpUrl {

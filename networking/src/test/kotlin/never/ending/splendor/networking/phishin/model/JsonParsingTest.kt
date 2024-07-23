@@ -3,9 +3,9 @@ package nes.networking.phishin.model
 import com.google.common.truth.Truth.assertThat
 import kotlinx.serialization.json.Json
 import nes.networking.networkingModule
-import never.ending.splendor.networking.phishin.model.showJson
-import never.ending.splendor.networking.phishin.model.showsJson
-import never.ending.splendor.networking.phishin.model.yearsJson
+import never.ending.splendor.networking.showJson
+import never.ending.splendor.networking.showsJson
+import never.ending.splendor.networking.yearsJson
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.instance

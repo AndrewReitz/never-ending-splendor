@@ -1,17 +1,17 @@
 package nes.networking.phishin.model
 
 import kotlinx.serialization.Serializable
-import nes.networking.adpters.HttpUrlAdapter
+import nes.networking.serializers.HttpUrlSerializer
 import okhttp3.HttpUrl
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @Serializable
 data class Track(
-    val id: Int,
+    val id: Long,
     val title: String,
 
-    @Serializable(with = HttpUrlAdapter::class)
+    @Serializable(with = HttpUrlSerializer::class)
     val mp3: HttpUrl,
     val duration: Long
 ) {

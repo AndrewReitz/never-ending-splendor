@@ -74,12 +74,13 @@ sealed class Destination {
     @Serializable data class YearSelectionScreen(val years: List<YearData>) : Destination() {
         companion object {
             val typeMap = mapOf(typeOf<List<YearData>>() to serializableType<List<YearData>>())
-
-            fun from(savedStateHandle: SavedStateHandle) =
-                savedStateHandle.toRoute<YearSelectionScreen>(typeMap)
         }
     }
-    @Serializable data class ShowSelectionScreen(val shows:List<Show>) : Destination()
+    @Serializable data class ShowSelectionScreen(val shows: List<Show>) : Destination() {
+        companion object {
+            val typeMap = mapOf(typeOf<List<Show>>() to serializableType<List<Show>>())
+        }
+    }
     @Serializable data class ErrorScreen(val message: String): Destination()
 }
 
@@ -101,7 +102,6 @@ class NewUiActivity : ComponentActivity(), DIAware {
                     appState = appState,
                     navController = navController,
                     onYearSelected = { year ->
-                        navController.navigate(route = Destination.LoadingScreen)
                         viewModel.loadShows(year)
                     }
                 )
@@ -117,20 +117,6 @@ fun App(
     navController: NavHostController,
     onYearSelected: (year: String) -> Unit
 ) {
-    NavHost(navController = navController, startDestination = Destination.LoadingScreen) {
-        composable<Destination.LoadingScreen> { LoadingScreen() }
-        composable<Destination.YearSelectionScreen>(typeMap = Destination.YearSelectionScreen.typeMap) { backStackEntry ->
-            val years = backStackEntry.toRoute<Destination.YearSelectionScreen>()
-            YearsScreen(years = years.years, onClick = onYearSelected)
-        }
-        composable<Destination.ShowSelectionScreen> {
-
-        }
-        composable<Destination.ErrorScreen> {
-            ErrorScreen(message = "Oh No! TODO")
-        }
-    }
-
     TestComposeTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -140,13 +126,29 @@ fun App(
                 .padding(innerPadding)
                 .fillMaxSize()) {
 
+                NavHost(navController = navController, startDestination = Destination.LoadingScreen) {
+                    composable<Destination.LoadingScreen> { LoadingScreen() }
+                    composable<Destination.YearSelectionScreen>(typeMap = Destination.YearSelectionScreen.typeMap) { backStackEntry ->
+                        val years = backStackEntry.toRoute<Destination.YearSelectionScreen>()
+                        YearsScreen(years = years.years, onClick = onYearSelected)
+                    }
+                    composable<Destination.ShowSelectionScreen>(typeMap = Destination.ShowSelectionScreen.typeMap) { backStackEntry ->
+                        val shows = backStackEntry.toRoute<Destination.ShowSelectionScreen>()
+                        ShowScreen(shows.shows)
+                    }
+                    composable<Destination.ErrorScreen> {
+                        ErrorScreen(message = "Oh No! TODO")
+                    }
+                }
+
                 when (appState) {
+                    AppState.InitialState -> Unit // do nothing app is already trying to load data
                     AppState.Loading -> navController.navigate(Destination.LoadingScreen)
                     is AppState.Years -> navController.navigate(Destination.YearSelectionScreen(appState.data))
+                    is AppState.Shows -> navController.navigate(Destination.ShowSelectionScreen(appState.data))
                     is AppState.Error -> ErrorScreen(
                         message = appState.message
                     )
-                    is AppState.Shows -> navController.navigate(Destination.ShowSelectionScreen(appState.data))
                 }
             }
         }
@@ -184,6 +186,13 @@ fun YearsScreen(
             MessageRow(year, Rainbow[i % Rainbow.size], onClick)
         }
     }
+}
+
+@Composable
+fun ShowScreen(
+    shows: List<Show>
+) {
+    Text(text = "Load shows here!")
 }
 
 @Composable

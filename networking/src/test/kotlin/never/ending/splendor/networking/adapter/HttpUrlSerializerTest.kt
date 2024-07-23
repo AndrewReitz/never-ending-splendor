@@ -11,7 +11,7 @@ import org.kodein.di.DIAware
 import org.kodein.di.instance
 import kotlin.test.Test
 
-class HttpUrlAdapterTest : DIAware {
+class HttpUrlSerializerTest : DIAware {
 
     private val json: Json by instance()
 
@@ -19,7 +19,7 @@ class HttpUrlAdapterTest : DIAware {
     fun `should be bijective`() {
 
         val testData = Track(
-            id = 123,
+            id = 12345,
             title = "Rift",
             mp3 = "http://example.com".toHttpUrl(),
             duration = 10L

@@ -1,4 +1,4 @@
-package nes.networking.adpters
+package nes.networking.serializers
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-internal object DateJsonAdapter: KSerializer<Date> {
+internal object DateJsonSerializer: KSerializer<Date> {
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 

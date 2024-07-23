@@ -21,7 +21,7 @@ plugins {
     id("com.gradle.enterprise") version "3.8.1"
 }
 
-include(":mobile", ":networking")
+include(":mobile", ":networking", ":new-ui")
 
 rootProject.name = "Never-Ending-Splendor"
 

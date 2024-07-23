@@ -13,6 +13,7 @@ import nes.networking.phishin.model.YearData
 import nes.networking.retry
 
 sealed interface AppState {
+    data object InitialState: AppState
     data object Loading: AppState
 
     data class Years(
@@ -29,7 +30,7 @@ sealed interface AppState {
 class NewUiViewModel(
     private val phishinRepository: PhishInRepository,
 ) : ViewModel() {
-    private val _appState: MutableStateFlow<AppState> = MutableStateFlow(AppState.Loading)
+    private val _appState: MutableStateFlow<AppState> = MutableStateFlow(AppState.InitialState)
     val appState: StateFlow<AppState> = _appState
 
     init {
@@ -49,6 +50,8 @@ class NewUiViewModel(
 
     fun loadShows(year: String) {
         viewModelScope.launch {
+            _appState.emit(AppState.Loading)
+
             val state = when (val result = retry { phishinRepository.shows(year) } ) {
                 is Failure -> AppState.Error("Error occurred!")
                 is Success -> AppState.Shows(result.value)

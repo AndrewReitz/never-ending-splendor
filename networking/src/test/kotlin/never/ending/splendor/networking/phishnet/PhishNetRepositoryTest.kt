@@ -6,8 +6,8 @@ import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import nes.networking.phishnet.PHISH_NET_URL_TAG
 import nes.networking.phishnet.PhishNetRepository
-import never.ending.splendor.networking.phishin.model.reviews
-import never.ending.splendor.networking.phishin.model.setlist
+import never.ending.splendor.networking.reviews
+import never.ending.splendor.networking.setlist
 import okhttp3.ExperimentalOkHttpApi
 import okhttp3.HttpUrl
 import org.junit.Test

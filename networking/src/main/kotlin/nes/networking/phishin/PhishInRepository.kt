@@ -6,7 +6,7 @@ import nes.networking.phishin.model.Show
 import nes.networking.phishin.model.YearData
 import kotlin.Exception
 
-class PhishInRepository internal constructor(
+class PhishInRepository(
     private val phishInService: PhishInService
 ) {
     suspend fun years(): Result<List<YearData>, Exception> = resultFrom {

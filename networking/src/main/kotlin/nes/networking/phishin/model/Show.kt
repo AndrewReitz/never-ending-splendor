@@ -1,13 +1,13 @@
 package nes.networking.phishin.model
 
 import kotlinx.serialization.Serializable
-import nes.networking.adpters.DateJsonAdapter
+import nes.networking.serializers.DateJsonSerializer
 import java.util.Date
 
 @Serializable
 data class Show(
-    val id: Int,
-    @Serializable(with = DateJsonAdapter::class)
+    val id: Long,
+    @Serializable(with = DateJsonSerializer::class)
     val date: Date,
     val venue_name: String,
     val taper_notes: String?,

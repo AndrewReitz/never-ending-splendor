@@ -13,8 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 const val PHISHIN_RETROFIT_TAG = "Phishin"
-
-private val PHISHIN_API_URL: HttpUrl = requireNotNull("https://phish.in/".toHttpUrlOrNull())
+val PHISHIN_API_URL: HttpUrl = requireNotNull("https://phish.in/".toHttpUrlOrNull())
 
 val phishInModule = DI.Module(name = "PhishInModule") {
 

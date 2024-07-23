@@ -17,6 +17,10 @@ tasks.test {
     }
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
 
@@ -32,7 +36,7 @@ dependencies {
 
     implementation(libs.okio)
 
-    implementation(libs.bundles.retrofit)
+    api(libs.bundles.retrofit)
 
     implementation(libs.kotlinx.serialization)
 
@@ -58,10 +62,10 @@ sourceSets {
     }
 }
 
-val integrationTestImplementation by configurations.getting {
+val integrationTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
-val integrationTestRuntimeOnly by configurations.getting
+val integrationTestRuntimeOnly: Configuration by configurations.getting
 configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
 configurations["integrationTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
 

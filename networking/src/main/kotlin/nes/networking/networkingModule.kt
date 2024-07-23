@@ -20,7 +20,7 @@ import java.util.Date
  */
 const val CACHE_DIR_TAG = "CacheDir"
 
-private val DISK_CACHE_SIZE = MEGABYTES.toBytes(100).toInt()
+val DISK_CACHE_SIZE = MEGABYTES.toBytes(100).toInt()
 
 val networkingModule = DI.Module(name = "NetworkingModule") {
 

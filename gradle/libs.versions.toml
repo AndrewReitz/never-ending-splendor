@@ -11,6 +11,8 @@ coroutines = "1.8.1"
 compose-bom = "2024.06.00"
 compose-compiler = "1.5.14"
 navigation = "2.8.0-beta05"
+hilt = "2.51.1"
+hiltNavigationCompose = "1.2.0"
 
 [libraries]
 android-build-gradle = { module = "com.android.tools.build:gradle", version = "8.5.1"}
@@ -78,6 +80,13 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firbase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version = "0.34.0" }
+
 [bundles]
 buildSrc = [
     "android-build-gradle",
@@ -142,6 +151,11 @@ navigation = [
     "androidx-composoe-nav"
 ]
 
+hilt = [
+    "hilt-android",
+    "hilt-navigation-compose"
+]
+
 [plugins]
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 version-check = { id = "com.github.ben-manes.versions", version = "0.51.0" }
@@ -149,3 +163,5 @@ play-publisher = { id = "com.github.triplet.play", version = "3.10.1"}
 google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
 serialization = "org.jetbrains.kotlin.plugin.serialization:2.0.0"
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version = "2.0.0-1.0.23" }
