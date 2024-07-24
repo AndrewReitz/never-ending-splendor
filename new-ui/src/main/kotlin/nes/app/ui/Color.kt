@@ -64,4 +64,12 @@ val md_theme_dark_surfaceTint = Color(0xFF8BDA67)
 val md_theme_dark_outlineVariant = Color(0xFF43483E)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-val seed = Color(0xFF256F00)
+// rainbow colors
+val Rainbow = listOf(
+    Color(0xFFE57373),
+    Color(0xFF9575CD),
+    Color(0xFF64B5F6),
+    Color(0xFF4DD0E1),
+    Color(0xFFAED581),
+    Color(0xFFFFD54F),
+)
