@@ -15,7 +15,7 @@ kotlin {
 }
 
 android {
-    namespace = "never.ending.splendor.newui"
+    namespace = "nes.app"
     compileSdk = libs.versions.android.sdk.get().toInt()
 
     signingConfigs {
@@ -30,7 +30,7 @@ android {
 
     defaultConfig {
         val buildNumber: String by project
-        applicationId = "never.ending.splendor.newui"
+        applicationId = "nes.app"
         minSdk = 23
         targetSdk = libs.versions.android.sdk.get().toInt()
         versionCode = buildNumber.toInt()
@@ -93,6 +93,8 @@ dependencies {
 
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.timber)
+
+    implementation(libs.bundles.media3)
 
     debugImplementation(libs.bundles.android.debug.libs)
     releaseImplementation(libs.bundles.android.release.libs)

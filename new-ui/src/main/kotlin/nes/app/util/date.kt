@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.util
 
 import java.text.SimpleDateFormat
 import java.util.Date

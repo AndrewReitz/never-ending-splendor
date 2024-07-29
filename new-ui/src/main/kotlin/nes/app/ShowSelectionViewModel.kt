@@ -9,6 +9,7 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nes.app.util.NetworkState
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.Show
 import nes.networking.retry
@@ -20,9 +21,10 @@ class ShowSelectionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    private val showYear: String = checkNotNull(savedStateHandle["year"])
+    val showYear: String = checkNotNull(savedStateHandle["year"])
 
-    private val _shows: MutableStateFlow<NetworkState<List<Show>, String>> = MutableStateFlow(NetworkState.Loading)
+    private val _shows: MutableStateFlow<NetworkState<List<Show>, String>> = MutableStateFlow(
+        NetworkState.Loading)
     val shows: StateFlow<NetworkState<List<Show>, String>> = _shows
 
     init {

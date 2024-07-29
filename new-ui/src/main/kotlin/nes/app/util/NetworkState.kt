@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.util
 
 sealed interface NetworkState<out CONTENT, out ERROR> {
     data object Loading: NetworkState<Nothing, Nothing>

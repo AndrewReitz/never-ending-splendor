@@ -8,6 +8,7 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nes.app.util.NetworkState
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.YearData
 import nes.networking.retry

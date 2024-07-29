@@ -9,6 +9,7 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nes.app.util.NetworkState
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.Show
 import nes.networking.retry
@@ -21,6 +22,7 @@ class ShowViewModel @Inject constructor(
 ): ViewModel() {
 
     private val showId: Long = checkNotNull(savedStateHandle["id"])
+    val venue: String = checkNotNull(savedStateHandle["venue"])
 
     private val _show: MutableStateFlow<NetworkState<Show, String>> = MutableStateFlow(NetworkState.Loading)
     val show: StateFlow<NetworkState<Show, String>> = _show

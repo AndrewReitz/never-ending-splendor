@@ -18,9 +18,12 @@ sealed class Screen(
     }
 
     data object Show : Screen(
-        route = "show/{id}",
-        navArguments = listOf(navArgument("id") { type = NavType.LongType })
+        route = "show/{id}/{venue}",
+        navArguments = listOf(
+            navArgument("id") { type = NavType.LongType },
+            navArgument("venue") { type = NavType.StringType }
+        )
     ) {
-        fun createRoute(showId: Long) = "show/$showId"
+        fun createRoute(showId: Long, venue: String) = "show/$showId/$venue"
     }
 }
