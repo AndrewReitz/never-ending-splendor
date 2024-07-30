@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.year
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

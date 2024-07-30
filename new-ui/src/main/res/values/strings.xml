@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Never Ending Splendor (Phish.in)</string>
     <string name="navigate_back">Navigate Back</string>
+    <string name="pause">Pause</string>
 </resources>

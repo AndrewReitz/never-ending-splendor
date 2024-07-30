@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.service
 
 import android.content.Intent
 import androidx.media3.common.Player

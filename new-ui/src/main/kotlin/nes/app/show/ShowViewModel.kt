@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.show
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import nes.app.util.NetworkState
+import nes.app.util.toAlbumFormat
+import nes.app.util.toSimpleFormat
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.Show
 import nes.networking.retry
@@ -22,7 +24,10 @@ class ShowViewModel @Inject constructor(
 ): ViewModel() {
 
     private val showId: Long = checkNotNull(savedStateHandle["id"])
-    val venue: String = checkNotNull(savedStateHandle["venue"])
+    private val venue: String = checkNotNull(savedStateHandle["venue"])
+
+    private val _appBarTitle: MutableStateFlow<String> = MutableStateFlow(venue)
+    val appBarTitle: StateFlow<String> = _appBarTitle
 
     private val _show: MutableStateFlow<NetworkState<Show, String>> = MutableStateFlow(NetworkState.Loading)
     val show: StateFlow<NetworkState<Show, String>> = _show
@@ -35,7 +40,11 @@ class ShowViewModel @Inject constructor(
         viewModelScope.launch {
             val state: NetworkState<Show, String> = when(val result = retry { phishInRepository.show(showId.toString()) }) {
                 is Failure -> NetworkState.Error("Error Occurred!")
-                is Success -> NetworkState.Loaded(result.value)
+                is Success -> {
+                    val value = result.value
+                    _appBarTitle.emit("${value.date.toAlbumFormat()} ${value.venue_name}")
+                    NetworkState.Loaded(value)
+                }
             }
 
             _show.emit(state)

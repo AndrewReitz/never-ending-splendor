@@ -111,7 +111,6 @@ dependencies {
 
     implementation(libs.play.services.cast)
     implementation(libs.play.services.cast.companion)
-    implementation(libs.android.material)
 
     implementation(platform(libs.firebase.bom))
 

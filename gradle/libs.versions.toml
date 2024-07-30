@@ -76,6 +76,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-material-icons = "androidx.compose.material:material-icons-extended:1.6.8"
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom"}
 firbase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
@@ -150,7 +151,8 @@ compose = [
     "androidx-ui-graphics",
     "androidx-ui-tooling",
     "androidx-material3",
-    "androidx-activity-compose"
+    "androidx-activity-compose",
+    "androidx-material-icons",
 ]
 
 navigation = [

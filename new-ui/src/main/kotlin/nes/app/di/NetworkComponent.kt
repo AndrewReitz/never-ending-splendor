@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.di
 
 import android.content.Context
 import dagger.Module
@@ -6,9 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
 import kotlinx.serialization.json.Json
-import nes.networking.CACHE_DIR_TAG
 import nes.networking.DISK_CACHE_SIZE
 import nes.networking.phishin.PHISHIN_API_URL
 import nes.networking.phishin.PhishInRepository
@@ -19,11 +17,9 @@ import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import org.kodein.di.instance
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.io.File
-import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
