@@ -13,7 +13,7 @@ sealed class Screen(
     data object ShowSelection : Screen(
         route = "shows/{year}",
         navArguments = listOf(navArgument("year") { type = NavType.StringType })
-    )  {
+    ) {
         fun createRoute(year: String) = "shows/$year"
     }
 
@@ -26,4 +26,6 @@ sealed class Screen(
     ) {
         fun createRoute(showId: Long, venue: String) = "show/$showId/$venue"
     }
+
+    data object Player : Screen("player")
 }

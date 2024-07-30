@@ -37,7 +37,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -51,12 +50,11 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import nes.app.R
 import nes.app.components.ErrorScreen
 import nes.app.components.LoadingScreen
+import nes.app.player.MiniPlayer
 import nes.app.ui.NesTheme
 import nes.app.ui.Rainbow
 import nes.app.util.NetworkState
@@ -69,7 +67,8 @@ import nes.networking.phishin.model.Show
 fun ShowScreen(
     mediaController: MediaController?,
     viewModel: ShowViewModel = hiltViewModel(),
-    upClick: () -> Unit
+    upClick: () -> Unit,
+    onMiniPlayerClick: () -> Unit
 ) {
     val showState by viewModel.show.collectAsState()
     val appBarTitle by viewModel.appBarTitle.collectAsState()
@@ -99,7 +98,8 @@ fun ShowScreen(
                 is NetworkState.Error -> ErrorScreen(state.error)
                 is NetworkState.Loaded -> ShowListWithPlayer(
                     show = state.value,
-                    mediaController = checkNotNull(mediaController) { "Should be loaded by now" }
+                    mediaController = checkNotNull(mediaController) { "Should be loaded by now" },
+                    onMiniPlayerClick = onMiniPlayerClick
                 )
                 NetworkState.Loading -> LoadingScreen()
             }
@@ -108,7 +108,11 @@ fun ShowScreen(
 }
 
 @Composable
-fun ShowListWithPlayer(show: Show, mediaController: MediaController) {
+fun ShowListWithPlayer(
+    show: Show,
+    mediaController: MediaController,
+    onMiniPlayerClick: () -> Unit,
+) {
     val items = show.tracks.map {
         MediaItem.Builder()
             .setUri(it.mp3.toString())
@@ -126,37 +130,35 @@ fun ShowListWithPlayer(show: Show, mediaController: MediaController) {
     }
     mediaController.addMediaItems(items)
 
-    var currentlyPlayingMediaId by remember { mutableStateOf<String?>(null) }
-    var currentlyPlayingTrackName by remember { mutableStateOf("--") }
+    var currentlyPlayingMediaId by remember {
+        mutableStateOf(mediaController.currentMediaItem?.mediaId)
+    }
     var playing by remember { mutableStateOf(mediaController.isPlaying) }
     val playerListener by remember {
         mutableStateOf(
             object : Player.Listener {
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                     currentlyPlayingMediaId = mediaItem?.mediaId
-                    currentlyPlayingTrackName = mediaItem?.mediaMetadata?.title?.toString() ?: "--"
                 }
 
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     playing = isPlaying
                 }
-
-                override fun onPlayerError(error: PlaybackException) {
-                    // TODO Log error
-                }
             }
         )
     }
 
-    DisposableEffect(show) {
+    DisposableEffect(Unit) {
         onDispose {
             mediaController.removeListener(playerListener)
         }
     }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         mediaController.addListener(playerListener)
     }
+
+    var firstLoad by remember { mutableStateOf(true) }
 
     Column {
         LazyColumn(modifier = Modifier
@@ -173,11 +175,18 @@ fun ShowListWithPlayer(show: Show, mediaController: MediaController) {
                 ) {
                     if (!isPlaying) {
 
-                        // check if first load and if it is clear out queue up
-                        // to first track
+                        if (firstLoad) {
+                            firstLoad = false
+                            for (ic in 0 .. mediaController.mediaItemCount) {
+                                val m = mediaController.getMediaItemAt(ic)
+                                if (m.mediaId == show.tracks.first().mp3.toString()) {
+                                    mediaController.removeMediaItems(0, ic)
+                                    break
+                                }
+                            }
+                        }
 
                         currentlyPlayingMediaId = track.mp3.toString()
-                        currentlyPlayingTrackName = track.title
                         mediaController.seekTo(i, 0)
                         mediaController.play()
                     } else {
@@ -186,29 +195,10 @@ fun ShowListWithPlayer(show: Show, mediaController: MediaController) {
                 }
             }
         }
-
-        val scope = rememberCoroutineScope()
-        var duration by remember(currentlyPlayingMediaId) { mutableStateOf( "--:--") }
-        LaunchedEffect(currentlyPlayingMediaId) {
-            scope.launch {
-                while(true) {
-                    delay(1000)
-                    duration = DateUtils.formatElapsedTime(mediaController.currentPosition / 1000)
-                }
-            }
-        }
-
         MiniPlayer(
-            trackTitle = currentlyPlayingTrackName,
-            duration = duration,
-            isPlaying = playing
-        ) {
-            if (playing) {
-                mediaController.pause()
-            } else {
-                mediaController.play()
-            }
-        }
+            mediaController = mediaController,
+            onClick = onMiniPlayerClick
+        )
     }
 }
 
@@ -277,70 +267,5 @@ fun TrackRowPreview() {
         ) {
 
         }
-    }
-}
-
-@Composable
-fun MiniPlayer(
-    trackTitle: String,
-    duration: String,
-    isPlaying: Boolean,
-    playPauseClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .background(Color.Cyan),
-    ) {
-        Box(modifier = Modifier
-            .size(56.dp)
-            .background(Color.Magenta)
-        ) {
-
-        }
-
-        Column(
-            modifier = Modifier
-                .padding(8.dp)
-                .weight(1f)
-        ) {
-            Text(
-                text = trackTitle,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = duration,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        IconButton(
-            onClick = playPauseClick
-        ) {
-            val (imageVector, contentDescription) = if (isPlaying) {
-                Icons.Default.Pause to stringResource(R.string.pause)
-            } else {
-                Icons.Default.PlayArrow to stringResource(R.string.pause)
-            }
-
-            Icon(
-                imageVector = imageVector,
-                contentDescription = contentDescription
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MiniPlayerPreview() {
-    NesTheme {
-        MiniPlayer(
-            trackTitle = "Ghost",
-            duration = "40:00",
-            isPlaying = true,
-            playPauseClick = {}
-        )
     }
 }

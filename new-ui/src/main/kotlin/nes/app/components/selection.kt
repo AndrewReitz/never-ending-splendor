@@ -28,8 +28,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.media3.session.MediaController
 import nes.app.util.NetworkState
 import nes.app.R
+import nes.app.player.MiniPlayer
 import nes.app.ui.Rainbow
 
 data class SelectionData(
@@ -43,7 +45,9 @@ data class SelectionData(
 fun SelectionScreen(
     title: String = stringResource(R.string.app_name),
     state: NetworkState<List<SelectionData>, String>,
-    upClick: (() -> Unit)?
+    mediaController: MediaController?,
+    upClick: (() -> Unit)?,
+    onMiniPlayerClick: () -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -70,7 +74,16 @@ fun SelectionScreen(
         ) {
             when(state) {
                 is NetworkState.Error -> ErrorScreen(state.error)
-                is NetworkState.Loaded -> SelectionList(state.value)
+                is NetworkState.Loaded -> Column {
+                    SelectionList(
+                        Modifier.weight(1f),
+                        state.value
+                    )
+                    MiniPlayer(
+                        mediaController = mediaController,
+                        onClick = onMiniPlayerClick
+                    )
+                }
                 NetworkState.Loading -> LoadingScreen()
             }
         }
@@ -79,10 +92,12 @@ fun SelectionScreen(
 
 @Composable
 fun SelectionList(
+    modifier: Modifier = Modifier,
     data: List<SelectionData>,
-    modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier.then(Modifier.fillMaxSize())) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize()
+    ) {
         itemsIndexed(data) { i, (title, subtitle, onClick) ->
             SelectionRow(
                 title = title,

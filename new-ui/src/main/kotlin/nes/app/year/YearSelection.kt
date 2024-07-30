@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.session.MediaController
 import nes.app.components.SelectionData
 import nes.app.components.SelectionScreen
 import nes.app.util.mapCollection
@@ -11,7 +12,9 @@ import nes.app.util.mapCollection
 @Composable
 fun YearSelectionScreen(
     viewModel: YearSelectionViewModel = hiltViewModel(),
-    onYearClicked: (year: String) -> Unit
+    mediaController: MediaController?,
+    onYearClicked: (year: String) -> Unit,
+    onMiniPlayerClick: () -> Unit,
 ) {
     val state by viewModel.years.collectAsState()
     val selectionData = state.mapCollection {
@@ -20,5 +23,10 @@ fun YearSelectionScreen(
         }
     }
 
-    SelectionScreen(state = selectionData, upClick = null)
+    SelectionScreen(
+        state = selectionData,
+        upClick = null,
+        mediaController = mediaController,
+        onMiniPlayerClick = onMiniPlayerClick,
+    )
 }

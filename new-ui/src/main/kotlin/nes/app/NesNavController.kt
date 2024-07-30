@@ -5,6 +5,7 @@ import androidx.media3.session.MediaController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import nes.app.player.NesPlayer
 import nes.app.show.ShowScreen
 import nes.app.show.ShowSelectionScreen
 import nes.app.year.YearSelectionScreen
@@ -16,25 +17,37 @@ fun NesNavController(
 ) {
     NavHost(navController = navController, startDestination = Screen.YearSelection.route) {
         composable(route = Screen.YearSelection.route) {
-            YearSelectionScreen {
-                navController.navigate(Screen.ShowSelection.createRoute(it))
-            }
+            YearSelectionScreen(
+                mediaController = mediaController,
+                onMiniPlayerClick = { },
+                onYearClicked = { navController.navigate(Screen.ShowSelection.createRoute(it)) }
+            )
         }
         composable(
             route = Screen.ShowSelection.route,
             arguments = Screen.ShowSelection.navArguments
         ) {
-            ShowSelectionScreen(navigateUpClick = { navController.navigateUp() }) { id, venue ->
-                navController.navigate(Screen.Show.createRoute(id, venue))
-            }
+            ShowSelectionScreen(
+                mediaController = mediaController,
+                navigateUpClick = { navController.navigateUp() },
+                onShowClicked = { id, venue -> navController.navigate(Screen.Show.createRoute(id, venue)) },
+                onMiniPlayerClick = { navController.navigate(Screen.Player.route) }
+            )
         }
         composable(
             route = Screen.Show.route,
             arguments = Screen.Show.navArguments
         ) {
-            ShowScreen(mediaController = mediaController) {
-                navController.navigateUp()
-            }
+            ShowScreen(
+                mediaController = mediaController,
+                upClick = { navController.navigateUp() },
+                onMiniPlayerClick = { navController.navigate(Screen.Player.route) }
+            )
+        }
+        composable(
+            route = Screen.Player.route
+        ) {
+            NesPlayer(mediaController = mediaController)
         }
     }
 }
