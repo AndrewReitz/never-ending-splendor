@@ -13,7 +13,7 @@ compose-compiler = "1.5.14"
 navigation = "2.8.0-beta06"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0"
-media3 = "1.3.1"
+media3 = "1.4.0"
 
 [libraries]
 android-build-gradle = { module = "com.android.tools.build:gradle", version = "8.5.1"}
@@ -67,7 +67,7 @@ okio = { module = "com.squareup.okio:okio", version = "3.9.0" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit"}
 
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.9.0" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.9.1" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -93,6 +93,7 @@ media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = 
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
 media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 media3-common = { module = "androidx.media3:media3-common", version.ref = "media3"}
+media3-cast = { module = "androidx.media3:media3-cast", version.ref = "media3"}
 
 [bundles]
 buildSrc = [
@@ -168,7 +169,8 @@ media3 = [
     "media3-exoplayer",
     "media3-session",
     "media3-ui",
-    "media3-common"
+    "media3-common",
+    "media3-cast"
 ]
 
 [plugins]

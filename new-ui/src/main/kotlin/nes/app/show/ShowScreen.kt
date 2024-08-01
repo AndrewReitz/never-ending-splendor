@@ -2,7 +2,6 @@
 
 package nes.app.show
 
-import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -35,7 +33,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,12 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.PlaybackException
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
-import androidx.media3.session.MediaController
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import nes.app.R
+import nes.app.components.CastButton
 import nes.app.components.ErrorScreen
 import nes.app.components.LoadingScreen
 import nes.app.player.MiniPlayer
@@ -65,7 +60,7 @@ import nes.networking.phishin.model.Show
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowScreen(
-    mediaController: MediaController?,
+    musicPlayer: Player?,
     viewModel: ShowViewModel = hiltViewModel(),
     upClick: () -> Unit,
     onMiniPlayerClick: () -> Unit
@@ -85,6 +80,9 @@ fun ShowScreen(
                             contentDescription = "Navigate Back"
                         )
                     }
+                },
+                actions = {
+                    CastButton()
                 }
             )
         },
@@ -96,11 +94,13 @@ fun ShowScreen(
         ) {
             when(val state = showState) {
                 is NetworkState.Error -> ErrorScreen(state.error)
-                is NetworkState.Loaded -> ShowListWithPlayer(
-                    show = state.value,
-                    mediaController = checkNotNull(mediaController) { "Should be loaded by now" },
-                    onMiniPlayerClick = onMiniPlayerClick
-                )
+                is NetworkState.Loaded -> {
+                    ShowListWithPlayer(
+                        show = state.value,
+                        musicPlayer = checkNotNull(musicPlayer) { "should be loaded by now" },
+                        onMiniPlayerClick = onMiniPlayerClick
+                    )
+                }
                 NetworkState.Loading -> LoadingScreen()
             }
         }
@@ -110,30 +110,36 @@ fun ShowScreen(
 @Composable
 fun ShowListWithPlayer(
     show: Show,
-    mediaController: MediaController,
+    musicPlayer: Player,
     onMiniPlayerClick: () -> Unit,
 ) {
-    val items = show.tracks.map {
-        MediaItem.Builder()
-            .setUri(it.mp3.toString())
-            .setMediaId(it.mp3.toString())
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setArtist("Phish")
-                    .setAlbumArtist("Phish")
-                    .setAlbumTitle("${show.date.toAlbumFormat()} ${show.venue.location}")
-                    .setTitle(it.title)
-                    .setRecordingYear(show.date.yearString.toInt())
-                    .build()
-            )
-            .build()
+    LaunchedEffect(show) {
+        val items = show.tracks.map {
+            MediaItem.Builder()
+                .setUri(it.mp3.toString())
+                .setMediaId(it.mp3.toString())
+                .setMimeType(MimeTypes.AUDIO_MPEG)
+                .setTag(show)
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setArtist("Phish")
+                        .setAlbumArtist("Phish")
+                        .setAlbumTitle("${show.date.toAlbumFormat()} ${show.venue.location}")
+                        .setTitle(it.title)
+                        .setRecordingYear(show.date.yearString.toInt())
+                        .build()
+                )
+                .build()
+        }
+
+        musicPlayer.addMediaItems(items)
+        musicPlayer.prepare()
     }
-    mediaController.addMediaItems(items)
 
     var currentlyPlayingMediaId by remember {
-        mutableStateOf(mediaController.currentMediaItem?.mediaId)
+        mutableStateOf(musicPlayer.currentMediaItem?.mediaId)
     }
-    var playing by remember { mutableStateOf(mediaController.isPlaying) }
+    var playing by remember { mutableStateOf(musicPlayer.isPlaying) }
     val playerListener by remember {
         mutableStateOf(
             object : Player.Listener {
@@ -150,12 +156,12 @@ fun ShowListWithPlayer(
 
     DisposableEffect(Unit) {
         onDispose {
-            mediaController.removeListener(playerListener)
+            musicPlayer.removeListener(playerListener)
         }
     }
 
     LaunchedEffect(Unit) {
-        mediaController.addListener(playerListener)
+        musicPlayer.addListener(playerListener)
     }
 
     var firstLoad by remember { mutableStateOf(true) }
@@ -174,29 +180,28 @@ fun ShowListWithPlayer(
                     playing = isPlaying
                 ) {
                     if (!isPlaying) {
-
-                        if (firstLoad) {
-                            firstLoad = false
-                            for (ic in 0 .. mediaController.mediaItemCount) {
-                                val m = mediaController.getMediaItemAt(ic)
-                                if (m.mediaId == show.tracks.first().mp3.toString()) {
-                                    mediaController.removeMediaItems(0, ic)
-                                    break
-                                }
-                            }
-                        }
-
-                        currentlyPlayingMediaId = track.mp3.toString()
-                        mediaController.seekTo(i, 0)
-                        mediaController.play()
+//                        if (firstLoad) {
+//                            firstLoad = false
+//                            for (ic in 0 until musicPlayer.mediaItemCount) {
+//                                val m = musicPlayer.getMediaItemAt(ic)
+//                                if (m.mediaId == show.tracks.first().mp3.toString()) {
+//                                    musicPlayer.removeMediaItems(0, ic)
+//                                    break
+//                                }
+//                            }
+//                        }
+//
+//                        currentlyPlayingMediaId = track.mp3.toString()
+//                        musicPlayer.seekTo(i, 0)
+                        musicPlayer.play()
                     } else {
-                        mediaController.pause()
+                        musicPlayer.pause()
                     }
                 }
             }
         }
         MiniPlayer(
-            mediaController = mediaController,
+            musicPlayer = musicPlayer,
             onClick = onMiniPlayerClick
         )
     }

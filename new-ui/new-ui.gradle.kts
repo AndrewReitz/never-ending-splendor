@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.utils.addToStdlib.cast
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -95,6 +97,7 @@ dependencies {
     implementation(libs.timber)
 
     implementation(libs.bundles.media3)
+    implementation(libs.androidx.mediarouter)
 
     debugImplementation(libs.bundles.android.debug.libs)
     releaseImplementation(libs.bundles.android.release.libs)

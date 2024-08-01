@@ -32,25 +32,24 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.session.MediaController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nes.app.R
 
 @Composable
 fun MiniPlayer(
-    mediaController: MediaController?,
+    musicPlayer: Player?,
     onClick: () -> Unit
 ) {
 
-    if (mediaController == null) {
+    if (musicPlayer == null) {
         return
     }
 
     var currentlyPlayingTrackName by remember {
-        mutableStateOf(mediaController.currentMediaItem.title)
+        mutableStateOf(musicPlayer.currentMediaItem.title)
     }
-    var playing by remember { mutableStateOf(mediaController.isPlaying) }
+    var playing by remember { mutableStateOf(musicPlayer.isPlaying) }
     val playerListener by remember {
         mutableStateOf(
             object : Player.Listener {
@@ -71,15 +70,15 @@ fun MiniPlayer(
 
     DisposableEffect(Unit) {
         onDispose {
-            mediaController.removeListener(playerListener)
+            musicPlayer.removeListener(playerListener)
         }
     }
 
     LaunchedEffect(Unit) {
-        mediaController.addListener(playerListener)
+        musicPlayer.addListener(playerListener)
     }
 
-    if (mediaController.currentMediaItem == null) {
+    if (musicPlayer.currentMediaItem == null) {
         return
     }
 
@@ -89,7 +88,7 @@ fun MiniPlayer(
         scope.launch {
             while(true) {
                 delay(1000)
-                duration = DateUtils.formatElapsedTime(mediaController.currentPosition / 1000)
+                duration = DateUtils.formatElapsedTime(musicPlayer.currentPosition / 1000)
             }
         }
     }
@@ -127,10 +126,10 @@ fun MiniPlayer(
 
         IconButton(
             onClick = {
-                if (mediaController.isPlaying) {
-                    mediaController.pause()
+                if (musicPlayer.isPlaying) {
+                    musicPlayer.pause()
                 } else {
-                    mediaController.play()
+                    musicPlayer.play()
                 }
             }
         ) {

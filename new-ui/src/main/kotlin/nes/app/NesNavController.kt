@@ -1,24 +1,26 @@
 package nes.app
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.media3.session.MediaController
+import androidx.media3.common.Player
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import nes.app.player.NesPlayer
+import nes.app.player.FullPlayer
 import nes.app.show.ShowScreen
 import nes.app.show.ShowSelectionScreen
 import nes.app.year.YearSelectionScreen
 
+@ExperimentalMaterial3Api
 @Composable
 fun NesNavController(
-    mediaController: MediaController?,
+    musicPlayer: Player?,
     navController: NavHostController
 ) {
     NavHost(navController = navController, startDestination = Screen.YearSelection.route) {
         composable(route = Screen.YearSelection.route) {
             YearSelectionScreen(
-                mediaController = mediaController,
+                musicPlayer = musicPlayer,
                 onMiniPlayerClick = { },
                 onYearClicked = { navController.navigate(Screen.ShowSelection.createRoute(it)) }
             )
@@ -28,7 +30,7 @@ fun NesNavController(
             arguments = Screen.ShowSelection.navArguments
         ) {
             ShowSelectionScreen(
-                mediaController = mediaController,
+                musicPlayer = musicPlayer,
                 navigateUpClick = { navController.navigateUp() },
                 onShowClicked = { id, venue -> navController.navigate(Screen.Show.createRoute(id, venue)) },
                 onMiniPlayerClick = { navController.navigate(Screen.Player.route) }
@@ -39,7 +41,7 @@ fun NesNavController(
             arguments = Screen.Show.navArguments
         ) {
             ShowScreen(
-                mediaController = mediaController,
+                musicPlayer = musicPlayer,
                 upClick = { navController.navigateUp() },
                 onMiniPlayerClick = { navController.navigate(Screen.Player.route) }
             )
@@ -47,7 +49,10 @@ fun NesNavController(
         composable(
             route = Screen.Player.route
         ) {
-            NesPlayer(mediaController = mediaController)
+            FullPlayer(
+                player = musicPlayer,
+                upClick = { navController.navigateUp() },
+            )
         }
     }
 }

@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.media3.session.MediaController
+import androidx.media3.common.Player
 import nes.app.util.NetworkState
 import nes.app.R
 import nes.app.player.MiniPlayer
@@ -45,7 +45,7 @@ data class SelectionData(
 fun SelectionScreen(
     title: String = stringResource(R.string.app_name),
     state: NetworkState<List<SelectionData>, String>,
-    mediaController: MediaController?,
+    musicPlayer: Player?,
     upClick: (() -> Unit)?,
     onMiniPlayerClick: () -> Unit,
 ) {
@@ -63,6 +63,9 @@ fun SelectionScreen(
                             )
                         }
                     }
+                },
+                actions = {
+                    CastButton()
                 }
             )
         }
@@ -80,7 +83,7 @@ fun SelectionScreen(
                         state.value
                     )
                     MiniPlayer(
-                        mediaController = mediaController,
+                        musicPlayer = musicPlayer,
                         onClick = onMiniPlayerClick
                     )
                 }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.session.MediaController
+import androidx.media3.common.Player
 import nes.app.components.SelectionData
 import nes.app.components.SelectionScreen
 import nes.app.util.mapCollection
@@ -13,7 +13,7 @@ import nes.app.util.toSimpleFormat
 @Composable
 fun ShowSelectionScreen(
     viewModel: ShowSelectionViewModel = hiltViewModel(),
-    mediaController: MediaController?,
+    musicPlayer: Player?,
     navigateUpClick: () -> Unit,
     onShowClicked: (showId: Long, venue: String) -> Unit,
     onMiniPlayerClick: () -> Unit,
@@ -32,7 +32,7 @@ fun ShowSelectionScreen(
         title = viewModel.showYear,
         state = selectionData,
         upClick = navigateUpClick,
-        mediaController = mediaController,
+        musicPlayer = musicPlayer,
         onMiniPlayerClick = onMiniPlayerClick
     )
 }
