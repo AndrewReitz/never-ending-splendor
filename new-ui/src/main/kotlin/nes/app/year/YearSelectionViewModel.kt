@@ -8,7 +8,7 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import nes.app.util.NetworkState
+import nes.app.util.LCE
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.YearData
 import nes.networking.retry
@@ -19,9 +19,9 @@ class YearSelectionViewModel @Inject constructor(
     private val phishinRepository: PhishInRepository
 ): ViewModel() {
 
-    private val _years: MutableStateFlow<NetworkState<List<YearData>, String>> =
-        MutableStateFlow(NetworkState.Loading)
-    val years: StateFlow<NetworkState<List<YearData>, String>> = _years
+    private val _years: MutableStateFlow<LCE<List<YearData>, String>> =
+        MutableStateFlow(LCE.Loading)
+    val years: StateFlow<LCE<List<YearData>, String>> = _years
 
     init {
         loadYears()
@@ -30,8 +30,8 @@ class YearSelectionViewModel @Inject constructor(
     private fun loadYears() {
         viewModelScope.launch {
             val state = when(val result = retry { phishinRepository.years() }) {
-                is Failure -> NetworkState.Error("Error occurred!")
-                is Success -> NetworkState.Loaded(result.value)
+                is Failure -> LCE.Error("Error occurred!")
+                is Success -> LCE.Loaded(result.value)
             }
 
             _years.emit(state)

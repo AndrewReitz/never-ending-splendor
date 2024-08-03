@@ -99,6 +99,8 @@ dependencies {
     implementation(libs.bundles.media3)
     implementation(libs.androidx.mediarouter)
 
+    implementation(libs.kotlinx.coroutines.android)
+
     debugImplementation(libs.bundles.android.debug.libs)
     releaseImplementation(libs.bundles.android.release.libs)
 

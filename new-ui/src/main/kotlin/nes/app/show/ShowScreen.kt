@@ -52,7 +52,7 @@ import nes.app.components.LoadingScreen
 import nes.app.player.MiniPlayer
 import nes.app.ui.NesTheme
 import nes.app.ui.Rainbow
-import nes.app.util.NetworkState
+import nes.app.util.LCE
 import nes.app.util.toAlbumFormat
 import nes.app.util.yearString
 import nes.networking.phishin.model.Show
@@ -93,15 +93,19 @@ fun ShowScreen(
                 .fillMaxSize()
         ) {
             when(val state = showState) {
-                is NetworkState.Error -> ErrorScreen(state.error)
-                is NetworkState.Loaded -> {
-                    ShowListWithPlayer(
-                        show = state.value,
-                        musicPlayer = checkNotNull(musicPlayer) { "should be loaded by now" },
-                        onMiniPlayerClick = onMiniPlayerClick
-                    )
+                is LCE.Error -> ErrorScreen(state.error)
+                is LCE.Loaded -> {
+                    if (musicPlayer != null) {
+                        ShowListWithPlayer(
+                            show = state.value,
+                            musicPlayer = musicPlayer,
+                            onMiniPlayerClick = onMiniPlayerClick
+                        )
+                    } else {
+                        LoadingScreen()
+                    }
                 }
-                NetworkState.Loading -> LoadingScreen()
+                LCE.Loading -> LoadingScreen()
             }
         }
     }
@@ -116,8 +120,8 @@ fun ShowListWithPlayer(
     LaunchedEffect(show) {
         val items = show.tracks.map {
             MediaItem.Builder()
-                .setUri(it.mp3.toString())
-                .setMediaId(it.mp3.toString())
+                .setUri(it.mp3)
+                .setMediaId(it.mp3)
                 .setMimeType(MimeTypes.AUDIO_MPEG)
                 .setTag(show)
                 .setMediaMetadata(
@@ -171,7 +175,7 @@ fun ShowListWithPlayer(
             .fillMaxSize()
             .weight(1f)) {
             itemsIndexed(show.tracks) { i, track ->
-                val isPlaying = track.mp3.toString() == currentlyPlayingMediaId && playing
+                val isPlaying = track.mp3 == currentlyPlayingMediaId && playing
 
                 TrackRow(
                     boxColor = Rainbow[i % Rainbow.size],
@@ -180,19 +184,19 @@ fun ShowListWithPlayer(
                     playing = isPlaying
                 ) {
                     if (!isPlaying) {
-//                        if (firstLoad) {
-//                            firstLoad = false
-//                            for (ic in 0 until musicPlayer.mediaItemCount) {
-//                                val m = musicPlayer.getMediaItemAt(ic)
-//                                if (m.mediaId == show.tracks.first().mp3.toString()) {
-//                                    musicPlayer.removeMediaItems(0, ic)
-//                                    break
-//                                }
-//                            }
-//                        }
-//
-//                        currentlyPlayingMediaId = track.mp3.toString()
-//                        musicPlayer.seekTo(i, 0)
+                        if (firstLoad) {
+                            firstLoad = false
+                            for (ic in 0 until musicPlayer.mediaItemCount) {
+                                val m = musicPlayer.getMediaItemAt(ic)
+                                if (m.mediaId == show.tracks.first().mp3) {
+                                    musicPlayer.removeMediaItems(0, ic)
+                                    break
+                                }
+                            }
+                        }
+
+                        currentlyPlayingMediaId = track.mp3
+                        musicPlayer.seekTo(i, 0)
                         musicPlayer.play()
                     } else {
                         musicPlayer.pause()

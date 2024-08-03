@@ -9,9 +9,8 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import nes.app.util.NetworkState
+import nes.app.util.LCE
 import nes.app.util.toAlbumFormat
-import nes.app.util.toSimpleFormat
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.Show
 import nes.networking.retry
@@ -29,8 +28,8 @@ class ShowViewModel @Inject constructor(
     private val _appBarTitle: MutableStateFlow<String> = MutableStateFlow(venue)
     val appBarTitle: StateFlow<String> = _appBarTitle
 
-    private val _show: MutableStateFlow<NetworkState<Show, String>> = MutableStateFlow(NetworkState.Loading)
-    val show: StateFlow<NetworkState<Show, String>> = _show
+    private val _show: MutableStateFlow<LCE<Show, String>> = MutableStateFlow(LCE.Loading)
+    val show: StateFlow<LCE<Show, String>> = _show
 
     init {
         loadShow()
@@ -38,12 +37,12 @@ class ShowViewModel @Inject constructor(
 
     private fun loadShow() {
         viewModelScope.launch {
-            val state: NetworkState<Show, String> = when(val result = retry { phishInRepository.show(showId.toString()) }) {
-                is Failure -> NetworkState.Error("Error Occurred!")
+            val state: LCE<Show, String> = when(val result = retry { phishInRepository.show(showId.toString()) }) {
+                is Failure -> LCE.Error("Error Occurred!")
                 is Success -> {
                     val value = result.value
                     _appBarTitle.emit("${value.date.toAlbumFormat()} ${value.venue_name}")
-                    NetworkState.Loaded(value)
+                    LCE.Loaded(value)
                 }
             }
 

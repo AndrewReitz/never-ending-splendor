@@ -60,10 +60,6 @@ fun MiniPlayer(
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     playing = isPlaying
                 }
-
-                override fun onPlayerError(error: PlaybackException) {
-                    // TODO Log error
-                }
             }
         )
     }

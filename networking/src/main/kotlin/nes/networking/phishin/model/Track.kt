@@ -10,9 +10,7 @@ import java.util.concurrent.TimeUnit
 data class Track(
     val id: Long,
     val title: String,
-
-    @Serializable(with = HttpUrlSerializer::class)
-    val mp3: HttpUrl,
+    val mp3: String,
     val duration: Long
 ) {
     val formatedDuration: String get() {

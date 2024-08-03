@@ -4,6 +4,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 
+// TODO replace w/ Arrow?
 suspend fun <T> retry(
     block: suspend () -> Result<T, Exception>
 ): Result<T, Exception> {

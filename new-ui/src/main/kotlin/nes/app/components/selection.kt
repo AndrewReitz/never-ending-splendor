@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import nes.app.util.NetworkState
+import nes.app.util.LCE
 import nes.app.R
 import nes.app.player.MiniPlayer
 import nes.app.ui.Rainbow
@@ -44,7 +44,7 @@ data class SelectionData(
 @Composable
 fun SelectionScreen(
     title: String = stringResource(R.string.app_name),
-    state: NetworkState<List<SelectionData>, String>,
+    state: LCE<List<SelectionData>, String>,
     musicPlayer: Player?,
     upClick: (() -> Unit)?,
     onMiniPlayerClick: () -> Unit,
@@ -76,8 +76,8 @@ fun SelectionScreen(
                 .fillMaxSize()
         ) {
             when(state) {
-                is NetworkState.Error -> ErrorScreen(state.error)
-                is NetworkState.Loaded -> Column {
+                is LCE.Error -> ErrorScreen(state.error)
+                is LCE.Loaded -> Column {
                     SelectionList(
                         Modifier.weight(1f),
                         state.value
@@ -87,7 +87,7 @@ fun SelectionScreen(
                         onClick = onMiniPlayerClick
                     )
                 }
-                NetworkState.Loading -> LoadingScreen()
+                LCE.Loading -> LoadingScreen()
             }
         }
     }
