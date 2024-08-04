@@ -1,10 +1,9 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package nes.app.show
 
+import android.net.Uri
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,16 +15,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,18 +42,16 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import nes.app.R
-import nes.app.components.CastButton
-import nes.app.components.ErrorScreen
 import nes.app.components.LoadingScreen
+import nes.app.components.NesScaffold
 import nes.app.player.MiniPlayer
 import nes.app.ui.NesTheme
 import nes.app.ui.Rainbow
-import nes.app.util.LCE
 import nes.app.util.toAlbumFormat
+import nes.app.util.toMetadataExtras
 import nes.app.util.yearString
 import nes.networking.phishin.model.Show
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowScreen(
     musicPlayer: Player?,
@@ -68,45 +62,20 @@ fun ShowScreen(
     val showState by viewModel.show.collectAsState()
     val appBarTitle by viewModel.appBarTitle.collectAsState()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = appBarTitle) },
-                navigationIcon = {
-                    IconButton(onClick = upClick) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate Back"
-                        )
-                    }
-                },
-                actions = {
-                    CastButton()
-                }
+    NesScaffold(
+        title = appBarTitle,
+        state = showState,
+        upClick = upClick
+    ) { value ->
+        if (musicPlayer != null) {
+            ShowListWithPlayer(
+                show = value,
+                musicPlayer = musicPlayer,
+                onMiniPlayerClick = onMiniPlayerClick,
+                randomImageUriProvider = { viewModel.randomImageUri }
             )
-        },
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            when(val state = showState) {
-                is LCE.Error -> ErrorScreen(state.error)
-                is LCE.Loaded -> {
-                    if (musicPlayer != null) {
-                        ShowListWithPlayer(
-                            show = state.value,
-                            musicPlayer = musicPlayer,
-                            onMiniPlayerClick = onMiniPlayerClick
-                        )
-                    } else {
-                        LoadingScreen()
-                    }
-                }
-                LCE.Loading -> LoadingScreen()
-            }
+        } else {
+            LoadingScreen()
         }
     }
 }
@@ -115,6 +84,7 @@ fun ShowScreen(
 fun ShowListWithPlayer(
     show: Show,
     musicPlayer: Player,
+    randomImageUriProvider: () -> Uri,
     onMiniPlayerClick: () -> Unit,
 ) {
     LaunchedEffect(show) {
@@ -123,14 +93,15 @@ fun ShowListWithPlayer(
                 .setUri(it.mp3)
                 .setMediaId(it.mp3)
                 .setMimeType(MimeTypes.AUDIO_MPEG)
-                .setTag(show)
                 .setMediaMetadata(
                     MediaMetadata.Builder()
+                        .setExtras(show.toMetadataExtras())
                         .setArtist("Phish")
                         .setAlbumArtist("Phish")
                         .setAlbumTitle("${show.date.toAlbumFormat()} ${show.venue.location}")
                         .setTitle(it.title)
                         .setRecordingYear(show.date.yearString.toInt())
+                        .setArtworkUri(randomImageUriProvider())
                         .build()
                 )
                 .build()

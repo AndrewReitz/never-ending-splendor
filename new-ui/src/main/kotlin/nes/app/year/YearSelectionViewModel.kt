@@ -19,9 +19,9 @@ class YearSelectionViewModel @Inject constructor(
     private val phishinRepository: PhishInRepository
 ): ViewModel() {
 
-    private val _years: MutableStateFlow<LCE<List<YearData>, String>> =
+    private val _years: MutableStateFlow<LCE<List<YearData>, Exception>> =
         MutableStateFlow(LCE.Loading)
-    val years: StateFlow<LCE<List<YearData>, String>> = _years
+    val years: StateFlow<LCE<List<YearData>, Exception>> = _years
 
     init {
         loadYears()
@@ -30,7 +30,7 @@ class YearSelectionViewModel @Inject constructor(
     private fun loadYears() {
         viewModelScope.launch {
             val state = when(val result = retry { phishinRepository.years() }) {
-                is Failure -> LCE.Error("Error occurred!")
+                is Failure -> LCE.Error(userDisplayedMessage = "Error occurred!", error = result.reason)
                 is Success -> LCE.Loaded(result.value)
             }
 

@@ -1,5 +1,7 @@
 package nes.app.show
 
+import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,7 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nes.app.util.Images
 import nes.app.util.LCE
 import nes.app.util.toAlbumFormat
 import nes.networking.phishin.PhishInRepository
@@ -19,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShowViewModel @Inject constructor(
     private val phishInRepository: PhishInRepository,
+    private val images: Images,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -28,8 +32,10 @@ class ShowViewModel @Inject constructor(
     private val _appBarTitle: MutableStateFlow<String> = MutableStateFlow(venue)
     val appBarTitle: StateFlow<String> = _appBarTitle
 
-    private val _show: MutableStateFlow<LCE<Show, String>> = MutableStateFlow(LCE.Loading)
-    val show: StateFlow<LCE<Show, String>> = _show
+    private val _show: MutableStateFlow<LCE<Show, Exception>> = MutableStateFlow(LCE.Loading)
+    val show: StateFlow<LCE<Show, Exception>> = _show
+
+    val randomImageUri: Uri get() = images.randomImageUrl.toUri()
 
     init {
         loadShow()
@@ -37,8 +43,8 @@ class ShowViewModel @Inject constructor(
 
     private fun loadShow() {
         viewModelScope.launch {
-            val state: LCE<Show, String> = when(val result = retry { phishInRepository.show(showId.toString()) }) {
-                is Failure -> LCE.Error("Error Occurred!")
+            val state: LCE<Show, Exception> = when(val result = retry { phishInRepository.show(showId.toString()) }) {
+                is Failure -> LCE.Error(userDisplayedMessage = "Error Occurred!", error = result.reason)
                 is Success -> {
                     val value = result.value
                     _appBarTitle.emit("${value.date.toAlbumFormat()} ${value.venue_name}")

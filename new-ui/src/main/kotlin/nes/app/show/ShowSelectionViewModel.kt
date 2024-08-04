@@ -23,9 +23,8 @@ class ShowSelectionViewModel @Inject constructor(
 
     val showYear: String = checkNotNull(savedStateHandle["year"])
 
-    private val _shows: MutableStateFlow<LCE<List<Show>, String>> = MutableStateFlow(
-        LCE.Loading)
-    val shows: StateFlow<LCE<List<Show>, String>> = _shows
+    private val _shows: MutableStateFlow<LCE<List<Show>, Exception>> = MutableStateFlow(LCE.Loading)
+    val shows: StateFlow<LCE<List<Show>, Exception>> = _shows
 
     init {
         loadShows()
@@ -34,7 +33,7 @@ class ShowSelectionViewModel @Inject constructor(
     private fun loadShows() {
         viewModelScope.launch {
             val state = when(val result = retry { phishinRepository.shows(showYear) }) {
-                is Failure -> LCE.Error("Error Occurred!")
+                is Failure -> LCE.Error(userDisplayedMessage = "Error Occurred!", result.reason)
                 is Success -> LCE.Loaded(result.value)
             }
 

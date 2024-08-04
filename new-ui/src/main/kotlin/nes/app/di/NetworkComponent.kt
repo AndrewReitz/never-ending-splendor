@@ -1,6 +1,7 @@
 package nes.app.di
 
 import android.content.Context
+import coil.ImageLoader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -80,6 +81,16 @@ class NetworkComponent {
     @Provides
     @Singleton
     fun providesInterceptors(): Set<@JvmSuppressWildcards Interceptor> = emptySet()
+
+    @Provides
+    @Singleton
+    fun provideImageLoader(
+        @ApplicationContext context: Context,
+        okHttpClient: OkHttpClient
+    ) = ImageLoader.Builder(context)
+        .okHttpClient(okHttpClient)
+        .crossfade(true)
+        .build()
 }
 
 @Qualifier

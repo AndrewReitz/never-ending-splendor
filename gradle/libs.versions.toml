@@ -95,6 +95,8 @@ media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 media3-common = { module = "androidx.media3:media3-common", version.ref = "media3"}
 media3-cast = { module = "androidx.media3:media3-cast", version.ref = "media3"}
 
+coil = "io.coil-kt:coil-compose:2.7.0"
+
 [bundles]
 buildSrc = [
     "android-build-gradle",

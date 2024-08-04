@@ -100,6 +100,7 @@ dependencies {
     implementation(libs.androidx.mediarouter)
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.coil)
 
     debugImplementation(libs.bundles.android.debug.libs)
     releaseImplementation(libs.bundles.android.release.libs)

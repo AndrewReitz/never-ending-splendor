@@ -27,6 +27,10 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 @Composable
 fun ErrorScreen(message: String, modifier: Modifier = Modifier) {
     Box(modifier = modifier.then(Modifier.fillMaxSize())) {
-        Text(text = message)
+        Text(
+            text = message,
+            modifier = Modifier.align(Alignment.Center),
+            style = MaterialTheme.typography.headlineMedium
+        )
     }
 }

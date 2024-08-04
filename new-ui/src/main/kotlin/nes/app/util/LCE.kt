@@ -5,7 +5,7 @@ package nes.app.util
 sealed interface LCE<out CONTENT, out ERROR> {
     data object Loading: LCE<Nothing, Nothing>
     data class Loaded<out C>(val value: C): LCE<C, Nothing>
-    data class Error<E>(val error: E): LCE<Nothing, E>
+    data class Error<E>(val userDisplayedMessage: String, val error: E): LCE<Nothing, E>
 }
 
 fun <IN, OUT, E> LCE<IN, E>.map(transform: (IN) -> OUT): LCE<OUT, E> =

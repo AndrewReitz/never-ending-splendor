@@ -13,15 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,55 +33,29 @@ data class SelectionData(
     val onClick: () -> Unit
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectionScreen(
     title: String = stringResource(R.string.app_name),
-    state: LCE<List<SelectionData>, String>,
+    state: LCE<List<SelectionData>, Any>,
     musicPlayer: Player?,
     upClick: (() -> Unit)?,
     onMiniPlayerClick: () -> Unit,
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = title) },
-                navigationIcon = {
-                    upClick?.let {
-                        IconButton(onClick = upClick) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.navigate_back)
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    CastButton()
-                }
+
+    NesScaffold(
+        title = title,
+        state = state,
+        upClick = upClick
+    ) { value ->
+        Column {
+            SelectionList(
+                Modifier.weight(1f),
+                value
             )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            when(state) {
-                is LCE.Error -> ErrorScreen(state.error)
-                is LCE.Loaded -> Column {
-                    SelectionList(
-                        Modifier.weight(1f),
-                        state.value
-                    )
-                    MiniPlayer(
-                        musicPlayer = musicPlayer,
-                        onClick = onMiniPlayerClick
-                    )
-                }
-                LCE.Loading -> LoadingScreen()
-            }
+            MiniPlayer(
+                musicPlayer = musicPlayer,
+                onClick = onMiniPlayerClick
+            )
         }
     }
 }

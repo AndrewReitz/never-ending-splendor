@@ -18,10 +18,12 @@ fun NesNavController(
     navController: NavHostController
 ) {
     NavHost(navController = navController, startDestination = Screen.YearSelection.route) {
+        val miniPlayerClicked = { navController.navigate(Screen.Player.route) }
+
         composable(route = Screen.YearSelection.route) {
             YearSelectionScreen(
                 musicPlayer = musicPlayer,
-                onMiniPlayerClick = { },
+                onMiniPlayerClick = miniPlayerClicked,
                 onYearClicked = { navController.navigate(Screen.ShowSelection.createRoute(it)) }
             )
         }
@@ -33,7 +35,7 @@ fun NesNavController(
                 musicPlayer = musicPlayer,
                 navigateUpClick = { navController.navigateUp() },
                 onShowClicked = { id, venue -> navController.navigate(Screen.Show.createRoute(id, venue)) },
-                onMiniPlayerClick = { navController.navigate(Screen.Player.route) }
+                onMiniPlayerClick = miniPlayerClicked
             )
         }
         composable(
@@ -43,7 +45,7 @@ fun NesNavController(
             ShowScreen(
                 musicPlayer = musicPlayer,
                 upClick = { navController.navigateUp() },
-                onMiniPlayerClick = { navController.navigate(Screen.Player.route) }
+                onMiniPlayerClick = miniPlayerClicked
             )
         }
         composable(
@@ -51,6 +53,12 @@ fun NesNavController(
         ) {
             FullPlayer(
                 player = musicPlayer,
+                navigateToShow = { id, name ->
+                    navController.clearBackStack(Screen.Player.route)
+                    navController.navigate(Screen.Show.createRoute(id, name)) {
+                        popUpTo(Screen.YearSelection.route)
+                    }
+                },
                 upClick = { navController.navigateUp() },
             )
         }
