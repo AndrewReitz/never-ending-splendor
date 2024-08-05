@@ -14,12 +14,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.navigation.compose.rememberNavController
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import dagger.Component
 import nes.app.service.PlaybackService
 
 @OptIn(UnstableApi::class)
@@ -40,7 +42,10 @@ fun NesApp(
                     val mediaControllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
                     controllerFuture = mediaControllerFuture
                     mediaControllerFuture.addListener(
-                        { mediaController = mediaControllerFuture.get() },
+                        {
+                            val result = mediaControllerFuture.get()
+                            mediaController = result
+                        },
                         MoreExecutors.directExecutor()
                     )
                 }

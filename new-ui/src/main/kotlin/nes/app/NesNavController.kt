@@ -49,7 +49,8 @@ fun NesNavController(
             )
         }
         composable(
-            route = Screen.Player.route
+            route = Screen.Player.route,
+            arguments = Screen.Player.navArguments
         ) {
             FullPlayer(
                 player = musicPlayer,
