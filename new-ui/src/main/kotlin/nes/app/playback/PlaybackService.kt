@@ -1,4 +1,4 @@
-package nes.app.service
+package nes.app.playback
 
 import android.content.Intent
 import androidx.annotation.OptIn
@@ -20,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import nes.app.ReplaceableForwardingPlayer
 
 @UnstableApi
 class PlaybackService : MediaSessionService(), SessionAvailabilityListener, MediaLibraryService.MediaLibrarySession.Callback {

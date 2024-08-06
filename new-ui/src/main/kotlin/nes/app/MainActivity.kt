@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import dagger.hilt.android.AndroidEntryPoint
+import nes.app.ui.NesApp
 import nes.app.ui.NesTheme
 
 @ExperimentalMaterial3Api

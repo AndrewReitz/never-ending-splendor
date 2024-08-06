@@ -1,4 +1,4 @@
-package nes.app.show
+package nes.app.ui.show
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

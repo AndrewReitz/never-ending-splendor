@@ -1,4 +1,4 @@
-package nes.app.show
+package nes.app.ui.show
 
 import android.net.Uri
 import androidx.core.net.toUri

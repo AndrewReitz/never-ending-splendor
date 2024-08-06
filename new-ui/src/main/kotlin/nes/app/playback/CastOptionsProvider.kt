@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.playback
 
 import android.content.Context
 import com.google.android.gms.cast.CastMediaControlIntent

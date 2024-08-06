@@ -1,4 +1,4 @@
-package nes.app.show
+package nes.app.ui.show
 
 import android.net.Uri
 import android.os.Bundle
@@ -42,10 +42,10 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import nes.app.R
-import nes.app.components.LoadingScreen
-import nes.app.components.NesScaffold
-import nes.app.player.MiniPlayer
-import nes.app.player.PlayerViewModel
+import nes.app.ui.components.LoadingScreen
+import nes.app.ui.components.NesScaffold
+import nes.app.ui.player.MiniPlayer
+import nes.app.ui.player.PlayerViewModel
 import nes.app.ui.NesTheme
 import nes.app.ui.Rainbow
 import nes.app.util.stub

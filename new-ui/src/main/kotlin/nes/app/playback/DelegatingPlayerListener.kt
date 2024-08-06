@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package nes.app
+package nes.app.playback
 
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.DeviceInfo

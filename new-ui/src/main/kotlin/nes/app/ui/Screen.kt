@@ -1,10 +1,8 @@
-package nes.app
+package nes.app.ui
 
-import androidx.core.text.htmlEncode
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import okio.ByteString.Companion.decodeBase64
 import okio.ByteString.Companion.encodeUtf8
 
 sealed class Screen(

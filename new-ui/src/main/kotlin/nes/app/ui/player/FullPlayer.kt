@@ -1,4 +1,4 @@
-package nes.app.player
+package nes.app.ui.player
 
 import androidx.annotation.OptIn
 import androidx.compose.foundation.basicMarquee
@@ -44,9 +44,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import coil.compose.AsyncImage
 import nes.app.R
-import nes.app.components.CastButton
-import nes.app.components.LoadingScreen
-import nes.app.components.TopAppBarText
+import nes.app.ui.components.CastButton
+import nes.app.ui.components.LoadingScreen
+import nes.app.ui.components.TopAppBarText
 import nes.app.util.artworkUri
 import nes.app.util.mediaMetaData
 import nes.app.util.title

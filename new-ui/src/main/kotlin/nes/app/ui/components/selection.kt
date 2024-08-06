@@ -1,4 +1,4 @@
-package nes.app.components
+package nes.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import nes.app.util.LCE
 import nes.app.R
-import nes.app.player.MiniPlayer
+import nes.app.ui.player.MiniPlayer
 import nes.app.ui.Rainbow
 
 data class SelectionData(

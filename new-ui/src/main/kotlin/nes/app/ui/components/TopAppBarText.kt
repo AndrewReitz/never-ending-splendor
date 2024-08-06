@@ -1,4 +1,4 @@
-package nes.app.components
+package nes.app.ui.components
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.material3.Text

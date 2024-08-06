@@ -1,4 +1,4 @@
-package nes.app
+package nes.app.playback
 
 import android.os.Looper
 import android.view.Surface

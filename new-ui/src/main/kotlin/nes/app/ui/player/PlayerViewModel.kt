@@ -1,4 +1,4 @@
-package nes.app.player
+package nes.app.ui.player
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle
@@ -11,14 +11,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import nes.app.PlayerManager
+import nes.app.playback.MediaControllerContainer
 import nes.app.util.formatedElapsedTime
 import okio.ByteString.Companion.decodeBase64
 import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    playerManager: PlayerManager,
+    mediaControllerContainer: MediaControllerContainer,
     savedStateHandle: SavedStateHandle,
 ): ViewModel() {
 
@@ -31,7 +31,7 @@ class PlayerViewModel @Inject constructor(
         val currentPosition: Long,
     )
 
-    private val player = playerManager.mediaController
+    private val player = mediaControllerContainer.mediaController
 
     private val playerListener = object : Player.Listener {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {

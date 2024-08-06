@@ -1,4 +1,4 @@
-package nes.app.player
+package nes.app.ui.player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

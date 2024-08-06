@@ -1,4 +1,4 @@
-package nes.app.year
+package nes.app.ui.year
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +8,7 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import nes.app.PlayerManager
+import nes.app.playback.MediaControllerContainer
 import nes.app.util.LCE
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.YearData
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class YearSelectionViewModel @Inject constructor(
     private val phishinRepository: PhishInRepository,
-    private val playbackManager: PlayerManager,
+    private val playbackManager: MediaControllerContainer,
 ): ViewModel() {
 
     private val _years: MutableStateFlow<LCE<List<YearData>, Exception>> =

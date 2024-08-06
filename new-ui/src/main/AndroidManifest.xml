@@ -25,7 +25,7 @@
         </activity>
 
         <service
-            android:name=".service.PlaybackService"
+            android:name=".playback.PlaybackService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true"
             android:permission="nes">
