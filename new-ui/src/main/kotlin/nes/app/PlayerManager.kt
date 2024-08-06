@@ -16,15 +16,18 @@ import nes.app.service.PlaybackService
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@OptIn(UnstableApi::class)
 @Singleton
-class PlaybackManager @OptIn(UnstableApi::class) @Inject constructor(
+class PlayerManager @Inject constructor(
     @ApplicationContext val context: Context,
 ) {
 
     private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val controllerFuture: ListenableFuture<MediaController>
-    private lateinit var mediaController: MediaController
+    private lateinit var _mediaController: MediaController
+
+    val mediaController by lazy { _mediaController }
 
     init {
         val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
@@ -33,13 +36,9 @@ class PlaybackManager @OptIn(UnstableApi::class) @Inject constructor(
 
         mediaControllerFuture.addListener(
             {
-                mediaController = mediaControllerFuture.get()
+                _mediaController = mediaControllerFuture.get()
             },
             MoreExecutors.directExecutor()
         )
-    }
-
-    fun release() {
-        MediaController.releaseFuture(controllerFuture)
     }
 }

@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.Player
 import nes.app.util.LCE
 import nes.app.R
 import nes.app.player.MiniPlayer
@@ -37,9 +36,8 @@ data class SelectionData(
 fun SelectionScreen(
     title: String = stringResource(R.string.app_name),
     state: LCE<List<SelectionData>, Any>,
-    musicPlayer: Player?,
     upClick: (() -> Unit)?,
-    onMiniPlayerClick: () -> Unit,
+    onMiniPlayerClick: (title: String) -> Unit,
 ) {
 
     NesScaffold(
@@ -52,10 +50,7 @@ fun SelectionScreen(
                 Modifier.weight(1f),
                 value
             )
-            MiniPlayer(
-                musicPlayer = musicPlayer,
-                onClick = onMiniPlayerClick
-            )
+            MiniPlayer(onClick = onMiniPlayerClick)
         }
     }
 }

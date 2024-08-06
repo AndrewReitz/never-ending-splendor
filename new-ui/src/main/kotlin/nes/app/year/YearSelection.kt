@@ -12,9 +12,8 @@ import nes.app.util.mapCollection
 @Composable
 fun YearSelectionScreen(
     viewModel: YearSelectionViewModel = hiltViewModel(),
-    musicPlayer: Player?,
     onYearClicked: (year: String) -> Unit,
-    onMiniPlayerClick: () -> Unit,
+    onMiniPlayerClick: (title: String) -> Unit,
 ) {
     val state by viewModel.years.collectAsState()
     val selectionData = state.mapCollection {
@@ -26,7 +25,6 @@ fun YearSelectionScreen(
     SelectionScreen(
         state = selectionData,
         upClick = null,
-        musicPlayer = musicPlayer,
         onMiniPlayerClick = onMiniPlayerClick,
     )
 }

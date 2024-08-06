@@ -19,86 +19,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Player
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import nes.app.R
-import nes.app.ui.NesTheme
 import nes.app.util.albumTitle
 import nes.app.util.artworkUri
-import nes.app.util.formatedElapsedTime
-import nes.app.util.stub
 import nes.app.util.title
 
 @Composable
 fun MiniPlayer(
-    musicPlayer: Player?,
-    onClick: () -> Unit
+    viewModel: PlayerViewModel = hiltViewModel(),
+    onClick: (title: String) -> Unit
 ) {
-    if (musicPlayer == null) {
-        return
-    }
+    val playerState by viewModel.playerState.collectAsState()
 
-    var playing by remember { mutableStateOf(musicPlayer.isPlaying) }
-    var currentMediaItem by remember { mutableStateOf(musicPlayer.currentMediaItem) }
-    val playerListener by remember {
-        mutableStateOf(
-            object : Player.Listener {
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    currentMediaItem = mediaItem
-                }
-
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    playing = isPlaying
-                    currentMediaItem = musicPlayer.currentMediaItem
-                }
-            }
-        )
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            musicPlayer.removeListener(playerListener)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        musicPlayer.addListener(playerListener)
-    }
-
-    if (currentMediaItem == null) {
-        return
-    }
-
-    val scope = rememberCoroutineScope()
-    var duration by remember { mutableStateOf(musicPlayer.formatedElapsedTime) }
-    LaunchedEffect(Unit) {
-        scope.launch {
-            while (true) {
-                delay(1000)
-                duration = musicPlayer.formatedElapsedTime
-            }
-        }
-    }
-
-    // todo show "album" too
+    val currentMediaItem = playerState.mediaItem ?: return
+    val playing = playerState.isPlaying
+    val elapsedTime = playerState.formatedElapsedTime
 
     Surface(
         shadowElevation = 8.dp
@@ -109,7 +54,9 @@ fun MiniPlayer(
                 .height(56.dp)
                 .shadow(2.dp)
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .clickable(onClick = onClick),
+                .clickable {
+                    onClick(currentMediaItem.albumTitle)
+                },
         ) {
 
             AsyncImage(
@@ -136,7 +83,7 @@ fun MiniPlayer(
 
             Box(modifier = Modifier.fillMaxHeight()) {
                 Text(
-                    text = duration,
+                    text = elapsedTime,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.align(Alignment.Center)
                 )
@@ -144,10 +91,10 @@ fun MiniPlayer(
 
             IconButton(
                 onClick = {
-                    if (musicPlayer.isPlaying) {
-                        musicPlayer.pause()
+                    if (playing) {
+                        viewModel.pause()
                     } else {
-                        musicPlayer.play()
+                        viewModel.play()
                     }
                 }
             ) {
@@ -166,26 +113,26 @@ fun MiniPlayer(
     }
 }
 
-@Preview
-@Composable
-fun MiniPlayerPreview() {
-    NesTheme {
-        MiniPlayer(musicPlayer = object : Player by stub() {
-            override fun getCurrentMediaItem() = MediaItem.Builder()
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setTitle("The Lizards")
-                        .setAlbumTitle("2024/08/03 Deer Creek")
-                        .build()
-                )
-                .build()
-
-            override fun isPlaying(): Boolean = true
-            override fun addListener(listener: Player.Listener) = Unit
-            // should display 1:20
-            override fun getCurrentPosition(): Long = 1000 * 60 * 1 + 20
-        }) {
-            // onClick do nothing
-        }
-    }
-}
+//@Preview
+//@Composable
+//fun MiniPlayerPreview() {
+//    NesTheme {
+//        MiniPlayer(musicPlayer = object : Player by stub() {
+//            override fun getCurrentMediaItem() = MediaItem.Builder()
+//                .setMediaMetadata(
+//                    MediaMetadata.Builder()
+//                        .setTitle("The Lizards")
+//                        .setAlbumTitle("2024/08/03 Deer Creek")
+//                        .build()
+//                )
+//                .build()
+//
+//            override fun isPlaying(): Boolean = true
+//            override fun addListener(listener: Player.Listener) = Unit
+//            // should display 1:20
+//            override fun getCurrentPosition(): Long = 1000 * 60 * 1 + 20
+//        }) {
+//            // onClick do nothing
+//        }
+//    }
+//}

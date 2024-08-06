@@ -8,6 +8,7 @@ import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nes.app.PlayerManager
 import nes.app.util.LCE
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.YearData
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class YearSelectionViewModel @Inject constructor(
-    private val phishinRepository: PhishInRepository
+    private val phishinRepository: PhishInRepository,
+    private val playbackManager: PlayerManager,
 ): ViewModel() {
 
     private val _years: MutableStateFlow<LCE<List<YearData>, Exception>> =

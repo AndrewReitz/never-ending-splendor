@@ -27,48 +27,7 @@ import nes.app.service.PlaybackService
 @OptIn(UnstableApi::class)
 @ExperimentalMaterial3Api
 @Composable
-fun NesApp(
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-) {
-    val context = LocalContext.current
-    var controllerFuture by remember { mutableStateOf<ListenableFuture<MediaController>?>(null) }
-    var mediaController by remember { mutableStateOf<MediaController?>(null) }
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> {
-                    val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
-                    val mediaControllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
-                    controllerFuture = mediaControllerFuture
-                    mediaControllerFuture.addListener(
-                        {
-                            val result = mediaControllerFuture.get()
-                            mediaController = result
-                        },
-                        MoreExecutors.directExecutor()
-                    )
-                }
-
-                Lifecycle.Event.ON_DESTROY -> {
-                    controllerFuture?.let { MediaController.releaseFuture(it) }
-                    mediaController = null
-                }
-
-                Lifecycle.Event.ON_START -> {}
-                Lifecycle.Event.ON_RESUME -> {}
-                Lifecycle.Event.ON_PAUSE -> {}
-                Lifecycle.Event.ON_STOP -> {}
-                Lifecycle.Event.ON_ANY -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-
+fun NesApp() {
     val navController = rememberNavController()
-    NesNavController(
-        musicPlayer = mediaController,
-        navController = navController
-    )
+    NesNavController(navController = navController)
 }

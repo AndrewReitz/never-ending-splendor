@@ -13,10 +13,9 @@ import nes.app.util.toSimpleFormat
 @Composable
 fun ShowSelectionScreen(
     viewModel: ShowSelectionViewModel = hiltViewModel(),
-    musicPlayer: Player?,
     navigateUpClick: () -> Unit,
     onShowClicked: (showId: Long, venue: String) -> Unit,
-    onMiniPlayerClick: () -> Unit,
+    onMiniPlayerClick: (title: String) -> Unit,
 ) {
     val state by viewModel.shows.collectAsState()
     val selectionData = state.mapCollection {
@@ -32,7 +31,6 @@ fun ShowSelectionScreen(
         title = viewModel.showYear,
         state = selectionData,
         upClick = navigateUpClick,
-        musicPlayer = musicPlayer,
         onMiniPlayerClick = onMiniPlayerClick
     )
 }

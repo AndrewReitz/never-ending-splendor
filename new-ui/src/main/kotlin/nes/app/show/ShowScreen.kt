@@ -45,8 +45,10 @@ import nes.app.R
 import nes.app.components.LoadingScreen
 import nes.app.components.NesScaffold
 import nes.app.player.MiniPlayer
+import nes.app.player.PlayerViewModel
 import nes.app.ui.NesTheme
 import nes.app.ui.Rainbow
+import nes.app.util.stub
 import nes.app.util.toAlbumFormat
 import nes.app.util.toMetadataExtras
 import nes.app.util.yearString
@@ -54,10 +56,9 @@ import nes.networking.phishin.model.Show
 
 @Composable
 fun ShowScreen(
-    musicPlayer: Player?,
     viewModel: ShowViewModel = hiltViewModel(),
     upClick: () -> Unit,
-    onMiniPlayerClick: () -> Unit
+    onMiniPlayerClick: (title: String) -> Unit
 ) {
     val showState by viewModel.show.collectAsState()
     val appBarTitle by viewModel.appBarTitle.collectAsState()
@@ -67,25 +68,20 @@ fun ShowScreen(
         state = showState,
         upClick = upClick
     ) { value ->
-        if (musicPlayer != null) {
-            ShowListWithPlayer(
-                show = value,
-                musicPlayer = musicPlayer,
-                onMiniPlayerClick = onMiniPlayerClick,
-                randomImageUriProvider = { viewModel.randomImageUri }
-            )
-        } else {
-            LoadingScreen()
-        }
+        ShowListWithPlayer(
+            show = value,
+            onMiniPlayerClick = onMiniPlayerClick,
+            randomImageUriProvider = { viewModel.randomImageUri }
+        )
     }
 }
 
 @Composable
 fun ShowListWithPlayer(
     show: Show,
-    musicPlayer: Player,
     randomImageUriProvider: () -> Uri,
-    onMiniPlayerClick: () -> Unit,
+    onMiniPlayerClick: (title: String) -> Unit,
+    viewModel: PlayerViewModel = hiltViewModel()
 ) {
     LaunchedEffect(show) {
         val items = show.tracks.map {
@@ -98,7 +94,7 @@ fun ShowListWithPlayer(
                         .setExtras(show.toMetadataExtras())
                         .setArtist("Phish")
                         .setAlbumArtist("Phish")
-                        .setAlbumTitle("${show.date.toAlbumFormat()} ${show.venue.location}")
+                        .setAlbumTitle("${show.date.toAlbumFormat()} ${show.venue_name}")
                         .setTitle(it.title)
                         .setRecordingYear(show.date.yearString.toInt())
                         .setArtworkUri(randomImageUriProvider())
@@ -107,37 +103,13 @@ fun ShowListWithPlayer(
                 .build()
         }
 
-        musicPlayer.addMediaItems(items)
-        musicPlayer.prepare()
+        viewModel.addMediaItems(items)
     }
 
-    var currentlyPlayingMediaId by remember {
-        mutableStateOf(musicPlayer.currentMediaItem?.mediaId)
-    }
-    var playing by remember { mutableStateOf(musicPlayer.isPlaying) }
-    val playerListener by remember {
-        mutableStateOf(
-            object : Player.Listener {
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    currentlyPlayingMediaId = mediaItem?.mediaId
-                }
+    val playerState by viewModel.playerState.collectAsState()
 
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    playing = isPlaying
-                }
-            }
-        )
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            musicPlayer.removeListener(playerListener)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        musicPlayer.addListener(playerListener)
-    }
+    val currentlyPlayingMediaId = playerState.mediaItem?.mediaId
+    val playing = playerState.isPlaying
 
     var firstLoad by remember { mutableStateOf(true) }
 
@@ -157,26 +129,24 @@ fun ShowListWithPlayer(
                     if (!isPlaying) {
                         if (firstLoad) {
                             firstLoad = false
-                            for (ic in 0 until musicPlayer.mediaItemCount) {
-                                val m = musicPlayer.getMediaItemAt(ic)
+                            for (ic in 0 until viewModel.mediaItemCount) {
+                                val m = viewModel.getMediaItemAt(ic)
                                 if (m.mediaId == show.tracks.first().mp3) {
-                                    musicPlayer.removeMediaItems(0, ic)
+                                    viewModel.removeMediaItems(0, ic)
                                     break
                                 }
                             }
                         }
 
-                        currentlyPlayingMediaId = track.mp3
-                        musicPlayer.seekTo(i, 0)
-                        musicPlayer.play()
+                        viewModel.seekTo(i, 0)
+                        viewModel.play()
                     } else {
-                        musicPlayer.pause()
+                        viewModel.pause()
                     }
                 }
             }
         }
         MiniPlayer(
-            musicPlayer = musicPlayer,
             onClick = onMiniPlayerClick
         )
     }

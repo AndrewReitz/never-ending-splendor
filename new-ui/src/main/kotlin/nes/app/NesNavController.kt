@@ -14,15 +14,13 @@ import nes.app.year.YearSelectionScreen
 @ExperimentalMaterial3Api
 @Composable
 fun NesNavController(
-    musicPlayer: Player?,
     navController: NavHostController
 ) {
     NavHost(navController = navController, startDestination = Screen.YearSelection.route) {
-        val miniPlayerClicked = { navController.navigate(Screen.Player.route) }
+        val miniPlayerClicked = { title: String -> navController.navigate(Screen.Player.createRoute(title)) }
 
         composable(route = Screen.YearSelection.route) {
             YearSelectionScreen(
-                musicPlayer = musicPlayer,
                 onMiniPlayerClick = miniPlayerClicked,
                 onYearClicked = { navController.navigate(Screen.ShowSelection.createRoute(it)) }
             )
@@ -32,7 +30,6 @@ fun NesNavController(
             arguments = Screen.ShowSelection.navArguments
         ) {
             ShowSelectionScreen(
-                musicPlayer = musicPlayer,
                 navigateUpClick = { navController.navigateUp() },
                 onShowClicked = { id, venue -> navController.navigate(Screen.Show.createRoute(id, venue)) },
                 onMiniPlayerClick = miniPlayerClicked
@@ -43,7 +40,6 @@ fun NesNavController(
             arguments = Screen.Show.navArguments
         ) {
             ShowScreen(
-                musicPlayer = musicPlayer,
                 upClick = { navController.navigateUp() },
                 onMiniPlayerClick = miniPlayerClicked
             )
@@ -53,7 +49,6 @@ fun NesNavController(
             arguments = Screen.Player.navArguments
         ) {
             FullPlayer(
-                player = musicPlayer,
                 navigateToShow = { id, name ->
                     navController.clearBackStack(Screen.Player.route)
                     navController.navigate(Screen.Show.createRoute(id, name)) {
