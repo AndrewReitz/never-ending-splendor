@@ -9,11 +9,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.inBindSet
-import org.kodein.di.instance
-import org.kodein.di.singleton
 import timber.log.Timber
 
 @InstallIn(SingletonComponent::class)
@@ -22,7 +17,7 @@ class DebugComponent {
 
     @Provides
     @IntoSet
-    fun provideHttpLoggingInterceptors(): Interceptor {
+    fun provideHttpLoggingInterceptor(): Interceptor {
         return HttpLoggingInterceptor { message ->
             Timber.tag("OkHttpClient")
             Timber.v(message)

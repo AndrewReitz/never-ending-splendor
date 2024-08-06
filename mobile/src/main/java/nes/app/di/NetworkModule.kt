@@ -8,8 +8,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import nes.networking.DISK_CACHE_SIZE
-import nes.networking.phishin.PHISHIN_API_URL
+import nes.networking.NetworkingModule.Companion.DISK_CACHE_SIZE
+import nes.networking.NetworkingModule.Companion.PHISHIN_API_URL
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.PhishInService
 import nes.networking.phishin.PhishinApiKey
@@ -77,10 +77,6 @@ class NetworkModule {
     @Singleton
     @Provides
     fun providesPhishInApiKey() =  PhishinApiKey(Config.PHISH_IN_API_KEY)
-
-    @Provides
-    @Singleton
-    fun providesInterceptors(): Set<@JvmSuppressWildcards Interceptor> = emptySet()
 
     @Provides
     @Singleton

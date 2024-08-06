@@ -13,7 +13,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        jcenter() // needed for ccl library TODO upgradde to latest version of chromecast libs
     }
 }
 
@@ -21,9 +20,9 @@ plugins {
     id("com.gradle.enterprise") version "3.8.1"
 }
 
-include(":mobile", ":networking", ":new-ui")
+include(":mobile", ":networking")
 
-rootProject.name = "Never-Ending-Splendor"
+rootProject.name = "never-ending-splendor"
 
 rootProject.children.forEach {
     it.buildFileName = "${it.name}.gradle.kts"

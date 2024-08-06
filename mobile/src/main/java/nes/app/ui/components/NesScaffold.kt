@@ -43,9 +43,8 @@ fun <T> NesScaffold(
                             )
                         }
                     } ?: run {
-                        // TODO Put app icon here
                         Icon(
-                            painter = painterResource(id = androidx.media3.cast.R.drawable.quantum_ic_volume_up_white_36),
+                            painter = painterResource(id = R.mipmap.ic_launcher),
                             contentDescription = null
                         )
                     }

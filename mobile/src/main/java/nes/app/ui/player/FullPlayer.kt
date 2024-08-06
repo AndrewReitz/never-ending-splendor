@@ -41,7 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.util.UnstableApi
 import coil.compose.AsyncImage
 import nes.app.R
 import nes.app.ui.components.CastButton
@@ -52,7 +51,6 @@ import nes.app.util.mediaMetaData
 import nes.app.util.title
 import kotlin.math.max
 
-@OptIn(UnstableApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun FullPlayer(
@@ -118,7 +116,8 @@ fun FullPlayer(
                     text = currentMediaItem.title,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
-                        .basicMarquee(Int.MAX_VALUE)
+                        // TODO re-add
+//                        .basicMarquee(Int.MAX_VALUE)
                         .padding(8.dp)
                 )
 

@@ -12,7 +12,11 @@ import com.facebook.flipper.plugins.leakcanary2.LeakCanary2FlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import leakcanary.LeakCanary
 import nes.app.AppInitializer
 import timber.log.Timber
@@ -44,3 +48,11 @@ class DebugAppInitializer @Inject constructor(
         }
     }
 }
+
+@InstallIn(SingletonComponent::class)
+@Module
+abstract class DebugAppInitializerModule {
+    @Binds
+    abstract fun providesAppInitializer(debugAppInitializer: DebugAppInitializer): AppInitializer
+}
+

@@ -24,6 +24,9 @@ afterEvaluate {
     tasks.named("compileKotlin").configure {
         dependsOn(generateConfigTask)
     }
+//    tasks.named("kspKotlin").configure {
+//        dependsOn(generateConfigTask)
+//    }
 }
 
 plugins.findPlugin(IdeaPlugin::class)?.apply {
