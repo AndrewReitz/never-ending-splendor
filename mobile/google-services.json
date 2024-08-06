@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:769202266924:android:fe428887fe2fd77225c289",
         "android_client_info": {
-          "package_name": "never.ending.splendor"
+          "package_name": "nes.app"
         }
       },
       "oauth_client": [
@@ -39,7 +39,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:769202266924:android:3c2101dc6057248b25c289",
         "android_client_info": {
-          "package_name": "never.ending.splendor.debug"
+          "package_name": "nes.app.debug"
         }
       },
       "oauth_client": [

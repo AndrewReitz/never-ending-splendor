@@ -4,126 +4,48 @@
     >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
-        android:name="never.ending.splendor.app.NeverEndingSplendorApplication"
+        android:name="nes.app.NeverEndingSplendorApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_label"
-        android:theme="@style/NesAppTheme"
+        android:theme="@style/Theme.Nes"
         android:fullBackupContent="true"
         android:usesCleartextTraffic="true"
         android:supportsRtl="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         tools:targetApi="s">
 
-        <activity
-            android:name=".app.newui.NewUiActivity"
-            android:exported="true"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <!-- Main activity for music browsing on phone -->
-        <activity
-            android:name="never.ending.splendor.app.ui.MusicPlayerActivity"
-            android:label="@string/app_name"
+        <activity android:name="nes.app.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <!-- App links for http -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="never.ending.splendor"
-                    android:pathPattern="/"
-                    android:scheme="http" />
-            </intent-filter>
-
-            <!-- App links for https -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="never.ending.splendor"
-                    android:pathPattern="/"
-                    android:scheme="https" />
-            </intent-filter>
-
-            <!-- Use this intent filter to get voice searches, like "Play The Beatles" -->
-            <intent-filter>
-                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
             android:exported="true"/>
 
-        <!--
-             (OPTIONAL) use this meta data to indicate which icon should be
-             used in Android Auto media notifications (for example, when the
-             music changes and the user is looking at another app)
-        -->
         <meta-data
-            android:name="com.google.android.gms.car.notification.SmallIcon"
-            android:resource="@drawable/ic_notification" />
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value=".playback.CastOptionsProvider"
+            />
 
-
-        <!-- Main music service, provides media browsing and media playback services to
-         consumers through MediaBrowserService and MediaSession. Consumers connect to it through
-         MediaBrowser (for browsing) and MediaController (for play session control) -->
         <service
-            android:name="never.ending.splendor.app.MusicService"
-            android:exported="false"
-            android:label="@string/app_name"
+            android:name=".playback.PlaybackService"
             android:foregroundServiceType="mediaPlayback"
-            >
+            android:exported="true"
+            android:permission="nes">
             <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
+                <action android:name="androidx.media3.session.MediaSessionService"/>
             </intent-filter>
         </service>
 
-        <!-- Service that keeps track of reconnecting to Cast when wifi is enabled. -->
-        <service
-            android:name="com.google.android.libraries.cast.companionlibrary.cast.reconnection.ReconnectionService"/>
-
-        <!-- A full screen activity showing controls and a seek bar for
-             the current playing music -->
-        <activity
-            android:name="never.ending.splendor.app.ui.FullScreenPlayerActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:parentActivityName="never.ending.splendor.app.ui.MusicPlayerActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="never.ending.splendor.app.ui.MusicPlayerActivity"/>
-        </activity>
-
-        <!-- A receiver that will receive media buttons and send as
-            intents to your MediaBrowserServiceCompat implementation.
-            Required on pre-Lollipop. More information at
-           https://developer.android.com/reference/androidx/media/session/MediaButtonReceiver -->
-        <receiver android:name="androidx.media.session.MediaButtonReceiver"
+        <receiver android:name="androidx.media3.session.MediaButtonReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

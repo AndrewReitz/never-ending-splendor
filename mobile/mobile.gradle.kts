@@ -2,10 +2,12 @@ import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 
 plugins {
     id("com.android.application")
-    alias(libs.plugins.compose.compiler)
     id("org.jetbrains.kotlin.android")
-    alias(libs.plugins.serialization)
 
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
 
@@ -29,7 +31,7 @@ play {
 }
 
 android {
-    namespace = "never.ending.splendor"
+    namespace = "nes.app"
     compileSdk = libs.versions.android.sdk.get().toInt()
 
     signingConfigs {
@@ -54,7 +56,7 @@ android {
 
     defaultConfig {
         val buildNumber: String by project
-        applicationId = "never.ending.splendor"
+        applicationId = "nes.app"
         minSdk = 23
         targetSdk = libs.versions.android.sdk.get().toInt()
         versionCode = buildNumber.toInt()
@@ -109,13 +111,21 @@ dependencies {
     implementation(libs.kotlinx.serialization)
     implementation(libs.kotlinx.coroutines.android)
 
-    implementation(libs.play.services.cast)
-    implementation(libs.play.services.cast.companion)
-
     implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
 
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.bundles.firebase)
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.navigation)
+
+    implementation(libs.bundles.hilt)
+    ksp(libs.hilt.android.compiler)
+
+    implementation(libs.android.material)
+    implementation(libs.accompanist.systemuicontroller)
+
+    implementation(libs.bundles.media3)
+    implementation(libs.androidx.mediarouter)
 
     implementation(libs.bundles.androidx)
     implementation(libs.bundles.compose)
@@ -124,12 +134,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.kodein)
-    implementation(libs.kodein.compose)
-
-    implementation(libs.picasso)
+    implementation(libs.coil)
     implementation(libs.okhttp.logging.interceptor)
-
     implementation(libs.timber)
 
     debugImplementation(libs.bundles.android.debug.libs)

@@ -1,6 +1,6 @@
 package never.ending.splendor.app
 
-import android.app.Application
+import android.content.Context
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.android.utils.FlipperUtils
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin
@@ -12,12 +12,15 @@ import com.facebook.flipper.plugins.leakcanary2.LeakCanary2FlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
+import dagger.hilt.android.qualifiers.ApplicationContext
 import leakcanary.LeakCanary
+import nes.app.AppInitializer
 import timber.log.Timber
+import javax.inject.Inject
 
 /** Debug specific initialization things. */
-class DebugAppInitializer(
-    private val context: Application,
+class DebugAppInitializer @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val networkFlipperPlugin: NetworkFlipperPlugin
 ) : AppInitializer {
     override fun invoke() {
