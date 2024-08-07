@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm")
 
     alias(libs.plugins.serialization)
-//    alias(libs.plugins.ksp)
+    alias(libs.plugins.ksp)
 
     id("api-key-provider")
     id("kotlin-config-writer")
@@ -28,18 +28,18 @@ dependencies {
     api(libs.okhttp)
     api(libs.result4k)
 
-    implementation(libs.byteunits)
     implementation(libs.okio)
     api(libs.bundles.retrofit)
 
     implementation(libs.kotlinx.serialization)
 
-//    implementation(libs.dagger)
-//    ksp(libs.dagger.compiler)
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("reflect"))
     testImplementation(libs.bundles.network.test.libs)
+    kspTest(libs.dagger.compiler)
 }
 
 kotlinConfigWriter {

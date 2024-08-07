@@ -3,8 +3,9 @@ package nes.networking.phishnet
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import javax.inject.Inject
 
-internal class PhishNetAuthInterceptor(
+internal class PhishNetAuthInterceptor @Inject constructor(
     private val apiKey: PhishNetApiKey
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

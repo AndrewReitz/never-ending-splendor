@@ -8,7 +8,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class NeverEndingSplendorApplication : Application(), ImageLoaderFactory {
+class NesApplication : Application(), ImageLoaderFactory {
 
     @Inject lateinit var appInitializer: AppInitializer
     @Inject lateinit var imageLoader: ImageLoader

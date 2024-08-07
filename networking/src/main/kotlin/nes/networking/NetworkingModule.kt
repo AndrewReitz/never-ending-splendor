@@ -1,12 +1,34 @@
 package nes.networking
 
-import com.jakewharton.byteunits.DecimalByteUnit.MEGABYTES
+import dagger.Module
+import dagger.Provides
+import kotlinx.serialization.json.Json
+import okhttp3.Cache
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import javax.inject.Singleton
 
-class NetworkingModule {
+@Module
+interface NetworkingModule {
     companion object {
-        val DISK_CACHE_SIZE = MEGABYTES.toBytes(100).toInt()
         val PHISHIN_API_URL: HttpUrl = requireNotNull("https://phish.in/".toHttpUrlOrNull())
+
+        @Singleton
+        @Provides
+        fun provideJson() = Json {
+            ignoreUnknownKeys = true
+        }
+
+        @Singleton
+        @Provides
+        fun providesOkhttpClient(
+            cache: Cache?,
+            interceptors: Set<@JvmSuppressWildcards Interceptor>
+        ) = OkHttpClient.Builder()
+            .cache(cache)
+            .apply { interceptors.forEach { addInterceptor(it) } }
+            .build()
     }
 }

@@ -1,7 +1,13 @@
+@file:kotlin.OptIn(ExperimentalMaterial3Api::class)
+
 package nes.app.playback
 
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Intent
 import androidx.annotation.OptIn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.AudioAttributes
@@ -20,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import nes.app.MainActivity
 
 @UnstableApi
 class PlaybackService : MediaSessionService(), SessionAvailabilityListener, MediaLibraryService.MediaLibrarySession.Callback {
@@ -47,18 +54,24 @@ class PlaybackService : MediaSessionService(), SessionAvailabilityListener, Medi
             .setHandleAudioBecomingNoisy(true)
             .build()
 
-        val castContext = CastContext.getSharedInstance(this, MoreExecutors.directExecutor())
+        val castContext: CastContext = CastContext.getSharedInstance(this, MoreExecutors.directExecutor())
             .addOnFailureListener { /*TODO Log errors*/ }
             .result
-
 
         castPlayer = CastPlayer(castContext).apply {
             setSessionAvailabilityListener(this@PlaybackService)
         }
 
         val player = ReplaceableForwardingPlayer(exoPlayer)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            1337,
+            Intent(this, MainActivity::class.java),
+            FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
+        )
+
         mediaSession = MediaSession.Builder(this, player)
-            .setCallback(this)
+            .setSessionActivity(pendingIntent)
             .build()
         this.exoPlayer = exoPlayer
         this.player = player

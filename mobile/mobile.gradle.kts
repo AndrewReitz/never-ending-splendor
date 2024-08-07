@@ -137,6 +137,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.timber)
+    implementation(libs.byteunits)
 
     debugImplementation(libs.bundles.android.debug.libs)
     releaseImplementation(libs.bundles.android.release.libs)

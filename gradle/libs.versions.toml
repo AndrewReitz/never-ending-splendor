@@ -185,4 +185,4 @@ google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
 serialization = "org.jetbrains.kotlin.plugin.serialization:2.0.10"
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-ksp = { id = "com.google.devtools.ksp", version = "2.0.0-1.0.24" }
+ksp = "com.google.devtools.ksp:2.0.0-1.0.24"

@@ -4,8 +4,11 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.resultFrom
 import nes.networking.phishnet.model.Review
 import nes.networking.phishnet.model.SetList
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PhishNetRepository internal constructor(
+@Singleton
+class PhishNetRepository @Inject constructor(
     private val phishNetService: PhishNetService
 ) {
     suspend fun setlist(showDate: String): Result<SetList, Exception> = resultFrom {

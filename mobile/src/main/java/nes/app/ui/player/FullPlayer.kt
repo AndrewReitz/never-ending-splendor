@@ -1,6 +1,6 @@
 package nes.app.ui.player
 
-import androidx.annotation.OptIn
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +51,7 @@ import nes.app.util.mediaMetaData
 import nes.app.util.title
 import kotlin.math.max
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun FullPlayer(
@@ -116,8 +117,8 @@ fun FullPlayer(
                     text = currentMediaItem.title,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
-                        // TODO re-add
-//                        .basicMarquee(Int.MAX_VALUE)
+                        .align(Alignment.CenterHorizontally)
+                        .basicMarquee(Int.MAX_VALUE)
                         .padding(8.dp)
                 )
 
@@ -182,24 +183,3 @@ fun FullPlayer(
         }
     }
 }
-
-//@ExperimentalMaterial3Api
-//@Preview(showBackground = true)
-//@Composable
-//fun NesPlayerPreview() {
-//    NesTheme {
-//        FullPlayer(
-//            player = object : Player by stub() {
-//                override fun getCurrentMediaItem() = MediaItem.Builder()
-//                    .setMediaMetadata(
-//                        MediaMetadata.Builder()
-//                            .setTitle("Punch you in the eye")
-//                            .build()
-//                    )
-//                    .build()
-//            },
-//            navigateToShow = { id, venueName ->  },
-//            upClick = { }
-//        )
-//    }
-//}
