@@ -220,3 +220,6 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.gitignore.io/api/gradle,android,androidstudio
+
+#ignore the weird .kotlin folder that keeps appearing
+.kotlin/

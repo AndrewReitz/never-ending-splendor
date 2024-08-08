@@ -56,7 +56,7 @@ android {
 
     defaultConfig {
         val buildNumber: String by project
-        applicationId = "nes.app"
+        applicationId = "never.ending.splendor"
         minSdk = 23
         targetSdk = libs.versions.android.sdk.get().toInt()
         versionCode = buildNumber.toInt()
