@@ -1,6 +1,6 @@
 package nes.networking.integration
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import nes.networking.phishin.PhishInService
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
@@ -18,7 +18,7 @@ class PhishInServiceIntegrationTest {
     }
 
     @Test
-    fun `should get years`() = runBlocking {
+    fun `should get years`() = runTest {
         assertTrue(classUnderTest.years().data.isNotEmpty())
     }
 }

@@ -7,4 +7,6 @@
     <string name="navigate_back">Navigate Back</string>
     <string name="pause">Pause</string>
     <string name="play">Play</string>
+
+    <string name="api_error_message">There was an error getting data from Phish.in, check your network connection and try again.</string>
 </resources>

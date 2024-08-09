@@ -1,4 +1,4 @@
-package nes.app.util
+package nes.app
 
 import java.lang.reflect.Proxy
 

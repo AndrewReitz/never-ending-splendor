@@ -33,8 +33,11 @@ class ShowSelectionViewModel @Inject constructor(
     private fun loadShows() {
         viewModelScope.launch {
             val state = when(val result = retry { phishinRepository.shows(showYear) }) {
-                is Failure -> LCE.Error(userDisplayedMessage = "Error Occurred!", result.reason)
-                is Success -> LCE.Loaded(result.value)
+                is Failure -> LCE.Error(
+                    userDisplayedMessage = "There was an error loading data from Phish.in",
+                    error = result.reason
+                )
+                is Success -> LCE.Content(result.value)
             }
 
             _shows.emit(state)

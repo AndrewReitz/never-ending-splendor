@@ -1,6 +1,6 @@
 package nes.networking.integration
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import nes.networking.phishnet.PhishNetService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,7 +19,7 @@ class PhishNetServiceIntegrationTest {
     }
 
     @Test
-    fun `request show info for 2020-02-22`() = runBlocking {
+    fun `request show info for 2020-02-22`() = runTest {
         classUnderTest.setlist("2020-02-22").run {
             assertEquals("", error_message, "Error message should be empty")
             assertEquals(expected = "2020-02-22", actual = data[0].showdate)
@@ -27,7 +27,7 @@ class PhishNetServiceIntegrationTest {
     }
 
     @Test
-    fun `request show id for 1560881138`() = runBlocking {
+    fun `request show id for 1560881138`() = runTest {
         // 1560881138 is the 2020-02-22 showid
         classUnderTest.reviews("1560881138").run {
             assertEquals("", error_message, "Error message should be empty")

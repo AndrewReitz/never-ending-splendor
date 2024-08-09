@@ -5,15 +5,21 @@ import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.MimeTypes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nes.app.playback.MediaPlayerContainer
 import nes.app.util.Images
 import nes.app.util.LCE
 import nes.app.util.toAlbumFormat
+import nes.app.util.toMetadataExtras
+import nes.app.util.yearString
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.Show
 import nes.networking.retry
@@ -23,6 +29,7 @@ import javax.inject.Inject
 class ShowViewModel @Inject constructor(
     private val phishInRepository: PhishInRepository,
     private val images: Images,
+    private val mediaPlayerContainer: MediaPlayerContainer,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -35,8 +42,6 @@ class ShowViewModel @Inject constructor(
     private val _show: MutableStateFlow<LCE<Show, Exception>> = MutableStateFlow(LCE.Loading)
     val show: StateFlow<LCE<Show, Exception>> = _show
 
-    val randomImageUri: Uri get() = images.randomImageUrl.toUri()
-
     init {
         loadShow()
     }
@@ -46,9 +51,31 @@ class ShowViewModel @Inject constructor(
             val state: LCE<Show, Exception> = when(val result = retry { phishInRepository.show(showId.toString()) }) {
                 is Failure -> LCE.Error(userDisplayedMessage = "Error Occurred!", error = result.reason)
                 is Success -> {
-                    val value = result.value
-                    _appBarTitle.emit("${value.date.toAlbumFormat()} ${value.venue_name}")
-                    LCE.Loaded(value)
+                    val show = result.value
+
+                    val items = show.tracks.map {
+                        MediaItem.Builder()
+                            .setUri(it.mp3)
+                            .setMediaId(it.mp3)
+                            .setMimeType(MimeTypes.AUDIO_MPEG)
+                            .setMediaMetadata(
+                                MediaMetadata.Builder()
+                                    .setExtras(show.toMetadataExtras())
+                                    .setArtist("Phish")
+                                    .setAlbumArtist("Phish")
+                                    .setAlbumTitle("${show.date.toAlbumFormat()} ${show.venue_name}")
+                                    .setTitle(it.title)
+                                    .setRecordingYear(show.date.yearString.toInt())
+                                    .setArtworkUri(images.randomImageUrl.toUri())
+                                    .build()
+                            )
+                            .build()
+                    }
+
+                    checkNotNull(mediaPlayerContainer.mediaPlayer).addMediaItems(items)
+
+                    _appBarTitle.emit("${show.date.toAlbumFormat()} ${show.venue_name}")
+                    LCE.Content(show)
                 }
             }
 

@@ -16,6 +16,7 @@ plugins {
     id("build-number")
 
     alias(libs.plugins.play.publisher)
+    alias(libs.plugins.paparazzi)
 }
 
 kotlin {
@@ -122,7 +123,6 @@ dependencies {
     ksp(libs.hilt.android.compiler)
 
     implementation(libs.android.material)
-    implementation(libs.accompanist.systemuicontroller)
 
     implementation(libs.bundles.media3)
     implementation(libs.androidx.mediarouter)
@@ -143,4 +143,6 @@ dependencies {
     releaseImplementation(libs.bundles.android.release.libs)
 
     testImplementation(libs.bundles.android.test.libs)
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.android.compiler)
 }
