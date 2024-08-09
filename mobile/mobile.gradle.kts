@@ -16,6 +16,7 @@ plugins {
     id("build-number")
 
     alias(libs.plugins.play.publisher)
+    alias(libs.plugins.paparazzi)
 }
 
 kotlin {
@@ -143,4 +144,6 @@ dependencies {
     releaseImplementation(libs.bundles.android.release.libs)
 
     testImplementation(libs.bundles.android.test.libs)
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.android.compiler)
 }

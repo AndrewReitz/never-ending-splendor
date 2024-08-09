@@ -11,10 +11,10 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Qualifier
+import kotlin.annotation.AnnotationRetention.BINARY
 
 @Qualifier
-@MustBeDocumented
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(BINARY)
 annotation class PhishNet
 
 @Module(includes = [NetworkingModule::class])

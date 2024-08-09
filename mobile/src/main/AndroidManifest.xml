@@ -19,12 +19,15 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         tools:targetApi="s">
 
-        <activity android:name="nes.app.MainActivity"
-            android:exported="true">
+        <activity
+            android:name="nes.app.MainActivity"
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"

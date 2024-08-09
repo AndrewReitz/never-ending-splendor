@@ -79,106 +79,107 @@ fun FullPlayer(
 
         val playerState by viewModel.playerState.collectAsState()
 
-        val currentMediaItem = playerState.mediaItem
-        val playing = playerState.isPlaying
-        val duration = playerState.duration
+        when (val ps = playerState) {
+            is PlayerState.NoMedia -> LoadingScreen()
+            is PlayerState.MediaLoaded -> {
+                val currentMediaItem = ps.mediaItem
+                val playing = ps.isPlaying
+                val duration = ps.duration
 
-        if (currentMediaItem == null) {
-            LoadingScreen()
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Button(
-                        onClick = {
-                            val (showId, venueName) = currentMediaItem.mediaMetaData
-                            navigateToShow(showId, venueName)
-                        },
-                        modifier = Modifier.align(Alignment.Center)
-                    ) {
-                        Text(text = "Go to show")
-                    }
-                }
-
-                AsyncImage(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                    ,
-                    contentScale = ContentScale.Fit,
-                    model = currentMediaItem.artworkUri,
-                    contentDescription = null,
-                )
-
-                Text(
-                    text = currentMediaItem.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .basicMarquee(Int.MAX_VALUE)
-                        .padding(8.dp)
-                )
-
-                var sliderValue by remember {
-                    mutableFloatStateOf(playerState.currentPosition.toFloat())
-                }
-
-                LaunchedEffect(playerState.currentPosition) {
-                    sliderValue = playerState.currentPosition.toFloat()
-                }
-
-                Slider(
-                    value = sliderValue,
-                    onValueChange = {
-                        viewModel.seekTo(it.toLong())
-                    },
-                    valueRange = 0f .. max(duration.toFloat(), 0f),
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                        .fillMaxSize()
+                        .padding(innerPadding)
                 ) {
-                    IconButton(onClick = { viewModel.seekToPreviousMediaItem() }) {
-                        Icon(
-                            imageVector = Icons.Default.SkipPrevious,
-                            contentDescription = "previous song"
-                        )
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Button(
+                            onClick = {
+                                val (showId, venueName) = currentMediaItem.mediaMetaData
+                                navigateToShow(showId, venueName)
+                            },
+                            modifier = Modifier.align(Alignment.Center)
+                        ) {
+                            Text(text = "Go to show")
+                        }
                     }
-                    IconButton(
-                        onClick = {
-                            if (playing) {
-                                viewModel.pause()
-                            } else {
-                                viewModel.play()
-                            }
-                        },
-                        colors = IconButtonDefaults.iconButtonColors().copy(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        ),
-                        modifier = Modifier.size(56.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (!playing) Icons.Default.PlayArrow else Icons.Default.Pause,
-                            contentDescription = "play"
-                        )
-                    }
-                    IconButton(onClick = { viewModel.seekToNextMediaItem() }) {
-                        Icon(
-                            imageVector = Icons.Default.SkipNext,
-                            contentDescription = "skip to next song"
-                        )
-                    }
-                }
 
-                Spacer(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp))
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                        ,
+                        contentScale = ContentScale.Fit,
+                        model = currentMediaItem.artworkUri,
+                        contentDescription = null,
+                    )
+
+                    Text(
+                        text = currentMediaItem.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .basicMarquee(Int.MAX_VALUE)
+                            .padding(8.dp)
+                    )
+
+                    var sliderValue by remember {
+                        mutableFloatStateOf(ps.currentPosition.toFloat())
+                    }
+
+                    LaunchedEffect(ps.currentPosition) {
+                        sliderValue = ps.currentPosition.toFloat()
+                    }
+
+                    Slider(
+                        value = sliderValue,
+                        onValueChange = {
+                            viewModel.seekTo(it.toLong())
+                        },
+                        valueRange = 0f .. max(duration.toFloat(), 0f),
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(onClick = { viewModel.seekToPreviousMediaItem() }) {
+                            Icon(
+                                imageVector = Icons.Default.SkipPrevious,
+                                contentDescription = "previous song"
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                if (playing) {
+                                    viewModel.pause()
+                                } else {
+                                    viewModel.play()
+                                }
+                            },
+                            colors = IconButtonDefaults.iconButtonColors().copy(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            ),
+                            modifier = Modifier.size(56.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (!playing) Icons.Default.PlayArrow else Icons.Default.Pause,
+                                contentDescription = "play"
+                            )
+                        }
+                        IconButton(onClick = { viewModel.seekToNextMediaItem() }) {
+                            Icon(
+                                imageVector = Icons.Default.SkipNext,
+                                contentDescription = "skip to next song"
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp))
+                }
             }
         }
     }

@@ -48,6 +48,8 @@ import nes.app.ui.player.MiniPlayer
 import nes.app.ui.player.PlayerViewModel
 import nes.app.ui.NesTheme
 import nes.app.ui.Rainbow
+import nes.app.ui.components.CastButton
+import nes.app.ui.player.PlayerState.MediaLoaded
 import nes.app.util.stub
 import nes.app.util.toAlbumFormat
 import nes.app.util.toMetadataExtras
@@ -66,7 +68,8 @@ fun ShowScreen(
     NesScaffold(
         title = appBarTitle,
         state = showState,
-        upClick = upClick
+        upClick = upClick,
+        actions = { CastButton() }
     ) { value ->
         ShowListWithPlayer(
             show = value,
@@ -108,8 +111,8 @@ fun ShowListWithPlayer(
 
     val playerState by viewModel.playerState.collectAsState()
 
-    val currentlyPlayingMediaId = playerState.mediaItem?.mediaId
-    val playing = playerState.isPlaying
+    val currentlyPlayingMediaId = (playerState as? MediaLoaded)?.mediaItem?.mediaId
+    val playing = (playerState as? MediaLoaded)?.isPlaying ?: false
 
     var firstLoad by remember { mutableStateOf(true) }
 
@@ -146,9 +149,13 @@ fun ShowListWithPlayer(
                 }
             }
         }
-        MiniPlayer(
-            onClick = onMiniPlayerClick
-        )
+
+        TODO()
+//        MiniPlayer(
+//            onClick = onMiniPlayerClick,
+//            playerState = playerState,
+//            onPauseAction = on
+//        )
     }
 }
 

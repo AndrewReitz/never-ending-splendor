@@ -11,10 +11,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import kotlin.annotation.AnnotationRetention.BINARY
 
 @Qualifier
-@MustBeDocumented
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(BINARY)
 annotation class PhishIn
 
 @Module(includes = [NetworkingModule::class])

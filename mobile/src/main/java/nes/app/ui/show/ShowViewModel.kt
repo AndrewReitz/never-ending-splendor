@@ -48,7 +48,7 @@ class ShowViewModel @Inject constructor(
                 is Success -> {
                     val value = result.value
                     _appBarTitle.emit("${value.date.toAlbumFormat()} ${value.venue_name}")
-                    LCE.Loaded(value)
+                    LCE.Content(value)
                 }
             }
 

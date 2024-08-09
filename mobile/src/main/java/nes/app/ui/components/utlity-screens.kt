@@ -2,6 +2,7 @@ package nes.app.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -26,10 +27,15 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun ErrorScreen(message: String, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.then(Modifier.fillMaxSize())) {
+    Box(
+        modifier = modifier.then(
+            Modifier.fillMaxSize()
+        )
+    ) {
         Text(
             text = message,
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.align(Alignment.Center)
+                .padding(16.dp),
             style = MaterialTheme.typography.headlineMedium
         )
     }

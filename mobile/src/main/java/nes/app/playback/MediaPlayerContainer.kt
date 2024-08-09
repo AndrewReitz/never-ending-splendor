@@ -3,6 +3,7 @@ package nes.app.playback
 import android.content.ComponentName
 import android.content.Context
 import androidx.annotation.OptIn
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -12,19 +13,24 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface MediaPlayerContainer {
+    val mediaPlayer: Player?
+}
+
 /**
  * Container for the MediaController basically used to get the
  * media controller into the dependency graph.
  */
 @OptIn(UnstableApi::class)
 @Singleton
-class MediaControllerContainer @Inject constructor(
+class RealMediaPlayerContainer @Inject constructor(
     @ApplicationContext val context: Context,
-) {
-    private val controllerFuture: ListenableFuture<MediaController>
-    private lateinit var _mediaController: MediaController
+): MediaPlayerContainer {
 
-    val mediaController by lazy { _mediaController }
+    private val controllerFuture: ListenableFuture<MediaController>
+    private var _mediaController: MediaController? = null
+
+    override val mediaPlayer: Player? get() =_mediaController
 
     init {
         val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
