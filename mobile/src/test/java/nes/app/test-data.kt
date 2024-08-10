@@ -1,5 +1,6 @@
 package nes.app
 
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import nes.app.ui.player.PlayerState
@@ -14,6 +15,7 @@ import kotlin.time.Duration.Companion.minutes
 
 val mediaItem = MediaItem.Builder()
     .setUri("https://phish.in/audio/000/032/562/32562.mp3")
+    .setMediaId("https://phish.in/audio/000/032/562/32562.mp3")
     .setMediaMetadata(
         MediaMetadata.Builder()
             .setTitle("Free")
@@ -26,10 +28,16 @@ val noShowPlayerState = PlayerState.NoMedia
 
 val showingPlayerState = PlayerState.MediaLoaded(
     isPlaying = true,
-    mediaItem = mediaItem,
+    formatedDurationTime = "13:37",
     formatedElapsedTime = "1:23",
     duration = 7.minutes.inWholeMilliseconds,
     currentPosition = 1.minutes.inWholeMilliseconds,
+    showId = 1000,
+    venueName = "Lake Tahoe Outdoor Arena at Harveys",
+    artworkUri = "https://i.imgur.com/qhqUJWh.jpg".toUri(),
+    albumTitle = "10/10/2024 : Lake Tahoe Outdoor Arena at Harveys",
+    title = "Free",
+    mediaId = "https://phish.in/audio/000/032/562/32562.mp3"
 )
 
 val yearsContent = LCE.Content(

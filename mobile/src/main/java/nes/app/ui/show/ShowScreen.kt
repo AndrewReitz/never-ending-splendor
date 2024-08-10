@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.util.UnstableApi
 import nes.app.R
 import nes.app.ui.components.NesScaffold
 import nes.app.ui.player.PlayerViewModel
@@ -51,6 +52,7 @@ import nes.app.util.LCE
 import nes.app.util.map
 import nes.networking.phishin.model.Show
 
+@UnstableApi
 @Composable
 fun ShowScreen(
     viewModel: ShowViewModel = hiltViewModel(),
@@ -146,7 +148,7 @@ fun ShowListWithPlayer(
     onPauseAction: () -> Unit,
     onPlayAction: () -> Unit,
 ) {
-    val currentlyPlayingMediaId = mediaLoaded.mediaItem.mediaId
+    val currentlyPlayingMediaId = mediaLoaded.mediaId
     val playing = mediaLoaded.isPlaying
 
     Column {

@@ -1,6 +1,7 @@
 package nes.app.ui.show
 
 import android.net.Uri
+import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
+import androidx.media3.common.util.UnstableApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
@@ -46,6 +48,7 @@ class ShowViewModel @Inject constructor(
         loadShow()
     }
 
+    @OptIn(UnstableApi::class)
     private fun loadShow() {
         viewModelScope.launch {
             val state: LCE<Show, Exception> = when(val result = retry { phishInRepository.show(showId.toString()) }) {
@@ -67,6 +70,7 @@ class ShowViewModel @Inject constructor(
                                     .setTitle(it.title)
                                     .setRecordingYear(show.date.yearString.toInt())
                                     .setArtworkUri(images.randomImageUrl.toUri())
+                                    .setDurationMs(it.duration)
                                     .build()
                             )
                             .build()

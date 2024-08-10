@@ -146,3 +146,7 @@ dependencies {
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.android.compiler)
 }
+
+tasks.named("build") {
+    dependsOn("verifyPaparazziRelease")
+}

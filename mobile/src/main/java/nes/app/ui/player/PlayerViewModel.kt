@@ -1,41 +1,25 @@
 package nes.app.ui.player
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import nes.app.playback.MediaPlayerContainer
 import nes.app.ui.player.PlayerState.NoMedia
 import nes.app.util.formatedElapsedTime
+import nes.app.util.mediaExtras
 import okio.ByteString.Companion.decodeBase64
 import javax.inject.Inject
 
-sealed interface PlayerState {
-
-    @Immutable
-    data object NoMedia: PlayerState
-
-    @Immutable
-    data class MediaLoaded(
-        val isPlaying: Boolean,
-        val mediaItem: MediaItem,
-        val formatedElapsedTime: String,
-        val duration: Long,
-        val currentPosition: Long,
-    ): PlayerState
-}
-
+@UnstableApi
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val mediaPlayerContainer: MediaPlayerContainer,
@@ -101,12 +85,23 @@ class PlayerViewModel @Inject constructor(
 
     private fun newState() = when(val cmi = player.currentMediaItem) {
         null -> NoMedia
-        else -> PlayerState.MediaLoaded(
-            isPlaying = player.isPlaying,
-            mediaItem = cmi,
-            formatedElapsedTime = player.formatedElapsedTime,
-            duration = player.duration,
-            currentPosition = player.currentPosition
-        )
+        else -> {
+            val metadata = cmi.mediaMetadata
+            val (showId, venueName) = cmi.mediaExtras
+
+            PlayerState.MediaLoaded(
+                isPlaying = player.isPlaying,
+                formatedElapsedTime = player.formatedElapsedTime,
+                formatedDurationTime = metadata.durationMs?.formatedElapsedTime.orEmpty(),
+                duration = player.duration,
+                currentPosition = player.currentPosition,
+                showId = showId,
+                venueName = venueName,
+                artworkUri = metadata.artworkUri,
+                title = metadata.title.toString(),
+                albumTitle = metadata.albumTitle.toString(),
+                mediaId = cmi.mediaId,
+            )
+        }
     }
 }

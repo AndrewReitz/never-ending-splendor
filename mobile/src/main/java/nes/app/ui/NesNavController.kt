@@ -2,6 +2,7 @@ package nes.app.ui
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +11,7 @@ import nes.app.ui.show.ShowScreen
 import nes.app.ui.show.ShowSelectionScreen
 import nes.app.ui.year.YearSelectionScreen
 
+@UnstableApi
 @ExperimentalMaterial3Api
 @Composable
 fun NesNavController(

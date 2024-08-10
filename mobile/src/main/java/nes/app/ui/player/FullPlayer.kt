@@ -7,6 +7,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -44,16 +45,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.util.UnstableApi
 import coil.compose.AsyncImage
 import nes.app.R
 import nes.app.ui.components.CastButton
 import nes.app.ui.components.LoadingScreen
 import nes.app.ui.components.TopAppBarText
-import nes.app.util.artworkUri
-import nes.app.util.mediaMetaData
-import nes.app.util.title
+import nes.app.util.formatedElapsedTime
 import kotlin.math.max
 
+@UnstableApi
 @Composable
 fun FullPlayer(
     viewModel: PlayerViewModel = hiltViewModel(),
@@ -76,6 +77,7 @@ fun FullPlayer(
     )
 }
 
+@UnstableApi
 @Composable
 fun FullPlayer(
     playerState: PlayerState,
@@ -106,13 +108,9 @@ fun FullPlayer(
             )
         }
     ) { innerPadding ->
-        when (val ps = playerState) {
+        when (playerState) {
             is PlayerState.NoMedia -> LoadingScreen()
             is PlayerState.MediaLoaded -> {
-                val currentMediaItem = ps.mediaItem
-                val playing = ps.isPlaying
-                val duration = ps.duration
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -121,8 +119,7 @@ fun FullPlayer(
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Button(
                             onClick = {
-                                val (showId, venueName) = currentMediaItem.mediaMetaData
-                                navigateToShow(showId, venueName)
+                                navigateToShow(playerState.showId, playerState.venueName)
                             },
                             modifier = Modifier.align(Alignment.Center)
                         ) {
@@ -133,15 +130,14 @@ fun FullPlayer(
                     AsyncImage(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f)
-                        ,
+                            .weight(1f),
                         contentScale = ContentScale.Fit,
-                        model = currentMediaItem.artworkUri,
+                        model = playerState.artworkUri,
                         contentDescription = null,
                     )
 
                     Text(
-                        text = currentMediaItem.title,
+                        text = playerState.title,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
@@ -150,60 +146,100 @@ fun FullPlayer(
                     )
 
                     var sliderValue by remember {
-                        mutableFloatStateOf(ps.currentPosition.toFloat())
+                        mutableFloatStateOf(playerState.currentPosition.toFloat())
                     }
 
-                    LaunchedEffect(ps.currentPosition) {
-                        sliderValue = ps.currentPosition.toFloat()
+                    LaunchedEffect(playerState.currentPosition) {
+                        sliderValue = playerState.currentPosition.toFloat()
                     }
 
                     Slider(
                         value = sliderValue,
                         onValueChange = {
-                            seekTo(it.toLong())
+                            sliderValue = it
                         },
-                        valueRange = 0f .. max(duration.toFloat(), 0f),
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        onValueChangeFinished = {
+                            seekTo(sliderValue.toLong())
+                        },
+                        valueRange = 0f .. max(playerState.duration.toFloat(), 0f),
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
                     Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .padding(horizontal = 8.dp)
                     ) {
-                        IconButton(onClick = seekToPreviousMediaItem) {
-                            Icon(
-                                imageVector = Icons.Default.SkipPrevious,
-                                contentDescription = "previous song"
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                if (playing) onPause() else onPlay()
-                            },
-                            colors = IconButtonDefaults.iconButtonColors().copy(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            ),
-                            modifier = Modifier.size(56.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (!playing) Icons.Default.PlayArrow else Icons.Default.Pause,
-                                contentDescription = "play"
-                            )
-                        }
-                        IconButton(onClick = seekToNextMediaItem) {
-                            Icon(
-                                imageVector = Icons.Default.SkipNext,
-                                contentDescription = "skip to next song"
-                            )
-                        }
+                        Text(
+                            text = sliderValue.toLong().formatedElapsedTime,
+                            style = MaterialTheme.typography.labelSmall,
+
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = playerState.formatedDurationTime,
+                            style = MaterialTheme.typography.labelSmall
+                        )
                     }
+
+                    ActionsRow(
+                        seekToPreviousMediaItem,
+                        playerState.isPlaying,
+                        onPause,
+                        onPlay,
+                        seekToNextMediaItem
+                    )
 
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(8.dp))
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ActionsRow(
+    seekToPreviousMediaItem: () -> Unit,
+    playing: Boolean,
+    onPause: () -> Unit,
+    onPlay: () -> Unit,
+    seekToNextMediaItem: () -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        IconButton(onClick = seekToPreviousMediaItem) {
+            Icon(
+                imageVector = Icons.Default.SkipPrevious,
+                contentDescription = "previous song"
+            )
+        }
+        IconButton(
+            onClick = {
+                if (playing) onPause() else onPlay()
+            },
+            colors = IconButtonDefaults.iconButtonColors().copy(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
+            modifier = Modifier.size(56.dp)
+        ) {
+            Icon(
+                imageVector = if (!playing) Icons.Default.PlayArrow else Icons.Default.Pause,
+                contentDescription = "play"
+            )
+        }
+        IconButton(onClick = seekToNextMediaItem) {
+            Icon(
+                imageVector = Icons.Default.SkipNext,
+                contentDescription = "skip to next song"
+            )
         }
     }
 }

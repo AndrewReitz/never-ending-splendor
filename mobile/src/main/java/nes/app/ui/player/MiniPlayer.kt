@@ -28,9 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import nes.app.R
-import nes.app.util.albumTitle
-import nes.app.util.artworkUri
-import nes.app.util.title
 
 @Composable
 fun MiniPlayer(
@@ -42,7 +39,6 @@ fun MiniPlayer(
     when (playerState) {
         is PlayerState.NoMedia -> return
         is PlayerState.MediaLoaded -> {
-            val currentMediaItem = playerState.mediaItem
             val playing = playerState.isPlaying
             val elapsedTime = playerState.formatedElapsedTime
 
@@ -56,12 +52,12 @@ fun MiniPlayer(
                         .shadow(2.dp)
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .clickable {
-                            onClick(currentMediaItem.albumTitle)
+                            onClick(playerState.albumTitle)
                         },
                 ) {
 
                     AsyncImage(
-                        model = currentMediaItem.artworkUri,
+                        model = playerState.artworkUri,
                         contentDescription = null,
                         modifier = Modifier.size(56.dp),
                         contentScale = ContentScale.Crop
@@ -73,11 +69,11 @@ fun MiniPlayer(
                             .weight(1f)
                     ) {
                         Text(
-                            text = currentMediaItem.title,
+                            text = playerState.title,
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = currentMediaItem.albumTitle,
+                            text = playerState.albumTitle,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
