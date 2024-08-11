@@ -21,7 +21,7 @@ class DebugComponent {
         return HttpLoggingInterceptor { message ->
             Timber.tag("OkHttpClient")
             Timber.v(message)
-        }.apply { level = HttpLoggingInterceptor.Level.BODY }
+        }.apply { level = HttpLoggingInterceptor.Level.BASIC }
     }
 
     @Provides

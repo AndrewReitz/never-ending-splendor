@@ -111,6 +111,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.serialization)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.guava)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
@@ -138,6 +139,9 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.timber)
     implementation(libs.byteunits)
+
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.resilience)
 
     debugImplementation(libs.bundles.android.debug.libs)
     releaseImplementation(libs.bundles.android.release.libs)

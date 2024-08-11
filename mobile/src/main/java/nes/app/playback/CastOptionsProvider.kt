@@ -14,7 +14,6 @@ class CastOptionsProvider : OptionsProvider {
             .setCastMediaOptions(
                 CastMediaOptions.Builder()
                     .setMediaSessionEnabled(false)
-                    .setNotificationOptions(null) // maybe we don't want this?
                     .build()
             )
             .build()

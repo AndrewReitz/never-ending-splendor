@@ -41,7 +41,7 @@ class ShowScreenTest : PaparazziTest() {
                 onPauseAction = {},
                 onPlayAction = {},
                 actions = {},
-                onRowClick = {},
+                onRowClick = { _, _ -> },
                 upClick = {}
             )
         }

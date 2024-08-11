@@ -4,6 +4,9 @@
 
 - Including Compose to develop a new better UI
 - Updating android sdk from 34 to 35
+- Support for Android Auto
+- Updated support for chromecast to media3's CastPlayer
+- Using media3 / exoplayer for media playback
 
 == Esther 7/17/2024
 

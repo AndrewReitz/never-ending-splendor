@@ -1,6 +1,6 @@
 [versions]
 android-sdk = "34"
-kotlin = "2.0.0"
+kotlin = "2.0.10"
 firebase-bom = "33.1.2"
 androidx-media2 = "1.3.0"
 flipper = "0.261.0"
@@ -8,21 +8,22 @@ okhttp = "4.12.0"
 retrofit = "2.11.0"
 coroutines = "1.8.1"
 compose-bom = "2024.06.00"
-compose-compiler = "1.5.14"
+compose-compiler = "1.5.15"
 navigation = "2.7.7"
 hilt = "2.52"
 hiltNavigationCompose = "1.2.0"
 media3 = "1.4.0"
 
 [libraries]
-android-build-gradle = { module = "com.android.tools.build:gradle", version = "8.5.1"}
+android-build-gradle = { module = "com.android.tools.build:gradle", version = "8.5.2"}
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin"}
 kotlin-poet = { module = "com.squareup:kotlinpoet", version = "1.18.1" }
 java-poet = "com.squareup:javapoet:1.13.0"
 
 kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1"
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.8.1"}
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test",  version.ref = "coroutines" }
+kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava",  version.ref = "coroutines" }
 
 android-material = { module = "com.google.android.material:material", version = "1.12.0" }
 
@@ -90,6 +91,9 @@ dagger = "com.google.dagger:dagger:2.52"
 dagger-compiler = "com.google.dagger:dagger-compiler:2.52"
 
 coil = "io.coil-kt:coil-compose:2.7.0"
+
+arrow-core = "io.arrow-kt:arrow-core:1.2.4"
+arrow-resilience = "io.arrow-kt:arrow-resilience:1.2.4"
 
 [bundles]
 buildSrc = [
@@ -177,5 +181,5 @@ google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
 serialization = "org.jetbrains.kotlin.plugin.serialization:2.0.10"
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-ksp = "com.google.devtools.ksp:2.0.0-1.0.24"
+ksp = "com.google.devtools.ksp:2.0.10-1.0.24"
 paparazzi = "app.cash.paparazzi:1.3.4"

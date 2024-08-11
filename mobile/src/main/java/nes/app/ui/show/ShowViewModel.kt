@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import nes.app.playback.MediaPlayerContainer
 import nes.app.util.Images
 import nes.app.util.LCE
+import nes.app.util.showTitle
 import nes.app.util.toAlbumFormat
 import nes.app.util.toMetadataExtras
 import nes.app.util.yearString
@@ -66,11 +67,14 @@ class ShowViewModel @Inject constructor(
                                     .setExtras(show.toMetadataExtras())
                                     .setArtist("Phish")
                                     .setAlbumArtist("Phish")
-                                    .setAlbumTitle("${show.date.toAlbumFormat()} ${show.venue_name}")
+                                    .setAlbumTitle(show.showTitle)
                                     .setTitle(it.title)
                                     .setRecordingYear(show.date.yearString.toInt())
                                     .setArtworkUri(images.randomImageUrl.toUri())
                                     .setDurationMs(it.duration)
+                                    .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
+                                    .setIsPlayable(true)
+                                    .setIsBrowsable(false)
                                     .build()
                             )
                             .build()

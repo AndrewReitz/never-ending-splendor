@@ -20,6 +20,9 @@ import androidx.media3.common.VideoSize
 import androidx.media3.common.text.CueGroup
 import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
+import nes.app.util.MediaItemWrapper
+import nes.app.util.MediaItemsWrapper
+import timber.log.Timber
 import kotlin.math.min
 
 @UnstableApi
@@ -71,6 +74,11 @@ class ReplaceableForwardingPlayer(
     }
 
     override fun setMediaItems(mediaItems: List<MediaItem>, resetPosition: Boolean) {
+        Timber.d(
+            "setMediaItems() mediaItems=%s resetPosition=%s",
+            MediaItemsWrapper(mediaItems),
+            resetPosition
+        )
         player.setMediaItems(mediaItems, resetPosition)
         playlist.clear()
         playlist.addAll(mediaItems)
@@ -219,7 +227,7 @@ class ReplaceableForwardingPlayer(
 
     override fun seekTo(positionMs: Long) = player.seekTo(positionMs)
 
-    override fun seekTo(windowIndex: Int, positionMs: Long) = player.seekTo(windowIndex, positionMs)
+    override fun seekTo(mediaItemIndex: Int, positionMs: Long) = player.seekTo(mediaItemIndex, positionMs)
 
     override fun getSeekBackIncrement(): Long = player.seekBackIncrement
 

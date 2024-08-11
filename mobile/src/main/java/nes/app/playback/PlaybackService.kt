@@ -12,32 +12,46 @@ import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import androidx.media3.session.MediaSessionService
+import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
+import androidx.media3.session.SessionError
+import arrow.core.getOrElse
+import arrow.core.toOption
 import com.google.android.gms.cast.framework.CastContext
+import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import com.google.common.util.concurrent.SettableFuture
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.guava.future
 import nes.app.MainActivity
+import nes.app.util.MediaItemsWrapper
+import timber.log.Timber
+import javax.inject.Inject
 
 @UnstableApi
-class PlaybackService : MediaSessionService(), SessionAvailabilityListener, MediaLibraryService.MediaLibrarySession.Callback {
+@AndroidEntryPoint
+class PlaybackService : MediaLibraryService(), SessionAvailabilityListener,
+    MediaLibraryService.MediaLibrarySession.Callback {
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private var player: ReplaceableForwardingPlayer? = null
-    private var mediaSession: MediaSession? = null
+    private var mediaSession: MediaLibrarySession? = null
     private var exoPlayer: Player? = null
     private var castPlayer: Player? = null
 
+    @Inject
+    lateinit var mediaItemTree: MediaItemTree
 
     @OptIn(UnstableApi::class)
     override fun onCreate() {
@@ -52,10 +66,13 @@ class PlaybackService : MediaSessionService(), SessionAvailabilityListener, Medi
                 true
             )
             .setHandleAudioBecomingNoisy(true)
+            .setSkipSilenceEnabled(true)
             .build()
 
-        val castContext: CastContext = CastContext.getSharedInstance(this, MoreExecutors.directExecutor())
-            .addOnFailureListener { /*TODO Log errors*/ }
+        val castContext = CastContext.getSharedInstance(this, MoreExecutors.directExecutor())
+            .addOnFailureListener {
+                Timber.e(it, "Error getting the cast session")
+            }
             .result
 
         castPlayer = CastPlayer(castContext).apply {
@@ -70,7 +87,7 @@ class PlaybackService : MediaSessionService(), SessionAvailabilityListener, Medi
             FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
         )
 
-        mediaSession = MediaSession.Builder(this, player)
+        mediaSession = MediaLibrarySession.Builder(this, player, this)
             .setSessionActivity(pendingIntent)
             .build()
         this.exoPlayer = exoPlayer
@@ -82,13 +99,14 @@ class PlaybackService : MediaSessionService(), SessionAvailabilityListener, Medi
             player.release()
             release()
             mediaSession = null
+            serviceScope.cancel()
         }
         super.onDestroy()
     }
 
     override fun onGetSession(
         controllerInfo: MediaSession.ControllerInfo
-    ): MediaSession? = mediaSession
+    ): MediaLibrarySession? = mediaSession
 
     // User dismissed the app from recent tasks
     override fun onTaskRemoved(rootIntent: Intent?) {
@@ -117,17 +135,94 @@ class PlaybackService : MediaSessionService(), SessionAvailabilityListener, Medi
     override fun onPlaybackResumption(
         mediaSession: MediaSession,
         controller: MediaSession.ControllerInfo
-    ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
-        val settable = SettableFuture.create<MediaSession.MediaItemsWithStartPosition>()
-        serviceScope.launch {
-            settable.set(
-                MediaSession.MediaItemsWithStartPosition(
-                    player?.playlist ?: emptyList(),
-                    player?.currentPlaylistIndex ?: 0,
-                    player?.currentPosition ?: C.TIME_UNSET
-                )
+    ): ListenableFuture<MediaItemsWithStartPosition> {
+        return serviceScope.future(Dispatchers.Main) {
+            MediaItemsWithStartPosition(
+                player?.playlist ?: emptyList(),
+                player?.currentPlaylistIndex ?: 0,
+                player?.currentPosition ?: C.TIME_UNSET
             )
         }
-        return settable
+    }
+
+    override fun onConnect(
+        session: MediaSession,
+        controller: MediaSession.ControllerInfo
+    ): MediaSession.ConnectionResult {
+        val sessionCommands = MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS
+        if (
+            session.isMediaNotificationController(controller) ||
+            session.isAutomotiveController(controller) ||
+            session.isAutoCompanionController(controller)
+        ) {
+            // Available session commands to accept incoming custom commands from Auto.
+            return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+                .setAvailableSessionCommands(sessionCommands)
+                .build()
+        }
+        // Default commands with default custom layout for all other controllers.
+        return MediaSession.ConnectionResult.AcceptedResultBuilder(session).build()
+    }
+
+    override fun onGetLibraryRoot(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        params: LibraryParams?
+    ): ListenableFuture<LibraryResult<MediaItem>> {
+        return serviceScope.future {
+            val item = mediaItemTree.getRoot()
+            LibraryResult.ofItem(item, params)
+        }
+    }
+
+    override fun onGetChildren(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        parentId: String,
+        page: Int,
+        pageSize: Int,
+        params: LibraryParams?
+    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+        Timber.d("onGetChildren() parentId=%s", parentId)
+        return serviceScope.future {
+            val items = mediaItemTree.getChildren(parentId)
+            LibraryResult.ofItemList(items, params)
+        }
+    }
+
+    override fun onGetItem(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        mediaId: String
+    ): ListenableFuture<LibraryResult<MediaItem>> {
+        Timber.d("onGetItem() mediaId=%s", mediaId)
+        return serviceScope.future {
+            mediaItemTree.getItem(mediaId).toOption()
+                .map { LibraryResult.ofItem(it, null) }
+                .getOrElse { LibraryResult.ofError(SessionError.ERROR_INVALID_STATE) }
+        }
+    }
+
+    override fun onAddMediaItems(
+        mediaSession: MediaSession,
+        controller: MediaSession.ControllerInfo,
+        mediaItems: List<MediaItem>
+    ): ListenableFuture<List<MediaItem>> {
+        Timber.d("onAddMediaItems() mediaItems=%s", MediaItemsWrapper(mediaItems))
+        return serviceScope.future {
+            if (mediaItems.size == 1 && mediaItems.first().localConfiguration == null) {
+                mediaItemTree.getChildren(mediaItems.first().mediaId).let { playlist ->
+                    return@future playlist
+                }
+            }
+
+            mediaItems.map {
+                if (it.localConfiguration == null) {
+                    mediaItemTree.getItem(it.mediaId) ?: it
+                } else {
+                    it
+                }
+            }
+        }
     }
 }

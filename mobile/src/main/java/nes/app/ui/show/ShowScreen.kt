@@ -75,12 +75,11 @@ fun ShowScreen(
         onPauseAction = playerViewModel::pause,
         onPlayAction = playerViewModel::play,
         actions = { CastButton() },
-        onRowClick = {
+        onRowClick = { index, isPlaying ->
             when(val ps = playerState) {
                 is NoMedia -> {}
                 is MediaLoaded -> {
-                    if (!ps.isPlaying) {
-
+                    if (!isPlaying) {
                         if (firstLoad) {
                             firstLoad = false
                             showState.map { show ->
@@ -94,7 +93,7 @@ fun ShowScreen(
                             }
                         }
 
-                        playerViewModel.seekTo(it, 0)
+                        playerViewModel.seekTo(index, 0)
                         playerViewModel.play()
                     } else {
                         playerViewModel.pause()
@@ -111,7 +110,7 @@ fun ShowScreen(
     playerState: PlayerState,
     appBarTitle: String,
     upClick: () -> Unit,
-    onRowClick: (index: Int) -> Unit,
+    onRowClick: (index: Int, isPlaying: Boolean) -> Unit,
     onMiniPlayerClick: (title: String) -> Unit,
     onPauseAction: () -> Unit,
     onPlayAction: () -> Unit,
@@ -143,7 +142,7 @@ fun ShowListWithPlayer(
     show: Show,
     playerState: PlayerState,
     mediaLoaded: MediaLoaded,
-    onRowClick: (index: Int) -> Unit,
+    onRowClick: (index: Int, isPlaying: Boolean) -> Unit,
     onMiniPlayerClick: (title: String) -> Unit,
     onPauseAction: () -> Unit,
     onPlayAction: () -> Unit,
@@ -163,7 +162,7 @@ fun ShowListWithPlayer(
                     trackTitle = track.title,
                     duration = track.formatedDuration,
                     playing = isPlaying,
-                    onClick = { onRowClick(i) }
+                    onClick = { onRowClick(i, isPlaying) }
                 )
             }
         }
@@ -209,7 +208,7 @@ fun TrackRow(
             val (imageVector, contentDescription) = if (playing) {
                 Icons.Default.Pause to stringResource(R.string.pause)
             } else {
-                Icons.Default.PlayArrow to stringResource(R.string.pause)
+                Icons.Default.PlayArrow to stringResource(R.string.play)
             }
 
             Icon(

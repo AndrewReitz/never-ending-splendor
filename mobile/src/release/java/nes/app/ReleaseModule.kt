@@ -16,8 +16,5 @@ interface ReleaseModule {
     companion object {
         @Provides
         fun providesFirebaseCrashlytics(): FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
-
-        @Provides
-        fun providesInterceptors(): Set<@JvmSuppressWildcards Interceptor> = emptySet()
     }
 }

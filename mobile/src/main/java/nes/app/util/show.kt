@@ -9,3 +9,5 @@ fun Show.toMetadataExtras(): Bundle = Bundle().apply {
 }
 
 fun Bundle.toShowInfo(): Pair<Long, String> = getLong("showId") to getString("venueName", "")
+
+val Show.showTitle get() = "${date.toAlbumFormat()} $venue_name"

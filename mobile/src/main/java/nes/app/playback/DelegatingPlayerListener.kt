@@ -17,6 +17,7 @@ import androidx.media3.common.VideoSize
 import androidx.media3.common.text.Cue
 import androidx.media3.common.text.CueGroup
 import androidx.media3.common.util.UnstableApi
+import timber.log.Timber
 
 @UnstableApi
 class DelegatingPlayerListener(
@@ -35,10 +36,12 @@ class DelegatingPlayerListener(
     }
 
     override fun onPlayerError(error: PlaybackException) {
+        Timber.e(error, "onPlayerError")
         delegates.forEach { it.onPlayerError(error) }
     }
 
     override fun onPlayerErrorChanged(error: PlaybackException?) {
+        Timber.e(error, "onPlayerErrorChanged")
         delegates.forEach { it.onPlayerErrorChanged(error) }
     }
 

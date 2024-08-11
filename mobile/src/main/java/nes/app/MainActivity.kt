@@ -1,6 +1,5 @@
 package nes.app
 
-import android.media.AudioManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,8 +14,6 @@ import nes.app.ui.theme.NesTheme
 class MainActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        volumeControlStream = AudioManager.STREAM_MUSIC
 
         enableEdgeToEdge()
         setContent {

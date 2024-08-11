@@ -17,6 +17,7 @@ import nes.app.ui.player.PlayerState.NoMedia
 import nes.app.util.formatedElapsedTime
 import nes.app.util.mediaExtras
 import okio.ByteString.Companion.decodeBase64
+import timber.log.Timber
 import javax.inject.Inject
 
 @UnstableApi
@@ -75,7 +76,17 @@ class PlayerViewModel @Inject constructor(
     val mediaItemCount: Int get() = player.mediaItemCount
     fun getMediaItemAt(i: Int) = player.getMediaItemAt(i)
     fun removeMediaItems(fromIndex: Int, toIndex: Int) = player.removeMediaItems(fromIndex, toIndex)
-    fun seekTo(mediaItemIndex: Int, positionMs: Long) = player.seekTo(mediaItemIndex, positionMs)
+
+    fun seekTo(mediaItemIndex: Int, positionMs: Long) {
+        // make sure we are able to seek ahead
+        // this is an issue when switching between local player and cast player
+        viewModelScope.launch {
+            while (!player.isCommandAvailable(Player.COMMAND_SEEK_TO_MEDIA_ITEM)) {
+                delay(100)
+            }
+            player.seekTo(mediaItemIndex, positionMs)
+        }
+    }
 
     fun seekTo(positionMs: Long) = player.seekTo(positionMs)
 
@@ -83,25 +94,30 @@ class PlayerViewModel @Inject constructor(
         player.removeListener(playerListener)
     }
 
-    private fun newState() = when(val cmi = player.currentMediaItem) {
-        null -> NoMedia
-        else -> {
-            val metadata = cmi.mediaMetadata
-            val (showId, venueName) = cmi.mediaExtras
+    private fun newState(): PlayerState {
+        val cmi = player.currentMediaItem
+        return when {
+            cmi == null -> NoMedia
+            // somehow when working with the cast player we can media items we didn't queue
+            cmi.mediaId.isEmpty() -> NoMedia
+            else -> {
+                val metadata = cmi.mediaMetadata
+                val (showId, venueName) = cmi.mediaExtras
 
-            PlayerState.MediaLoaded(
-                isPlaying = player.isPlaying,
-                formatedElapsedTime = player.formatedElapsedTime,
-                formatedDurationTime = metadata.durationMs?.formatedElapsedTime.orEmpty(),
-                duration = player.duration,
-                currentPosition = player.currentPosition,
-                showId = showId,
-                venueName = venueName,
-                artworkUri = metadata.artworkUri,
-                title = metadata.title.toString(),
-                albumTitle = metadata.albumTitle.toString(),
-                mediaId = cmi.mediaId,
-            )
+                PlayerState.MediaLoaded(
+                    isPlaying = player.isPlaying,
+                    formatedElapsedTime = player.formatedElapsedTime,
+                    formatedDurationTime = metadata.durationMs?.formatedElapsedTime.orEmpty(),
+                    duration = player.duration,
+                    currentPosition = player.currentPosition,
+                    showId = showId,
+                    venueName = venueName,
+                    artworkUri = metadata.artworkUri,
+                    title = metadata.title.toString(),
+                    albumTitle = metadata.albumTitle.toString(),
+                    mediaId = cmi.mediaId,
+                )
+            }
         }
     }
 }
