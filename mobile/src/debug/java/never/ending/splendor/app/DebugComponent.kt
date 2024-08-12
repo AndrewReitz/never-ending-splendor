@@ -10,6 +10,7 @@ import dagger.multibindings.IntoSet
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -30,6 +31,7 @@ class DebugComponent {
         return FlipperOkhttpInterceptor(networkFlipperPlugin)
     }
 
+    @Singleton
     @Provides
     fun provideNetworkFlipperPlugin(): NetworkFlipperPlugin = NetworkFlipperPlugin()
 }
