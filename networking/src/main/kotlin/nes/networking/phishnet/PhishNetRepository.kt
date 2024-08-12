@@ -1,7 +1,7 @@
 package nes.networking.phishnet
 
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.resultFrom
+import arrow.core.Either
+import arrow.core.raise.either
 import nes.networking.phishnet.model.Review
 import nes.networking.phishnet.model.SetList
 import javax.inject.Inject
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class PhishNetRepository @Inject constructor(
     private val phishNetService: PhishNetService
 ) {
-    suspend fun setlist(showDate: String): Result<SetList, Exception> = resultFrom {
+    suspend fun setlist(showDate: String): Either<Throwable, SetList> = Either.catch {
         val data = phishNetService.setlist(showDate).data
         val firstSong = data[0]
         val songs = data.map { it.song }
@@ -26,7 +26,7 @@ class PhishNetRepository @Inject constructor(
         )
     }
 
-    suspend fun reviews(showId: String): Result<List<Review>, Exception> = resultFrom {
+    suspend fun reviews(showId: String): Either<Throwable, List<Review>> = Either.catch {
         phishNetService.reviews(showId).data
     }
 }

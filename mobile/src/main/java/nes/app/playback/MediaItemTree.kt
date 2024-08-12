@@ -5,10 +5,15 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
+import arrow.core.Either
+import arrow.core.computations.ResultEffect.bind
+import arrow.core.getOrElse
+import arrow.core.right
 import arrow.resilience.Schedule
 import arrow.resilience.retry
+import arrow.resilience.retryEither
+import arrow.resilience.retryRaise
 import com.google.common.collect.ImmutableList
-import dev.forkhandles.result4k.orThrow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +47,7 @@ class MediaItemTree @Inject constructor(
     private val shows: MutableMap<String, MediaItemNode> = mutableMapOf()
     private val tracks: MutableMap<String, MediaItemNode> = mutableMapOf()
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     private val root = MediaItemNode(
         MediaItem.Builder()
@@ -63,7 +68,7 @@ class MediaItemTree @Inject constructor(
     init {
         scope.launch {
             mediaTree = async {
-                val years: List<YearData> = retryForever { phishInRepository.years().orThrow() }
+                val years: List<YearData> = retryForever { phishInRepository.years() }
                 val children = years.map {
                     MediaItemNode(
                         MediaItem.Builder()
@@ -106,7 +111,7 @@ class MediaItemTree @Inject constructor(
         if (year != null) {
             if (year.children.isEmpty()) {
                 // get shows for year add to the
-                val shows = retryForever { phishInRepository.shows(year.id).orThrow() }
+                val shows = retryForever { phishInRepository.shows(year.id) }
                     .map {
                         MediaItem.Builder()
                             .setMediaMetadata(
@@ -135,7 +140,7 @@ class MediaItemTree @Inject constructor(
 
         if (show != null) {
             if (show.children.isEmpty()) {
-                val showData = retryForever { phishInRepository.show(show.id).orThrow() }
+                val showData = retryForever { phishInRepository.show(show.id) }
                 val showChildren = showData.tracks.map { track ->
                     MediaItem.Builder()
                         .setUri(track.mp3)
@@ -199,10 +204,11 @@ class MediaItemTree @Inject constructor(
      * Retries the action every 100 milliseconds up to 3 seconds and then
      * continues to retry again forever every 3 seconds
      */
-    private suspend fun <A> retryForever(action: suspend () -> A): A {
+    private suspend inline fun <Result> retryForever(action: () -> Either<Throwable, Result>): Result {
         return Schedule.exponential<Throwable>(100.milliseconds)
             .doWhile { _, duration -> duration < 3.seconds }
             .andThen(Schedule.spaced(3.seconds))
-            .retry(action)
+            .retryEither(action)
+            .getOrElse { error("This shouldn't happen") }
     }
 }

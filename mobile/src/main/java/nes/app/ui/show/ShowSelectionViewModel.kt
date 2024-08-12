@@ -4,27 +4,28 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import nes.app.ui.ApiErrorMessage
 import nes.app.util.LCE
+import nes.app.util.retryUntilSuccessful
 import nes.networking.phishin.PhishInRepository
 import nes.networking.phishin.model.Show
-import nes.networking.retry
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class ShowSelectionViewModel @Inject constructor(
     private val phishinRepository: PhishInRepository,
+    private val apiErrorMessage: ApiErrorMessage,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     val showYear: String = checkNotNull(savedStateHandle["year"])
 
-    private val _shows: MutableStateFlow<LCE<List<Show>, Exception>> = MutableStateFlow(LCE.Loading)
-    val shows: StateFlow<LCE<List<Show>, Exception>> = _shows
+    private val _shows: MutableStateFlow<LCE<List<Show>, Throwable>> = MutableStateFlow(LCE.Loading)
+    val shows: StateFlow<LCE<List<Show>, Throwable>> = _shows
 
     init {
         loadShows()
@@ -32,14 +33,18 @@ class ShowSelectionViewModel @Inject constructor(
 
     private fun loadShows() {
         viewModelScope.launch {
-            val state = when(val result = retry { phishinRepository.shows(showYear) }) {
-                is Failure -> LCE.Error(
-                    userDisplayedMessage = "There was an error loading data from Phish.in",
-                    error = result.reason
-                )
-                is Success -> LCE.Content(result.value)
-            }
-
+            val state = retryUntilSuccessful(
+                action = { phishinRepository.shows(showYear) },
+                onErrorAfter3SecondsAction = { error ->
+                    Timber.d(error, "Error retrieving shows")
+                    _shows.emit(
+                        LCE.Error(
+                            userDisplayedMessage = apiErrorMessage.value,
+                            error = error
+                        )
+                    )
+                }
+            )
             _shows.emit(state)
         }
     }

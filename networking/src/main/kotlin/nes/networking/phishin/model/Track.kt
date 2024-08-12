@@ -1,8 +1,6 @@
 package nes.networking.phishin.model
 
 import kotlinx.serialization.Serializable
-import nes.networking.serializers.HttpUrlSerializer
-import okhttp3.HttpUrl
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 

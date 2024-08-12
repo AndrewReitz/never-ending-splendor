@@ -106,7 +106,7 @@ fun ShowScreen(
 
 @Composable
 fun ShowScreen(
-    state: LCE<Show, Exception>,
+    state: LCE<Show, Throwable>,
     playerState: PlayerState,
     appBarTitle: String,
     upClick: () -> Unit,
