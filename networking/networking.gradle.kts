@@ -24,6 +24,7 @@ kotlin {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(libs.kotlinx.coroutines)
 
     api(libs.okhttp)
     api(libs.bundles.arrow)
