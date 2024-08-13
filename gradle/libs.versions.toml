@@ -21,6 +21,7 @@ kotlin-poet = { module = "com.squareup:kotlinpoet", version = "1.18.1" }
 java-poet = "com.squareup:javapoet:1.13.0"
 
 kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1"
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test",  version.ref = "coroutines" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava",  version.ref = "coroutines" }

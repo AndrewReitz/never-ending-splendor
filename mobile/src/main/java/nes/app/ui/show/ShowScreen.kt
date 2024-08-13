@@ -93,7 +93,9 @@ fun ShowScreen(
                             }
                         }
 
-                        playerViewModel.seekTo(index, 0)
+                        if (ps.mediaId != playerViewModel.getMediaItemAt(index).mediaId) {
+                            playerViewModel.seekTo(index, 0)
+                        }
                         playerViewModel.play()
                     } else {
                         playerViewModel.pause()
