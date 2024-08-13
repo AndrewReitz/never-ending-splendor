@@ -52,7 +52,6 @@ facebook-soloader = { module = "com.facebook.soloader:soloader", version = "0.11
 junit = { module = "junit:junit", version = "4.13.2"}
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
 
-result4k = { module = "dev.forkhandles:result4k", version = "2.19.0.0" }
 byteunits = { module = "com.jakewharton.byteunits:byteunits", version = "0.9.1" }
 timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.14" }
@@ -171,6 +170,11 @@ media3 = [
     "media3-ui",
     "media3-common",
     "media3-cast"
+]
+
+arrow = [
+    "arrow-core",
+    "arrow-resilience"
 ]
 
 [plugins]

@@ -140,8 +140,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.byteunits)
 
-    implementation(libs.arrow.core)
-    implementation(libs.arrow.resilience)
+    implementation(libs.bundles.arrow)
 
     debugImplementation(libs.bundles.android.debug.libs)
     releaseImplementation(libs.bundles.android.release.libs)

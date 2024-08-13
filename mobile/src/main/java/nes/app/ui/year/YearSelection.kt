@@ -24,7 +24,7 @@ fun YearSelectionScreen(
     onYearClicked: (year: String) -> Unit,
     onMiniPlayerClick: (title: String) -> Unit,
 ) {
-    val state: LCE<List<YearData>, Exception> by viewModel.years.collectAsState()
+    val state: LCE<List<YearData>, Throwable> by viewModel.years.collectAsState()
     val playerState by playerViewModel.playerState.collectAsState()
 
     YearSelectionScreen(
@@ -40,7 +40,7 @@ fun YearSelectionScreen(
 
 @Composable
 fun YearSelectionScreen(
-    yearData: LCE<List<YearData>, Exception>,
+    yearData: LCE<List<YearData>, Throwable>,
     onYearClicked: (year: String) -> Unit,
     onMiniPlayerClick: (title: String) -> Unit,
     playerState: PlayerState,

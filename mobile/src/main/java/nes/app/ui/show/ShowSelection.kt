@@ -26,7 +26,7 @@ fun ShowSelectionScreen(
     onMiniPlayerClick: (title: String) -> Unit,
 ) {
     val playerState by playerViewModel.playerState.collectAsState()
-    val state: LCE<List<Show>, Exception> by viewModel.shows.collectAsState()
+    val state: LCE<List<Show>, Throwable> by viewModel.shows.collectAsState()
 
     ShowSelectionScreen(
         screenTitle = viewModel.showYear,
@@ -44,7 +44,7 @@ fun ShowSelectionScreen(
 @Composable
 fun ShowSelectionScreen(
     screenTitle: String,
-    state: LCE<List<Show>, Exception>,
+    state: LCE<List<Show>, Throwable>,
     playerState: PlayerState,
     navigateUpClick: () -> Unit,
     onShowClicked: (showId: Long, venue: String) -> Unit,

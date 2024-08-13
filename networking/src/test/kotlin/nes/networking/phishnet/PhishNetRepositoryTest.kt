@@ -1,7 +1,6 @@
 package nes.networking.phishnet
 
 import dagger.Component
-import dev.forkhandles.result4k.valueOrNull
 import kotlinx.coroutines.runBlocking
 import nes.networking.TestModule
 import nes.networking.reviews
@@ -31,7 +30,7 @@ class PhishNetRepositoryTest {
         mockWebServer.enqueue(MockResponse().setBody(setlist.buffer))
 
         classUnderTest.setlist("2020-02-22").run {
-            assertNotNull(valueOrNull())
+            assertNotNull(getOrNull())
         }
     }
 
@@ -40,7 +39,7 @@ class PhishNetRepositoryTest {
         mockWebServer.enqueue(MockResponse().setBody(reviews.buffer))
 
         classUnderTest.reviews("1560881138").run {
-            assertNotNull(valueOrNull())
+            assertNotNull(getOrNull())
         }
     }
 }

@@ -26,7 +26,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     api(libs.okhttp)
-    api(libs.result4k)
+    api(libs.bundles.arrow)
 
     implementation(libs.okio)
     api(libs.bundles.retrofit)
