@@ -22,7 +22,7 @@ plugins {
 
 include(":mobile", ":networking")
 
-rootProject.name = "never-ending-splendor"
+rootProject.name = "phish-tapes"
 
 rootProject.children.forEach {
     it.buildFileName = "${it.name}.gradle.kts"
